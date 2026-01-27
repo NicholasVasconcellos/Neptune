@@ -1,11 +1,11 @@
 {
   "expo": {
-    "scheme":"myNeptune",
+    "scheme": "myneptune",
     "name": "demoApp",
     "slug": "demoApp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/Icon.jpg",
+    "icon": "./assets/NeptuneAppIcon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -27,8 +27,6 @@
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
-    "plugins": [
-      "expo-router"
-    ]
+    "plugins": ["expo-router"]
   }
 }

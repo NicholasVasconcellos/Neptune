@@ -1,7 +1,9 @@
 import { StyleSheet, Text, View, Image } from "react-native";
 import React from "react";
+import { Link } from "expo-router";
+import Card from "../Components/Card";
 
-import Logo from "../assets/Icon.jpg";
+import Logo from "../assets/NeptuneAppIcon.png";
 
 /* Home Page */
 const Home = () => {
@@ -9,6 +11,9 @@ const Home = () => {
     <View style={styles.container}>
       <Image source={Logo} style={styles.image}></Image>
       <Link href="/addTraining" style={styles.link}></Link>
+      <Card>
+        <Text>This is a card text</Text>
+      </Card>
       <Text style={styles.title}>Welcome to Neptune Swim</Text>
       <Text style={styles.card}>Enter Data</Text>
       <Text style={styles.card}>View Data</Text>
@@ -38,11 +43,11 @@ const styles = StyleSheet.create({
   },
   image: {
     marginVertical: 2,
-    width: '50%',
-    height: '50%',
+    width: "50%",
+    height: "50%",
   },
-  link:{
+  link: {
     marginVertical: 10,
     borderBottomWidth: 1,
-  }
+  },
 });
