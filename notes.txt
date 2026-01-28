@@ -6,5 +6,31 @@ Route Groups
  - Group Pages for organization
  - in Expo the file path becomes the Url
  - if you don't want to change the url with the grouping, just add () and it will be ignored.
- 
+
+
+Styles with Flex:
+    Default Flex Direction is Vertical (column)
+    
+    Align Items: Cross Axis alignment
+        Default= STretch (fill all space avaialble)
+        center: 
+    
+    justifyContent: main axis alignment
+
+    gap: set spacing between elements
+
+    alignSelf: 
+        put this on child
+        override the alignment set at parent
+
+
+flexDirection
+column
+row
+column-reverse
+row-reverse
+
+
+justifyContent (main axis alignment of children)
+flex-start
 

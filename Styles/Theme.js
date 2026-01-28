@@ -1,6 +1,6 @@
 // Color palette
 
-export const colors = {
+export const Colors = {
   // Global / Shared Colors
   primary: "#4fc3f7",
   primaryDark: "#0288d1",

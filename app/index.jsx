@@ -1,27 +1,70 @@
-import { StyleSheet, Text, View, Image } from "react-native";
+import { StyleSheet, Text, View, Image, useColorScheme } from "react-native";
 import React from "react";
 import { Link } from "expo-router";
 import Card from "../Components/Card";
 import Button from "../Components/Button";
+import ThemedText from "../Components/ThemedText";
 import Logo from "../assets/NeptuneAppIcon.png";
+
+import { Colors } from "../Styles/Theme";
+
+// Icons
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import FireIcon from "../Components/Icons/FireIcon";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
 /* Home Page */
 const Home = () => {
+  // Get the Curr Color Theme
+  const theme = Colors[useColorScheme()] || Colors.light;
+
   return (
     <View style={styles.container}>
-      <Image source={Logo} style={styles.image}></Image>
+      {/* Old Stuff */}
+      {/* <Image source={Logo} style={styles.image}></Image>
       <Link href="/addTraining" style={styles.link}></Link>
       <Card>
-        <Text>This is a card text</Text>
+        <ThemedText>This is a card text</ThemedText>
       </Card>
-      <Text style={styles.title}>Welcome to Neptune Swim</Text>
+      <ThemedText style={styles.title}>Welcome to Neptune Swim</ThemedText>
 
       <Button>Do Not Press This</Button>
-      <Text style={styles.card}>Enter Data</Text>
+      <ThemedText style={styles.card}>Enter Data</ThemedText>
 
 
-      <Text style={styles.card}>View Data</Text>
-      <Text style={styles.card}>Live Training</Text>
+      <ThemedText style={styles.card}>View Data</ThemedText>
+      <ThemedText style={styles.card}>Live Training</ThemedText> */}
+      <Button
+        icon={
+          <MaterialCommunityIcons
+            name="timer-outline"
+            size={24}
+            color={theme.text}
+          />
+        }
+      >
+        Add new Times
+      </Button>
+
+      <Button icon={<FontAwesome6 name="book" size={24} color={theme.text} />}>
+        Enter New Training
+      </Button>
+
+      <Button
+        icon={<AntDesign name="line-chart" size={24} color={theme.text} />}
+      >
+        Metrics Dashboard
+      </Button>
+
+      <Button
+        icon={<FontAwesome5 name="swimmer" size={24} color={theme.text} />}
+      >
+        Start a Training
+      </Button>
+
+      <Button icon={<FireIcon />}>This is a button</Button>
     </View>
   );
 };
@@ -30,7 +73,10 @@ export default Home;
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
+    // Cross Axis:
+    // Center this child with the parent
+    alignSelf: "center", // center on Parent
+    alignItems: "stretch", // Stretch children to full width of parent 
     flex: 1,
     gap: 4,
     justifyContent: "center",

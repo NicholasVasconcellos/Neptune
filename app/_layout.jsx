@@ -10,7 +10,7 @@ const RootLayout = () => {
   // headerShown = False to hide header on a page
   // Options>Title: name to set custom title
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1}}>
       {/* Screen Options: Global Options for all screens */}
       <Stack
         screenOptions={{
