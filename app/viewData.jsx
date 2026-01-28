@@ -5,7 +5,7 @@ import { Link } from 'expo-router'
 const viewData = () => {
   return (
     <View>
-      <Text>viewData</Text>
+      <Text>View Data</Text>
     </View>
   )
 }
