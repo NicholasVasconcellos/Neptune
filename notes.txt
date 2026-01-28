@@ -1,0 +1,10 @@
+Layout Files
+    - RootLayout, set the layout for all Files
+    - PUt the slot compoenent which will be populated by curr page
+
+Route Groups
+ - Group Pages for organization
+ - in Expo the file path becomes the Url
+ - if you don't want to change the url with the grouping, just add () and it will be ignored.
+ 
+

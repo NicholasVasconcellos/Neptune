@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, Image } from "react-native";
 import React from "react";
 import { Link } from "expo-router";
 import Card from "../Components/Card";
-
+import Button from "../Components/Button";
 import Logo from "../assets/NeptuneAppIcon.png";
 
 /* Home Page */
@@ -15,7 +15,11 @@ const Home = () => {
         <Text>This is a card text</Text>
       </Card>
       <Text style={styles.title}>Welcome to Neptune Swim</Text>
+
+      <Button>Do Not Press This</Button>
       <Text style={styles.card}>Enter Data</Text>
+
+
       <Text style={styles.card}>View Data</Text>
       <Text style={styles.card}>Live Training</Text>
     </View>
