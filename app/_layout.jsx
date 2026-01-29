@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
-import { Stack, Link } from "expo-router";
+import { Stack } from "expo-router";
+import ThemedText from "../Components/ThemedText";
 
 // Expo Renders Layout file by default
 // Slot: Renders page content
@@ -10,12 +11,13 @@ const RootLayout = () => {
   // headerShown = False to hide header on a page
   // Options>Title: name to set custom title
   return (
-    <View style={{ flex: 1}}>
+    <View style={{ flex: 1, backgroundColor: "#000" }}>
       {/* Screen Options: Global Options for all screens */}
       <Stack
         screenOptions={{
           headerStyle: { backgroundColor: "#ddd" },
           headerTintColor: "#333",
+          contentStyle: { backgroundColor: "#000" },
         }}
       >
         {/* Reister screen with file name index, title=Home, */}
@@ -37,6 +39,7 @@ const RootLayout = () => {
           options={{ title: "Start Training" }}
         ></Stack.Screen>
       </Stack>
+      <ThemedText>Footer </ThemedText>
     </View>
   );
 };
@@ -45,4 +48,5 @@ const RootLayout = () => {
 
 export default RootLayout;
 
-const styles = StyleSheet.create({});
+// const styles = StyleSheet.create({
+// });

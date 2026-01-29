@@ -21,7 +21,7 @@ const Home = () => {
   const theme = Colors[useColorScheme()] || Colors.light;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Old Stuff */}
       {/* <Image source={Logo} style={styles.image}></Image>
       <Link href="/addTraining" style={styles.link}></Link>
@@ -44,22 +44,28 @@ const Home = () => {
             color={theme.text}
           />
         }
+        href={"/addData"}
       >
         Add new Times
       </Button>
 
-      <Button icon={<FontAwesome6 name="book" size={24} color={theme.text} />}>
+      <Button
+        icon={<FontAwesome6 name="book" size={24} color={theme.text} />}
+        href={"/addTraining"}
+      >
         Enter New Training
       </Button>
 
       <Button
         icon={<AntDesign name="line-chart" size={24} color={theme.text} />}
+        href={"/viewData"}
       >
         Metrics Dashboard
       </Button>
 
       <Button
         icon={<FontAwesome5 name="swimmer" size={24} color={theme.text} />}
+        href={"/viewTraining"}
       >
         Start a Training
       </Button>
@@ -76,7 +82,7 @@ const styles = StyleSheet.create({
     // Cross Axis:
     // Center this child with the parent
     alignSelf: "center", // center on Parent
-    alignItems: "stretch", // Stretch children to full width of parent 
+    alignItems: "stretch", // Stretch children to full width of parent
     flex: 1,
     gap: 4,
     justifyContent: "center",

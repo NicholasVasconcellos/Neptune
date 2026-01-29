@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-import { Link } from 'expo-router'
+import { StyleSheet, Text, View } from "react-native";
+import React from "react";
+import { Link } from "expo-router";
 
 const addData = () => {
   return (
@@ -9,9 +9,9 @@ const addData = () => {
 
       <Link href="/">Back Home</Link>
     </View>
-  )
-}
+  );
+};
 
-export default addData
+export default addData;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});
