@@ -11,7 +11,7 @@ const RootLayout = () => {
   // headerShown = False to hide header on a page
   // Options>Title: name to set custom title
   return (
-    <View style={{ flex: 1, backgroundColor: "#000" }}>
+    <View style={{ flex: 1, backgroundColor: "#ae1a1a" }}>
       {/* Screen Options: Global Options for all screens */}
       <Stack
         screenOptions={{
@@ -21,25 +21,13 @@ const RootLayout = () => {
         }}
       >
         {/* Reister screen with file name index, title=Home, */}
-        <Stack.Screen name="index" options={{ title: "Home" }}></Stack.Screen>
+        <Stack.Screen name="login" options={{ title: "Login" }}></Stack.Screen>
         <Stack.Screen
-          name="addData"
-          options={{ title: "Log Data" }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="viewData"
-          options={{ title: "View Metrics" }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="addTraining"
-          options={{ title: "Add New Training" }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="viewTraining"
-          options={{ title: "Start Training" }}
+          name="register"
+          options={{ title: "Create Account" }}
         ></Stack.Screen>
       </Stack>
-      <ThemedText>Footer </ThemedText>
+      {/* <ThemedText>Footer </ThemedText> */}
     </View>
   );
 };

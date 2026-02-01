@@ -6,6 +6,12 @@ const addTraining = () => {
   return (
     <View>
       <Text>addTraining</Text>
+      <Text>Create new Training Here</Text>
+      {/* Button: Start from existing Training */}
+      {/* New Training */}
+
+
+      {/* Populate the Forms and continuously show the trainign duration */}
     </View>
   )
 }

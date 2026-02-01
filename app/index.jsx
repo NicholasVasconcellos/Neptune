@@ -22,21 +22,40 @@ const Home = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Old Stuff */}
-      {/* <Image source={Logo} style={styles.image}></Image>
-      <Link href="/addTraining" style={styles.link}></Link>
       <Card>
-        <ThemedText>This is a card text</ThemedText>
+        <ThemedText style={styles.title}>Welcome to Neptune Swim</ThemedText>
       </Card>
-      <ThemedText style={styles.title}>Welcome to Neptune Swim</ThemedText>
+      <Image source={Logo} style={styles.image}></Image>
 
-      <Button>Do Not Press This</Button>
-      <ThemedText style={styles.card}>Enter Data</ThemedText>
-
-
-      <ThemedText style={styles.card}>View Data</ThemedText>
-      <ThemedText style={styles.card}>Live Training</ThemedText> */}
       <Button
+        icon={
+          <MaterialCommunityIcons
+            name="timer-outline"
+            size={24}
+            color={theme.text}
+          />
+        }
+        href={"/login"}
+      >
+        Login To Account
+      </Button>
+
+
+      <Button
+        icon={
+          <MaterialCommunityIcons
+            name="timer-outline"
+            size={24}
+            color={theme.text}
+          />
+        }
+        href={"/register"}
+      >
+        Create new Account
+      </Button>
+
+
+      {/* <Button
         icon={
           <MaterialCommunityIcons
             name="timer-outline"
@@ -68,7 +87,7 @@ const Home = () => {
         href={"/viewTraining"}
       >
         Start a Training
-      </Button>
+      </Button> */}
 
       <Button icon={<FireIcon />}>This is a button</Button>
     </View>
