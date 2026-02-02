@@ -20,15 +20,15 @@ const RootLayout = () => {
   const theme = Colors[useColorScheme()] || Colors.light;
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#520ee6" }}>
+    <View style={{ flex: 1, backgroundColor: theme.background }}>
       {/* Screen Options: Global Options for all screens */}
       <Tabs
         screenOptions={{
           headerShown: false,
-          headerStyle: { backgroundColor: "#ddd" },
-          headerTintColor: "#333",
+          headerStyle: { backgroundColor: theme.backgroundSecondary },
+          headerTintColor: theme.text,
           contentStyle: { backgroundColor: "#000" },
-          tabBarActiveTintColor: theme.Ac
+          tabBarActiveTintColor: Colors.primary
 
         }}
       >

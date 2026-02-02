@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { Link } from "expo-router";
+import Button from "../../Components/Button";
 
 const addData = () => {
   return (
@@ -14,8 +15,7 @@ const addData = () => {
       {/* Upon Form submission Log message appears to say Created blablabla */}
 
       
-
-      <Link href="/">Back Home</Link>
+      <Button href={"/"}>Back Home</Button>
     </View>
   );
 };

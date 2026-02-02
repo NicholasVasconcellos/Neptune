@@ -4,6 +4,7 @@ import { Colors } from "../Styles/Theme";
 import { typography } from "../Styles/Theme";
 import ThemedText from "./ThemedText";
 import { useRouter } from "expo-router";
+import Card from "./Card";
 
 // Button Component with icon, and colors use current theme
 // Href Link, if button links to something
@@ -36,7 +37,7 @@ export default function Button({
     // When Style is a function, passable will pass in the this object with the isPressed property
     <Pressable
       style={(arg) => [
-        { backgroundColor: currTheme.background },
+        { backgroundColor: Colors.primary },
         styles.default,
         arg.pressed && styles.pressed,
         style,
