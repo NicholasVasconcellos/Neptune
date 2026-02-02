@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View,useColorScheme } from "react-native";
+import { StyleSheet, Text, View,useColorScheme, SafeAreaView } from "react-native";
 import React from "react";
 import { Stack } from "expo-router";
 import ThemedText from "../Components/ThemedText";

@@ -117,9 +117,12 @@ const styles = StyleSheet.create({
     boxShadow: "4px 4px rba(0,0,0,0.1)",
   },
   image: {
-    marginVertical: 2,
-    width: "50%",
-    height: "50%",
+    width: 300,
+    height: 300,
+    resizeMode: "contain",
+    alignSelf: "center",
+    marginBottom: 20,
+
   },
   link: {
     marginVertical: 10,
