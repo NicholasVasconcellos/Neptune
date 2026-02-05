@@ -36,7 +36,7 @@ const RootLayout = () => {
         {/* Reister screen with file name index, title=Home, */}
         <Tabs.Screen name="index" options={{ title: "Home" }}></Tabs.Screen>
         <Tabs.Screen
-          name="addData"
+          name="(tabs)/addData"
           options={{
             title: "Log Data",
             tabBarIcon: ({focused}) => (
@@ -45,7 +45,7 @@ const RootLayout = () => {
           }}
         ></Tabs.Screen>
         <Tabs.Screen
-          name="viewData"
+          name="(tabs)/viewData"
           options={{
             title: "View Metrics",
             tabBarIcon: ({focused}) => (
@@ -54,7 +54,7 @@ const RootLayout = () => {
           }}
         ></Tabs.Screen>
         <Tabs.Screen
-          name="addTraining"
+          name="(tabs)/addTraining"
           options={{
             title: "Add New Training",
             tabBarIcon: ({focused}) => (
@@ -63,7 +63,7 @@ const RootLayout = () => {
           }}
         ></Tabs.Screen>
         <Tabs.Screen
-          name="viewTraining"
+          name="(tabs)/viewTraining"
           options={{
             title: "Start Training",
             tabBarIcon: ({focused}) => (

@@ -28,11 +28,11 @@ const RootLayout = () => {
         >
           {/* Reister screen with file name index, title=Home, */}
           <Stack.Screen
-            name="login"
+            name="(auth)/login"
             options={{ title: "Login" }}
           ></Stack.Screen>
           <Stack.Screen
-            name="register"
+            name="(auth)/register"
             options={{ title: "Create Account" }}
           ></Stack.Screen>
         </Stack>

@@ -1,10 +1,12 @@
 import { StyleSheet, Text, View, Image, useColorScheme } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "expo-router";
 import Card from "../Components/Card";
 import Button from "../Components/Button";
 import ThemedText from "../Components/ThemedText";
 import Logo from "../assets/NeptuneAppIcon.png";
+
+import { supabase } from "../lib/supabase";
 
 import { Colors } from "../Styles/Theme";
 
@@ -20,12 +22,23 @@ const Home = () => {
   // Get the Curr Color Theme
   const theme = Colors[useColorScheme()] || Colors.light;
 
+  useEffect(() => {
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      console.log("Session:", session);
+    };
+
+    checkSession();
+  }, []);
+
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Card>
         <ThemedText style={styles.title}>Welcome to Neptune Swim</ThemedText>
       </Card>
-      <Image source={Logo} style={styles.image}></Image>
+      <Image source={Logo} style={styles.image} resizeMode="contain" />
 
       <Button
         icon={
@@ -40,7 +53,6 @@ const Home = () => {
         Login To Account
       </Button>
 
-
       <Button
         icon={
           <MaterialCommunityIcons
@@ -53,7 +65,6 @@ const Home = () => {
       >
         Create new Account
       </Button>
-
 
       {/* <Button
         icon={
@@ -119,10 +130,8 @@ const styles = StyleSheet.create({
   image: {
     width: 300,
     height: 300,
-    resizeMode: "contain",
     alignSelf: "center",
     marginBottom: 20,
-
   },
   link: {
     marginVertical: 10,
