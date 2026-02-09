@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { Link } from "expo-router";
-import Button from "../../Components/Button";
+import Button from "../../components/Button";
 
 const addData = () => {
   return (

@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import Button from '../../Components/Button'
+import Button from '../../components/Button'
 
 export default function Register() {
   return (

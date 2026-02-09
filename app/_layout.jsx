@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, useColorScheme } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import React from "react";
 import { Stack } from "expo-router";
-import ThemedText from "../Components/ThemedText";
+import ThemedText from "../components/ThemedText";
 import { Colors } from "../Styles/Theme";
 
 // Expo Renders Layout file by default

@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View, Image, useColorScheme } from "react-native";
 import React, { useEffect } from "react";
 import { Link } from "expo-router";
-import Card from "../Components/Card";
-import Button from "../Components/Button";
-import ThemedText from "../Components/ThemedText";
+import Card from "../components/Card";
+import Button from "../components/Button";
+import ThemedText from "../components/ThemedText";
 import Logo from "../assets/NeptuneAppIcon.png";
 
 import { supabase } from "../lib/supabase";
@@ -13,7 +13,7 @@ import { Colors } from "../Styles/Theme";
 // Icons
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import FireIcon from "../Components/Icons/FireIcon";
+import FireIcon from "../components/Icons/FireIcon";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 

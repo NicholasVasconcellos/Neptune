@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, useColorScheme } from "react-native";
 import React from "react";
 import { Tabs } from "expo-router";
-import ThemedText from "../../Components/ThemedText";
+import ThemedText from "../../components/ThemedText";
 import { Colors } from "../../Styles/Theme";
 
 // Icons
