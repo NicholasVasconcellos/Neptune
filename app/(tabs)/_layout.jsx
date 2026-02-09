@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View, useColorScheme } from "react-native";
 import React from "react";
 import { Tabs } from "expo-router";
-import ThemedText from "../../../components/ThemedText";
-import { Colors } from "../../../Styles/Theme";
+import ThemedText from "../../components/ThemedText";
+import { Colors } from "../../Styles/Theme";
 
 // Icons
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";

@@ -32,7 +32,7 @@ const Home = () => {
 
   useEffect(() => {
     if (!loading && session) {
-      router.replace("/(protected)");
+      router.replace("/(tabs)");
     }
   }, [session, loading]);
 

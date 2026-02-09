@@ -1,11 +1,11 @@
 import { StyleSheet, View, Image, useColorScheme } from "react-native";
 import React from "react";
-import Card from "../../../components/Card";
-import Button from "../../../components/Button";
-import ThemedText from "../../../components/ThemedText";
-import { Colors } from "../../../Styles/Theme";
-import { useAuth } from "../../../context/AuthContext";
-import Logo from "../../../assets/NeptuneAppIcon.png";
+import Card from "../../components/Card";
+import Button from "../../components/Button";
+import ThemedText from "../../components/ThemedText";
+import { Colors } from "../../Styles/Theme";
+import { useAuth } from "../../context/AuthContext";
+import Logo from "../../assets/NeptuneAppIcon.png";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 const Home = () => {
@@ -28,7 +28,7 @@ const Home = () => {
         icon={
           <FontAwesome6 name="add" size={24} color={theme.text} />
         }
-        href={"/(protected)/(tabs)/addData"}
+        href={"/addData"}
       >
         Log Data
       </Button>
@@ -37,7 +37,7 @@ const Home = () => {
         icon={
           <FontAwesome6 name="chart-line" size={24} color={theme.text} />
         }
-        href={"/(protected)/(tabs)/viewData"}
+        href={"/viewData"}
       >
         View Metrics
       </Button>
@@ -46,7 +46,7 @@ const Home = () => {
         icon={
           <FontAwesome6 name="scroll" size={24} color={theme.text} />
         }
-        href={"/(protected)/(tabs)/addTraining"}
+        href={"/addTraining"}
       >
         Add New Training
       </Button>
@@ -55,7 +55,7 @@ const Home = () => {
         icon={
           <FontAwesome6 name="play" size={24} color={theme.text} />
         }
-        href={"/(protected)/(tabs)/viewTraining"}
+        href={"/viewTraining"}
       >
         Start Training
       </Button>
