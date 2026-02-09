@@ -5,6 +5,8 @@ import { Stack } from "expo-router";
 import ThemedText from "../components/ThemedText";
 import { Colors } from "../Styles/Theme";
 
+import { AuthProvider } from "../context/AuthContext";
+
 // Expo Renders Layout file by default
 // Slot: Renders page content
 // Stack: Renders page +  keeps the previous pages stored
@@ -17,28 +19,37 @@ const RootLayout = () => {
   // headerShown = False to hide header on a page
   // Options>Title: name to set custom title
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1, backgroundColor: currTheme.background }}>
-        {/* Screen Options: Global Options for all screens */}
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: currTheme.background },
-          }}
+    <AuthProvider>
+      <SafeAreaProvider>
+        <SafeAreaView
+          style={{ flex: 1, backgroundColor: currTheme.background }}
         >
-          {/* Reister screen with file name index, title=Home, */}
-          <Stack.Screen
-            name="(auth)/login"
-            options={{ title: "Login" }}
-          ></Stack.Screen>
-          <Stack.Screen
-            name="(auth)/register"
-            options={{ title: "Create Account" }}
-          ></Stack.Screen>
-        </Stack>
-        {/* <ThemedText>Footer </ThemedText> */}
-      </SafeAreaView>
-    </SafeAreaProvider>
+          {/* Screen Options: Global Options for all screens */}
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: currTheme.background },
+            }}
+          >
+            {/* Register screens */}
+            <Stack.Screen name="index" options={{ title: "Home" }} />
+            <Stack.Screen
+              name="(protected)"
+              options={{ title: "App" }}
+            />
+            <Stack.Screen
+              name="(auth)/login"
+              options={{ title: "Login" }}
+            />
+            <Stack.Screen
+              name="(auth)/register"
+              options={{ title: "Create Account" }}
+            />
+          </Stack>
+          {/* <ThemedText>Footer </ThemedText> */}
+        </SafeAreaView>
+      </SafeAreaProvider>
+    </AuthProvider>
   );
 };
 

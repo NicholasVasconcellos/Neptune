@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View, useColorScheme } from "react-native";
 import React from "react";
 import { Tabs } from "expo-router";
-import ThemedText from "../../components/ThemedText";
-import { Colors } from "../../Styles/Theme";
+import ThemedText from "../../../components/ThemedText";
+import { Colors } from "../../../Styles/Theme";
 
 // Icons
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
@@ -36,7 +36,7 @@ const RootLayout = () => {
         {/* Reister screen with file name index, title=Home, */}
         <Tabs.Screen name="index" options={{ title: "Home" }}></Tabs.Screen>
         <Tabs.Screen
-          name="(tabs)/addData"
+          name="addData"
           options={{
             title: "Log Data",
             tabBarIcon: ({focused}) => (
@@ -45,7 +45,7 @@ const RootLayout = () => {
           }}
         ></Tabs.Screen>
         <Tabs.Screen
-          name="(tabs)/viewData"
+          name="viewData"
           options={{
             title: "View Metrics",
             tabBarIcon: ({focused}) => (
@@ -54,7 +54,7 @@ const RootLayout = () => {
           }}
         ></Tabs.Screen>
         <Tabs.Screen
-          name="(tabs)/addTraining"
+          name="addTraining"
           options={{
             title: "Add New Training",
             tabBarIcon: ({focused}) => (
@@ -63,7 +63,7 @@ const RootLayout = () => {
           }}
         ></Tabs.Screen>
         <Tabs.Screen
-          name="(tabs)/viewTraining"
+          name="viewTraining"
           options={{
             title: "Start Training",
             tabBarIcon: ({focused}) => (

@@ -1,12 +1,19 @@
-import { StyleSheet, Text, View, Image, useColorScheme } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  useColorScheme,
+  ActivityIndicator,
+} from "react-native";
 import React, { useEffect } from "react";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import Card from "../components/Card";
 import Button from "../components/Button";
 import ThemedText from "../components/ThemedText";
 import Logo from "../assets/NeptuneAppIcon.png";
 
-import { supabase } from "../lib/supabase";
+import { useAuth } from "../context/AuthContext";
 
 import { Colors } from "../Styles/Theme";
 
@@ -21,17 +28,25 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 const Home = () => {
   // Get the Curr Color Theme
   const theme = Colors[useColorScheme()] || Colors.light;
+  const { session, loading } = useAuth();
 
   useEffect(() => {
-    const checkSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      console.log("Session:", session);
-    };
+    if (!loading && session) {
+      router.replace("/(protected)");
+    }
+  }, [session, loading]);
 
-    checkSession();
-  }, []);
+  if (loading) {
+    return (
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
+        <ActivityIndicator size="large" color={Colors.primary} />
+      </View>
+    );
+  }
+
+  if (session) {
+    return null;
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
