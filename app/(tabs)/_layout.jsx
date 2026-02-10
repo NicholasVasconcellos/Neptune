@@ -56,7 +56,7 @@ const RootLayout = () => {
         <Tabs.Screen
           name="addTraining"
           options={{
-            title: "Add New Training",
+            title: "New Training",
             tabBarIcon: ({focused}) => (
               <FontAwesome6 name="scroll" size={24} color={focused ? Colors.primary : theme.text} />
             ),
