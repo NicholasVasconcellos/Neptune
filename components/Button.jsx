@@ -11,19 +11,13 @@ import Card from "./Card";
 // ON Press = callbackfunction on click
 // icon: button icon if any
 // children get's the text content
-export default function Button({
-  onClick,
-  href,
-  style,
-  icon,
-  children,
-  ...args
-}) {
+/** @type {React.FC<import('react-native').PressableProps & { onClick?: () => void, href?: string, icon?: React.ReactNode, containerStyle?: import('react-native').StyleProp<import('react-native').ViewStyle> }>} */
+const Button = ({ onClick, href, containerStyle, icon, children, ...args }) => {
   // Get the Current theme name from the hook
   // Select the corresponding section of colors
   const themeName = useColorScheme();
 
-  const currTheme = Colors[themeName] || Colors["light"];
+  const currTheme = Colors[themeName ?? "light"];
 
   // if link provided, go to link on click
   const router = useRouter();
@@ -40,7 +34,7 @@ export default function Button({
         { backgroundColor: Colors.primary },
         styles.default,
         arg.pressed && styles.pressed,
-        style,
+        containerStyle,
       ]}
       onPress={handlePress}
       {...args}
@@ -58,7 +52,9 @@ export default function Button({
       </ThemedText>
     </Pressable>
   );
-}
+};
+
+export default Button;
 
 const styles = StyleSheet.create({
   default: {

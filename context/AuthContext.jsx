@@ -1,13 +1,18 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 
-const AuthContext = createContext({
-  session: null,
-  loading: true,
-});
+const AuthContext = createContext(
+  /** @type {{ session: import('@supabase/supabase-js').Session | null, loading: boolean }} */ ({
+    session: null,
+    loading: true,
+  }),
+);
 
+/** @param {{ children: React.ReactNode }} props */
 export function AuthProvider({ children }) {
-  const [session, setSession] = useState(null);
+  const [session, setSession] = useState(
+    /** @type {import('@supabase/supabase-js').Session | null} */ (null),
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,14 +26,14 @@ export function AuthProvider({ children }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
+      // Update session variable with the one provided
+      // Event is passed in but not used so use underline
       setSession(session);
     });
 
-    // Cleanup
+    // Cleanup (remove subscription)
     return () => subscription.unsubscribe();
   }, []);
-
-  // REturn a cleanup function
 
   return (
     <AuthContext.Provider value={{ session, loading }}>
