@@ -5,7 +5,7 @@ import {
   Alert,
   Platform,
   useColorScheme,
-  Pressable,
+
   TextInput,
 } from "react-native";
 import Button from "../../components/Button.jsx";
@@ -32,12 +32,12 @@ export default function Register() {
     // if error show native popup Dialog
     if (error) {
       if (Platform.OS === "web") {
-        window.alert("Shii Bro:", error.message);
+        window.alert("Shii Bro: " + error.message);
       } else {
         Alert.alert("Shii Bro:", error.message);
       }
     }
-    if (!session) {
+    else if (!session) {
       if (Platform.OS === "web") {
         window.alert("Check inbox for Email Verification! 📩");
       } else {
