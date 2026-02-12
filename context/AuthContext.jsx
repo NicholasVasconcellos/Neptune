@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
+import { AppState } from "react-native";
 
 const AuthContext = createContext(
   /** @type {{ session: import('@supabase/supabase-js').Session | null, loading: boolean }} */ ({
@@ -30,6 +31,18 @@ export function AuthProvider({ children }) {
       // Event is passed in but not used so use underline
       setSession(session);
     });
+
+    // Auto Refresh Auth When app is open
+    const appStateSubscription = AppState.addEventListener(
+      "change",
+      (state) => {
+        if (state == "active") {
+          supabase.auth.startAutoRefresh();
+        } else {
+          supabase.auth.stopAutoRefresh();
+        }
+      },
+    );
 
     // Cleanup (remove subscription)
     return () => subscription.unsubscribe();
