@@ -7,6 +7,8 @@ import {
   useColorScheme,
   Pressable,
   TextInput,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 import Button from "../../components/Button.jsx";
 import React, { useState } from "react";
@@ -39,31 +41,33 @@ export default function Login() {
   }
 
   return (
-    <View style={styles.container} accessibilityRole="form">
-      <Text style={[styles.label, { color: theme.text }]}>Email</Text>
-      <ThemedInput
-      styles={{marginBottom: 20}}
-        placeholder="email@domain.com"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <Text style={[styles.label, { color: theme.text }]}>Password</Text>
-      <ThemedInput
-        placeholder="Enter Password"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
-      {/* 
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} acessible={false}>
+      <View style={styles.container} accessibilityRole="form">
+        <Text style={[styles.label, { color: theme.text }]}>Email</Text>
+        <ThemedInput
+          styles={{ marginBottom: 20 }}
+          placeholder="email@domain.com"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+        <Text style={[styles.label, { color: theme.text }]}>Password</Text>
+        <ThemedInput
+          placeholder="Enter Password"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
+        {/* 
           if Loading disable the button
           onClick callback is the signinWithemail 
         */}
-      <Button onClick={signInWithEmail} disabled={loading}>
-        Sign In
-      </Button>
-    </View>
+        <Button onClick={signInWithEmail} disabled={loading}>
+          Sign In
+        </Button>
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 

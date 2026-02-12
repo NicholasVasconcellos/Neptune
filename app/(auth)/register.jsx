@@ -5,7 +5,6 @@ import {
   Alert,
   Platform,
   useColorScheme,
-
   TextInput,
 } from "react-native";
 import Button from "../../components/Button.jsx";
@@ -36,8 +35,7 @@ export default function Register() {
       } else {
         Alert.alert("Shii Bro:", error.message);
       }
-    }
-    else if (!session) {
+    } else if (!session) {
       if (Platform.OS === "web") {
         window.alert("Check inbox for Email Verification! 📩");
       } else {
@@ -48,35 +46,37 @@ export default function Register() {
   }
 
   return (
-    <View style={styles.container} accessibilityRole="form">
-      <Text style={[styles.label, { color: theme.text }]}>Email</Text>
-      <TextInput
-        style={[
-          styles.input,
-          { color: theme.text, borderBlockColor: theme.text },
-        ]}
-        placeholder="email@domain.com"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <Text style={[styles.label, { color: theme.text }]}>Set Password</Text>
-      <TextInput
-        style={[
-          styles.input,
-          { color: theme.text, borderBlockColor: theme.text },
-        ]}
-        placeholder="Create New Password"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
-      {/* if Loading disable, onClick callback is the signinWithemail */}
-      <Button onClick={signUpWithEmail} disabled={loading}>
-        Create Account
-      </Button>
-    </View>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} acessible={false}>
+      <View style={styles.container} accessibilityRole="form">
+        <Text style={[styles.label, { color: theme.text }]}>Email</Text>
+        <TextInput
+          style={[
+            styles.input,
+            { color: theme.text, borderBlockColor: theme.text },
+          ]}
+          placeholder="email@domain.com"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+        <Text style={[styles.label, { color: theme.text }]}>Set Password</Text>
+        <TextInput
+          style={[
+            styles.input,
+            { color: theme.text, borderBlockColor: theme.text },
+          ]}
+          placeholder="Create New Password"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
+        {/* if Loading disable, onClick callback is the signinWithemail */}
+        <Button onClick={signUpWithEmail} disabled={loading}>
+          Create Account
+        </Button>
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 
