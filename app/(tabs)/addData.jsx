@@ -4,6 +4,10 @@ import {
   Pressable,
   useColorScheme,
   ScrollView,
+  Touchable,
+  TouchableWithoutFeedback,
+  Platform,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import { Colors, typography, spacing } from "../../Styles/Theme";
@@ -14,7 +18,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import ThemedInput from "../../components/ThemedInput";
 
 // Supabase Data Submit
-import { supabase } from "./supabase";
+import { supabase } from "../../lib/supabase";
 
 const dataTypes = [
   { key: "time", label: "Time", icon: "stopwatch", set: "fa6" },
@@ -22,59 +26,75 @@ const dataTypes = [
   { key: "training", label: "Training", icon: "dumbbell", set: "fa6" },
 ];
 
-
-async function addUser(name, age, team="", group=""){
-
-}
-
-
-
-const addData = () => {
-  
+export default function addData() {
   const themeName = useColorScheme();
   const theme = Colors[themeName ?? "light"];
   const [selected, setSelected] = useState(null);
 
-  // Variables For the Input
+  // State Variables
   const [name, setName] = useState("");
-  const [age, setAge] = useState(null);
-
+  const [age, setAge] = useState("");
   const [group, setGroup] = useState("");
   const [team, setTeam] = useState("");
 
+  const [loading, setLoading] = useState(false);
 
-  // Variables to Track which objects are being created
-  const [newUser, setNewUser] = useState(false);
-  const [newTime, setNewTime] = useState(false);
-  const [newTeam, setNewTeam] = useState(false);
-  const [newGroup, setNewGroup] = useState(false);
+  // Add user Function
+  async function addUser() {
+    setLoading(true);
 
-  // if setNew User
-  // Display forms:
-  // Name, Age, Team (optional), Group (Optional)
-  // if setNewTime
-  // Render Forms:
-  // Name, stroke,distance, unit, time
+    const { data, error } = await supabase
+      .from("Athletes")
+      .insert([{ Name: name, Age: age }])
+      .select();
+    // .select to return the new row if success
 
-  // Button Callback, add new User
-  //
+    if (error) {
+      if (Platform.OS === "web") {
+        window.alert("Error Adding bro" + error.message);
+      } else {
+        Alert.alert("Error Adding bro", error.message);
+      }
+    } else if (data) {
+      if (Platform.OS === "web") {
+        window.alert("Added " + name);
+      } else {
+        Alert.alert("Added ", name);
+      }
 
-  
+      setName("");
+      setAge("");
+    }
+    setLoading(false);
+  }
 
   const [tablename, setTablename] = useState("");
-    const {data,error} = await supabase.from("Athletes").insert([
-      {Name: name },{Age: age}
-    ])
-  return (
-    <ScrollView>
-      <ThemedText>Enter User</ThemedText>
-      <ThemedInput placeholder="Type Here"></ThemedInput>
-      <Button> Submit</Button>
-    </ScrollView>
-  );
-};
 
-export default addData;
+  return (
+    <TouchableWithoutFeedback>
+      <ScrollView>
+        <ThemedText>Name</ThemedText>
+        <ThemedInput
+          placeholder="Enter Name"
+          value={name}
+          onChangeText={setName}
+        ></ThemedInput>
+        <ThemedText>Age</ThemedText>
+        <ThemedInput
+          placeholder="Enter Age"
+          keyboardType="numeric"
+          value={age}
+          onChangeText={setAge}
+        ></ThemedInput>
+
+        <Button onClick={addUser} disabled={loading}>
+          {" "}
+          Submit
+        </Button>
+      </ScrollView>
+    </TouchableWithoutFeedback>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
