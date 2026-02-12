@@ -1,10 +1,12 @@
-import { StyleSheet, View, Image, useColorScheme } from "react-native";
-import React from "react";
+import { StyleSheet, View, Image, useColorScheme, ScrollView } from "react-native";
+import React, { useEffect } from "react";
+import { router } from "expo-router";
 import Card from "../../components/Card";
 import Button from "../../components/Button";
 import ThemedText from "../../components/ThemedText";
 import { Colors } from "../../Styles/Theme";
 import { useAuth } from "../../context/AuthContext";
+import { supabase } from "../../lib/supabase";
 import Logo from "../../assets/NeptuneAppIcon.png";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
@@ -12,8 +14,17 @@ const Home = () => {
   const theme = Colors[useColorScheme()] || Colors.light;
   const { session } = useAuth();
 
+  useEffect(() => {
+    if (!session) {
+      router.replace("../");
+    }
+  }, [session]);
+
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
+    <ScrollView
+      style={{ backgroundColor: theme.background }}
+      contentContainerStyle={styles.container}
+    >
       <Card>
         <ThemedText style={styles.title}>Welcome to Neptune Swim</ThemedText>
       </Card>
@@ -59,7 +70,16 @@ const Home = () => {
       >
         Start Training
       </Button>
-    </View>
+
+      <Button
+        icon={
+          <FontAwesome6 name="right-from-bracket" size={24} color={theme.text} />
+        }
+        onClick={() => supabase.auth.signOut()}
+      >
+        Log Out
+      </Button>
+    </ScrollView>
   );
 };
 
@@ -71,9 +91,8 @@ const styles = StyleSheet.create({
     // Center this child with the parent
     alignSelf: "center", // center on Parent
     alignItems: "stretch", // Stretch children to full width of parent
-    flex: 1,
     gap: 4,
-    justifyContent: "center",
+    paddingVertical: 20,
   },
   title: {
     fontWeight: "bold",

@@ -12,6 +12,7 @@ import Button from "../../components/Button.jsx";
 import React, { useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { Colors } from "../../Styles/Theme";
+import ThemedInput from "../../components/ThemedInput.jsx";
 
 export default function Login() {
   // Create State Variables
@@ -40,11 +41,7 @@ export default function Login() {
   return (
     <View style={styles.container} accessibilityRole="form">
       <Text style={[styles.label, { color: theme.text }]}>Email</Text>
-      <TextInput
-        style={[
-          styles.input,
-          { color: theme.text, borderBlockColor: theme.text },
-        ]}
+      <ThemedInput
         placeholder="email@domain.com"
         value={email}
         onChangeText={setEmail}
@@ -52,11 +49,7 @@ export default function Login() {
         autoCapitalize="none"
       />
       <Text style={[styles.label, { color: theme.text }]}>Password</Text>
-      <TextInput
-        style={[
-          styles.input,
-          { color: theme.text, borderBlockColor: theme.text },
-        ]}
+      <ThemedInput
         placeholder="Enter Password"
         secureTextEntry
         value={password}
