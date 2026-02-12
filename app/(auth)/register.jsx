@@ -5,7 +5,10 @@ import {
   Alert,
   Platform,
   useColorScheme,
+  Pressable,
   TextInput,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 import Button from "../../components/Button.jsx";
 import React, { useState } from "react";
