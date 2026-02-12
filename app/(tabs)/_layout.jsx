@@ -34,7 +34,15 @@ const RootLayout = () => {
         }}
       >
         {/* Reister screen with file name index, title=Home, */}
-        <Tabs.Screen name="index" options={{ title: "Home" }}></Tabs.Screen>
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: "Home",
+            tabBarIcon: ({focused}) => (
+              <FontAwesome6 name="house" size={24} color={focused ? Colors.primary : theme.text} />
+            ),
+          }}
+        ></Tabs.Screen>
         <Tabs.Screen
           name="addData"
           options={{
