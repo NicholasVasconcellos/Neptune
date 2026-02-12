@@ -30,18 +30,20 @@ async function addUser(name, age, team="", group=""){
 
 
 const addData = () => {
-  
   const themeName = useColorScheme();
   const theme = Colors[themeName ?? "light"];
   const [selected, setSelected] = useState(null);
 
   // Variables For the Input
+
   const [name, setName] = useState("");
   const [age, setAge] = useState(null);
-
+  const [timeEntry, setTimeEntry] = useState("");
+  const [unitEntry, setUnitEntry] = useState("");
   const [group, setGroup] = useState("");
   const [team, setTeam] = useState("");
-
+  const [distance, setDistance] = useState(null);
+  const [stroke, setStroke] = useState("");
 
   // Variables to Track which objects are being created
   const [newUser, setNewUser] = useState(false);
@@ -69,8 +71,41 @@ const addData = () => {
     <ScrollView>
       <ThemedText>Enter User</ThemedText>
       <ThemedInput placeholder="Type Here"></ThemedInput>
-      <Button> Submit</Button>
     </ScrollView>
+
+    // <View style={[styles.container, { backgroundColor: theme.background }]}>
+    //   <ThemedText style={styles.heading}>Add Data</ThemedText>
+    //   <ThemedText style={styles.subheading}>Select a category</ThemedText>
+
+    //   <View style={styles.grid}>
+    //     {dataTypes.map((item) => (
+    //       <Pressable
+    //         key={item.key}
+    //         onPress={() => setSelected(item.key)}
+    //         style={({ pressed }) => [
+    //           styles.gridItem,
+    //           { backgroundColor: theme.backgroundCard },
+    //           selected === item.key && styles.gridItemSelected,
+    //           pressed && styles.pressed,
+    //         ]}
+    //       >
+    //         {item.set === "fa5" ? (
+    //           <FontAwesome5 name={item.icon} size={36} color={selected === item.key ? Colors.primary : theme.text} />
+    //         ) : (
+    //           <FontAwesome6 name={item.icon} size={36} color={selected === item.key ? Colors.primary : theme.text} />
+    //         )}
+    //         <ThemedText style={styles.gridLabel}>{item.label}</ThemedText>
+    //       </Pressable>
+    //     ))}
+    //   </View>
+
+    //   {/* After selecting Icons, will selectively populate input forms */}
+    //   {/* input forms will have typeahead, and will detect when an entry is new and put a "new" tag */}
+    //   {/* if Creating a new object, any required fields will be further populated as dropdown */}
+    //   {/* Upon Form submission Log message appears to say Created blablabla */}
+
+    //   <Button href={"/"}>Back Home</Button>
+    // </View>
   );
 };
 
