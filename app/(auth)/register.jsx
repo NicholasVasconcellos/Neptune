@@ -14,6 +14,7 @@ import Button from "../../components/Button.jsx";
 import React, { useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { Colors } from "../../Styles/Theme";
+import ThemedInput from "../../components/ThemedInput.jsx";
 
 export default function Register() {
   // Create State Variables
@@ -49,14 +50,11 @@ export default function Register() {
   }
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} acessible={false}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={styles.container} accessibilityRole="form">
         <Text style={[styles.label, { color: theme.text }]}>Email</Text>
-        <TextInput
-          style={[
-            styles.input,
-            { color: theme.text, borderBlockColor: theme.text },
-          ]}
+        <ThemedInput
+          styles={{ marginBottom: 20 }}
           placeholder="email@domain.com"
           value={email}
           onChangeText={setEmail}
@@ -64,11 +62,8 @@ export default function Register() {
           autoCapitalize="none"
         />
         <Text style={[styles.label, { color: theme.text }]}>Set Password</Text>
-        <TextInput
-          style={[
-            styles.input,
-            { color: theme.text, borderBlockColor: theme.text },
-          ]}
+
+        <ThemedInput
           placeholder="Create New Password"
           secureTextEntry
           value={password}
@@ -85,6 +80,7 @@ export default function Register() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     marginTop: 40,
     padding: 12,
   },

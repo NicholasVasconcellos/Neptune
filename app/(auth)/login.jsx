@@ -41,7 +41,7 @@ export default function Login() {
   }
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} acessible={false}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={styles.container} accessibilityRole="form">
         <Text style={[styles.label, { color: theme.text }]}>Email</Text>
         <ThemedInput
