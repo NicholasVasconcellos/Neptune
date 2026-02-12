@@ -42,6 +42,7 @@ export default function Login() {
     <View style={styles.container} accessibilityRole="form">
       <Text style={[styles.label, { color: theme.text }]}>Email</Text>
       <ThemedInput
+      styles={{marginBottom: 20}}
         placeholder="email@domain.com"
         value={email}
         onChangeText={setEmail}
@@ -55,7 +56,10 @@ export default function Login() {
         value={password}
         onChangeText={setPassword}
       />
-      {/* if Loading disable, onClick callback is the signinWithemail */}
+      {/* 
+          if Loading disable the button
+          onClick callback is the signinWithemail 
+        */}
       <Button onClick={signInWithEmail} disabled={loading}>
         Sign In
       </Button>

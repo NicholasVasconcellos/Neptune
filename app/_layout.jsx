@@ -39,11 +39,21 @@ const RootLayout = () => {
             />
             <Stack.Screen
               name="(auth)/login"
-              options={{ title: "Login" }}
+              options={{
+                title: "Login",
+                headerShown: true,
+                headerTransparent: true,
+                headerTitle: "",
+              }}
             />
             <Stack.Screen
               name="(auth)/register"
-              options={{ title: "Create Account" }}
+              options={{
+                title: "Create Account",
+                headerShown: true,
+                headerTransparent: true,
+                headerTitle: "",
+              }}
             />
           </Stack>
           {/* <ThemedText>Footer </ThemedText> */}
