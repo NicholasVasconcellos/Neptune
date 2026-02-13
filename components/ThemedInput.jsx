@@ -18,12 +18,9 @@ export default function ThemedInput({
   const localStyle = getStyles(theme);
 
   return (
-    <View>
+    <View style={localStyle.container}>
       <ThemedText style={localStyle.label}>{formTitle}</ThemedText>
-      <TextInput
-        style={[localStyle.input, styles]}
-        {...args}
-      />
+      <TextInput style={[localStyle.input, styles]} {...args} />
     </View>
   );
 }
@@ -32,7 +29,7 @@ const getStyles = (theme) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      marginTop: 40,
+      marginTop: 10,
       padding: 12,
     },
     label: {

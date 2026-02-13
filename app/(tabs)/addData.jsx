@@ -10,13 +10,20 @@ import {
   Alert,
 } from "react-native";
 import React, { useState } from "react";
+
+// Styles
 import { Colors, typography, spacing } from "../../Styles/Theme";
-import ThemedText from "../../components/ThemedText";
-import Button from "../../components/Button";
+
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+
+
+// My components
+import Title from "../../components/Title";
 import ThemedInput from "../../components/ThemedInput";
 import Typeahead from "../../components/Typeahead";
+import ThemedText from "../../components/ThemedText";
+import Button from "../../components/Button";
 
 // Supabase Data Submit
 import { supabase } from "../../lib/supabase";
@@ -195,16 +202,20 @@ export default function addData() {
     //     </Button>
     //   </ScrollView>
     // </TouchableWithoutFeedback>
-    <TouchableWithoutFeedback
-      onPress={Keyboard.dismiss}
-      accessible={false}
-      style={{ backgroundColor: theme.background }}
-    >
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View>
+        <Title>Add your Data</Title>
       <Typeahead
-        formTitle={"my Form"}
+        formTitle={"My Typeahed Form"}
         array={names}
-        placeholderText={"Texzt"}
+        placeholderText={"blablabla..."}
       ></Typeahead>
+      <Typeahead
+        formTitle={"Second Form"}
+        array={names}
+        placeholderText={"blablabla..."}
+      ></Typeahead>
+      </View>
     </TouchableWithoutFeedback>
   );
 }

@@ -46,9 +46,9 @@ const Typeahead = ({ array, formTitle, placeholderText }) => {
   };
 
   return (
-    <View style={styles.container} accessibilityRole="form">
-      <ThemedText>{formTitle}</ThemedText>
+    <View style={[styles.container, isDisplayed && styles.containerActive]} accessibilityRole="form">
       <ThemedInput
+        formTitle={formTitle}
         value={inputValue}
         onChangeText={onChangeText}
         placeholder={placeholderText}
@@ -80,16 +80,23 @@ export default Typeahead;
 const getStyles = (theme) =>
   StyleSheet.create({
     container: {
-      flex: 1,
-      marginTop: 40,
       padding: 12,
+      zIndex: 1,
+    },
+    containerActive: {
+      zIndex: 10,
     },
     suggestionsContainer: {
+      position: "absolute",
+      top: "100%",
+      left: 12,
+      right: 12,
       maxHeight: 200,
       borderWidth: 1,
       borderColor: theme.border,
       borderTopWidth: 0,
       backgroundColor: theme.backgroundSuggestion,
+      zIndex: 2,
     },
     suggestionItem: {
       padding: 10,
