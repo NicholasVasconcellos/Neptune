@@ -77,14 +77,6 @@ const Typeahead = ({ array, formTitle, placeholderText }) => {
 
 export default Typeahead;
 
-const myStyle = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: 40,
-    padding: 12,
-  },
-});
-
 const getStyles = (theme) =>
   StyleSheet.create({
     container: {
