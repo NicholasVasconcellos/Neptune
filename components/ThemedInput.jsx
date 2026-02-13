@@ -15,42 +15,41 @@ export default function ThemedInput({
 }) {
   const theme = Colors[useColorScheme()] ?? Colors.light;
 
+  const localStyle = getStyles(theme);
+
   return (
     <View>
-      <ThemedText style={styles.label}>{formTitle}</ThemedText>
+      <ThemedText style={localStyle.label}>{formTitle}</ThemedText>
       <TextInput
-        style={[
-          {
-            backgroundColor: theme.uiBackground,
-            color: theme.text,
-            padding: 20,
-            borderRadius: 6,
-          },
-          styles,
-        ]}
+        style={[localStyle.input, styles]}
         {...args}
       />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: 40,
-    padding: 12,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 4,
-    marginTop: 12,
-  },
-  input: {
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    marginBottom: 8,
-  },
-});
+const getStyles = (theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      marginTop: 40,
+      padding: 12,
+    },
+    label: {
+      fontSize: 16,
+      fontWeight: "600",
+      marginBottom: 4,
+      marginTop: 12,
+    },
+    input: {
+      borderWidth: 1,
+      borderRadius: 8,
+      padding: 12,
+      fontSize: 16,
+      marginBottom: 8,
+      backgroundColor: theme.uiBackground,
+      color: theme.text,
+      padding: 20,
+      borderRadius: 6,
+    },
+  });
