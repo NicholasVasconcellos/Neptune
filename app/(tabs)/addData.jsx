@@ -6,8 +6,6 @@ import {
   ScrollView,
   Touchable,
   TouchableWithoutFeedback,
-  Platform,
-  Alert,
 } from "react-native";
 import React, { useState } from "react";
 
@@ -16,7 +14,6 @@ import { Colors, typography, spacing } from "../../Styles/Theme";
 
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-
 
 // My components
 import Title from "../../components/Title";
@@ -27,6 +24,7 @@ import Button from "../../components/Button";
 
 // Supabase Data Submit
 import { supabase } from "../../lib/supabase";
+import { alertLog } from "../../utils/alertLog";
 
 const dataTypes = [
   { key: "time", label: "Time", icon: "stopwatch", set: "fa6" },
@@ -47,6 +45,40 @@ export default function addData() {
 
   const [loading, setLoading] = useState(false);
 
+  // Get Data form Supabase table into array
+  // Error from backend
+  const [error, setError] = useState(null);
+  // Data from backend
+  const [objectArray, setObjectArray] = useState([]);
+
+  // Get table data
+  async function getData() {
+
+    
+    setLoading(true);
+
+    // Get Logged in User ID
+    const user = (await supabase.auth.getUser()).data.user;
+
+    if(!user){
+      setLoading(false);
+      
+    }
+
+    const { data, error } = await supabase.from("Athletes").select();
+
+    if (error) {
+      alertLog("Couldn't get Data Bro:", error.message);
+    } else if (data) {
+      alertLog("Array Fetched", name);
+
+      setObjectArray(data.Name);
+    }
+
+    setLoading(false);
+  }
+
+
   // Add user Function
   async function addUser() {
     setLoading(true);
@@ -58,17 +90,9 @@ export default function addData() {
     // .select to return the new row if success
 
     if (error) {
-      if (Platform.OS === "web") {
-        window.alert("Error Adding bro" + error.message);
-      } else {
-        Alert.alert("Error Adding bro", error.message);
-      }
+      alertLog("Error Adding bro", error.message);
     } else if (data) {
-      if (Platform.OS === "web") {
-        window.alert("Added " + name);
-      } else {
-        Alert.alert("Added ", name);
-      }
+      alertLog("Added", name);
 
       setName("");
       setAge("");
@@ -205,16 +229,16 @@ export default function addData() {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View>
         <Title>Add your Data</Title>
-      <Typeahead
-        formTitle={"My Typeahed Form"}
-        array={names}
-        placeholderText={"blablabla..."}
-      ></Typeahead>
-      <Typeahead
-        formTitle={"Second Form"}
-        array={names}
-        placeholderText={"blablabla..."}
-      ></Typeahead>
+        <Typeahead
+          formTitle={"My Typeahed Form"}
+          array={names}
+          placeholderText={"blablabla..."}
+        ></Typeahead>
+        <Typeahead
+          formTitle={"Second Form"}
+          array={names}
+          placeholderText={"blablabla..."}
+        ></Typeahead>
       </View>
     </TouchableWithoutFeedback>
   );

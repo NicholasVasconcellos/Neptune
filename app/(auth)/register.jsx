@@ -2,8 +2,6 @@ import {
   StyleSheet,
   Text,
   View,
-  Alert,
-  Platform,
   useColorScheme,
   Pressable,
   TextInput,
@@ -13,6 +11,7 @@ import {
 import Button from "../../components/Button.jsx";
 import React, { useState } from "react";
 import { supabase } from "../../lib/supabase";
+import { alertLog } from "../../utils/alertLog";
 import { Colors } from "../../Styles/Theme";
 import ThemedInput from "../../components/ThemedInput.jsx";
 
@@ -34,17 +33,9 @@ export default function Register() {
     });
     // if error show native popup Dialog
     if (error) {
-      if (Platform.OS === "web") {
-        window.alert("Shii Bro: " + error.message);
-      } else {
-        Alert.alert("Shii Bro:", error.message);
-      }
+      alertLog("Shii Bro:", error.message);
     } else if (!session) {
-      if (Platform.OS === "web") {
-        window.alert("Check inbox for Email Verification! 📩");
-      } else {
-        Alert.alert("Check inbox for Email Verification! 📩");
-      }
+      alertLog("Check inbox for Email Verification! 📩");
     }
     setLoading(false);
   }

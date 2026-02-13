@@ -2,8 +2,6 @@ import {
   StyleSheet,
   Text,
   View,
-  Alert,
-  Platform,
   useColorScheme,
   Pressable,
   TextInput,
@@ -13,6 +11,7 @@ import {
 import Button from "../../components/Button.jsx";
 import React, { useState } from "react";
 import { supabase } from "../../lib/supabase";
+import { alertLog } from "../../utils/alertLog";
 import { Colors } from "../../Styles/Theme";
 import ThemedInput from "../../components/ThemedInput.jsx";
 
@@ -31,11 +30,7 @@ export default function Login() {
     });
     // if error show native popup Dialog
     if (error) {
-      if (Platform.OS === "web") {
-        window.alert(error.message);
-      } else {
-        Alert.alert("Error signing in big dog", error.message);
-      }
+      alertLog("Error signing in big dog", error.message);
     }
     setLoading(false);
   }
