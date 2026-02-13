@@ -16,6 +16,7 @@ import Button from "../../components/Button";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import ThemedInput from "../../components/ThemedInput";
+import Typeahead from "../../components/Typeahead";
 
 // Supabase Data Submit
 import { supabase } from "../../lib/supabase";
@@ -70,28 +71,140 @@ export default function addData() {
 
   const [tablename, setTablename] = useState("");
 
-  return (
-    <TouchableWithoutFeedback>
-      <ScrollView>
-        <ThemedText>Name</ThemedText>
-        <ThemedInput
-          placeholder="Enter Name"
-          value={name}
-          onChangeText={setName}
-        ></ThemedInput>
-        <ThemedText>Age</ThemedText>
-        <ThemedInput
-          placeholder="Enter Age"
-          keyboardType="numeric"
-          value={age}
-          onChangeText={setAge}
-        ></ThemedInput>
+  // Test Typeahead
+  const names = [
+    "Nick",
+    "Bre",
+    "Vic",
+    "Mar",
+    "Alex",
+    "Alexa",
+    "Alexander",
+    "Alicia",
+    "Allison",
+    "Ben",
+    "Benjamin",
+    "Bella",
+    "Brandon",
+    "Brianna",
+    "Caleb",
+    "Cameron",
+    "Carlos",
+    "Carla",
+    "Catherine",
+    "Daniel",
+    "Danielle",
+    "David",
+    "Diana",
+    "Dominic",
+    "Eli",
+    "Elijah",
+    "Emma",
+    "Emily",
+    "Ethan",
+    "Felix",
+    "Fiona",
+    "Frank",
+    "Faith",
+    "Gabriel",
+    "Gabriella",
+    "George",
+    "Grace",
+    "Hannah",
+    "Henry",
+    "Hector",
+    "Hailey",
+    "Isaac",
+    "Isabella",
+    "Ian",
+    "Ivy",
+    "Jack",
+    "Jackson",
+    "Jacob",
+    "Jasmine",
+    "Julia",
+    "Kevin",
+    "Katherine",
+    "Kyle",
+    "Kylie",
+    "Liam",
+    "Lucas",
+    "Luna",
+    "Lily",
+    "Logan",
+    "Mason",
+    "Mia",
+    "Michael",
+    "Mila",
+    "Matthew",
+    "Noah",
+    "Natalie",
+    "Nathan",
+    "Nora",
+    "Olivia",
+    "Owen",
+    "Oscar",
+    "Paul",
+    "Paula",
+    "Peter",
+    "Penelope",
+    "Quinn",
+    "Ryan",
+    "Rachel",
+    "Robert",
+    "Rose",
+    "Samuel",
+    "Sophia",
+    "Sebastian",
+    "Scarlett",
+    "Thomas",
+    "Taylor",
+    "Tristan",
+    "Tara",
+    "Uriel",
+    "Victor",
+    "Vanessa",
+    "William",
+    "Willow",
+    "Xavier",
+    "Yara",
+    "Zachary",
+    "Zoe",
+  ];
 
-        <Button onClick={addUser} disabled={loading}>
-          {" "}
-          Submit
-        </Button>
-      </ScrollView>
+  return (
+    // <TouchableWithoutFeedback>
+    //   <ScrollView style={{ flex: 1, backgroundColor: theme.background }}>
+    //     <ThemedText>Name</ThemedText>
+    //     <ThemedInput
+    //       placeholder="Enter Name"
+    //       value={name}
+    //       onChangeText={setName}
+    //     ></ThemedInput>
+    //     <ThemedText>Age</ThemedText>
+    //     <ThemedInput
+    //       placeholder="Enter Age"
+    //       keyboardType="numeric"
+    //       value={age}
+    //       onChangeText={setAge}
+    //     ></ThemedInput>
+
+    //     <Button onClick={addUser} disabled={loading}>
+    //       {" "}
+    //       Submit
+    //     </Button>
+    //   </ScrollView>
+    // </TouchableWithoutFeedback>
+    <TouchableWithoutFeedback
+      onPress={Keyboard.dismiss}
+      accessible={false}
+      style={{ backgroundColor: theme.background }}
+    >
+      <Typeahead
+        formTitle={"my Form"}
+        array={names}
+        placeholderText={"Texzt"}
+      ></Typeahead>
     </TouchableWithoutFeedback>
   );
 }

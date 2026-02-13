@@ -28,7 +28,7 @@ const RootLayout = () => {
           headerShown: false,
           headerStyle: { backgroundColor: theme.backgroundSecondary },
           headerTintColor: theme.text,
-          contentStyle: { backgroundColor: "red" },
+          sceneStyle: { backgroundColor: theme.background },
           tabBarActiveTintColor: Colors.primary,
           tabBarStyle:{backgroundColor: theme.background}
         }}

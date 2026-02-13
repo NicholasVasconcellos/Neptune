@@ -1,6 +1,6 @@
 import { useColorScheme, View } from "react-native";
 
-import { Colors } from "../Styles/Colors";
+import { Colors } from "../Styles/Theme";
 
 const Card = ({ style, ...args }) => {
   // Get The Color scheme from the device
@@ -12,7 +12,7 @@ const Card = ({ style, ...args }) => {
     <View
       style={[
         {
-          backgroundColor: currTheme.backgroundColor,
+          backgroundColor: currTheme.backgroundCard,
           borderRadius: 5,
           padding: 20,
         },
