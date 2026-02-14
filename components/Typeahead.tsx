@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View, FlatList, StyleSheet, Platform } from "react-native";
 
-import { TextInput, List, Surface, Chip } from "react-native-paper";
+import { TextInput, List, Surface, Chip, ActivityIndicator } from "react-native-paper";
 
 interface TypeaheadProps {
   array: Record<string, any>[];
@@ -9,6 +9,8 @@ interface TypeaheadProps {
   formTitle?: string;
   placeholderText?: string;
   onSelect?: (item: Record<string, any>) => void;
+  loading?: boolean;
+  value?: string;
 }
 
 const Typeahead = ({
@@ -17,8 +19,15 @@ const Typeahead = ({
   formTitle,
   placeholderText,
   onSelect,
+  loading,
+  value,
 }: TypeaheadProps) => {
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState(value ?? "");
+
+  useEffect(() => {
+    if (value !== undefined) setInputValue(value);
+  }, [value]);
+
   const [filteredArray, setFilteredArray] = useState<Record<string, any>[]>([]);
   const [isDisplayed, setIsDisplayed] = useState(false);
   const [isNew, setIsNew] = useState(false);
@@ -88,6 +97,13 @@ const Typeahead = ({
           onBlur={() => setTimeout(() => setIsDisplayed(false), 100)}
           placeholder={placeholderText}
           mode="outlined"
+          right={
+            loading ? (
+              <TextInput.Icon
+                icon={() => <ActivityIndicator size="small" />}
+              />
+            ) : undefined
+          }
         />
         {isNew && (
           <Chip mode="flat" style={styles.newChip} compact>
