@@ -1,52 +1,30 @@
-import { StyleSheet, TextInput, TextInputProps, useColorScheme, StyleProp, TextStyle } from "react-native";
-import { Colors } from "../Styles/Theme";
+import { StyleProp, TextStyle } from "react-native";
+import { TextInput } from "react-native-paper";
 import React from "react";
-import { View } from "react-native";
+import { TextInputProps } from "react-native";
 
-import ThemedText from "./ThemedText";
-
-interface ThemedInputProps extends TextInputProps {
+interface ThemedInputProps {
   formTitle?: string;
   styles?: StyleProp<TextStyle>;
+  placeholder?: string;
+  value?: string;
+  onChangeText?: (text: string) => void;
+  secureTextEntry?: boolean;
+  keyboardType?: TextInputProps["keyboardType"];
+  autoCapitalize?: TextInputProps["autoCapitalize"];
 }
 
 export default function ThemedInput({
   formTitle = "Sample Form",
-  styles,
+  styles: customStyle,
   ...args
 }: ThemedInputProps) {
-  const theme = Colors[useColorScheme() ?? "light"];
-
-  const localStyle = getStyles(theme);
-
   return (
-    <View style={localStyle.container}>
-      <ThemedText style={localStyle.label}>{formTitle}</ThemedText>
-      <TextInput style={[localStyle.input, styles]} {...args} />
-    </View>
+    <TextInput
+      label={formTitle}
+      mode="outlined"
+      style={[{ marginVertical: 6 }, customStyle]}
+      {...args}
+    />
   );
 }
-
-const getStyles = (theme: (typeof Colors)["dark"]) =>
-  StyleSheet.create({
-    container: {
-      flex: 1,
-      marginTop: 10,
-      padding: 12,
-    },
-    label: {
-      fontSize: 16,
-      fontWeight: "600",
-      marginBottom: 4,
-      marginTop: 12,
-    },
-    input: {
-      borderWidth: 1,
-      borderRadius: 8,
-      padding: 12,
-      fontSize: 16,
-      marginBottom: 8,
-      backgroundColor: theme.uiBackground,
-      color: theme.text,
-    },
-  });

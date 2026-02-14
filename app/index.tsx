@@ -3,10 +3,10 @@ import {
   View,
   Image,
   useColorScheme,
-  ActivityIndicator,
 } from "react-native";
 import React, { useEffect } from "react";
 import { router } from "expo-router";
+import { ActivityIndicator } from "react-native-paper";
 import Card from "../components/Card";
 import Button from "../components/Button";
 import ThemedText from "../components/ThemedText";
@@ -16,13 +16,8 @@ import { useAuth } from "../context/AuthContext";
 
 import { Colors } from "../Styles/Theme";
 
-// Icons
-import FireIcon from "../components/Icons/FireIcon";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-
 /* Home Page */
 const Home = () => {
-  // Get the Curr Color Theme
   const theme = Colors[useColorScheme() ?? "light"];
   const { session, loading } = useAuth();
 
@@ -35,7 +30,7 @@ const Home = () => {
   if (loading) {
     return (
       <View style={[styles.container, { backgroundColor: theme.background }]}>
-        <ActivityIndicator size="large" color={Colors.primary} />
+        <ActivityIndicator size="large" />
       </View>
     );
   }
@@ -47,37 +42,19 @@ const Home = () => {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Card>
-        <ThemedText style={styles.title}>Welcome to Neptune Swim</ThemedText>
+        <ThemedText variant="titleLarge" style={{ fontWeight: "bold" }}>
+          Welcome to Neptune Swim
+        </ThemedText>
       </Card>
       <Image source={Logo} style={styles.image} resizeMode="contain" />
 
-      <Button
-        icon={
-          <MaterialCommunityIcons
-            name="timer-outline"
-            size={24}
-            color={theme.text}
-          />
-        }
-        href={"/login"}
-      >
+      <Button icon="login" href={"/login"}>
         Login To Account
       </Button>
 
-      <Button
-        icon={
-          <MaterialCommunityIcons
-            name="timer-outline"
-            size={24}
-            color={theme.text}
-          />
-        }
-        href={"/register"}
-      >
+      <Button icon="account-plus" href={"/register"} mode="outlined">
         Create new Account
       </Button>
-
-      <Button icon={<FireIcon />}>This is a button</Button>
     </View>
   );
 };
@@ -91,10 +68,6 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 4,
     justifyContent: "center",
-  },
-  title: {
-    fontWeight: "bold",
-    fontSize: 18,
   },
   image: {
     width: 300,

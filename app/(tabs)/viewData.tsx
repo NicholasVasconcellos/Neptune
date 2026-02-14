@@ -1,18 +1,19 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import React from 'react'
-import { Link } from 'expo-router'
+import { Text } from 'react-native-paper'
+import Title from '../../components/Title'
 
 // Dedicated Reporting page, allows you to select which data to view
 // Custom Filter, sorting, grouping
-// Get Charts you want, Pin a chart to you home page. 
+// Get Charts you want, Pin a chart to you home page.
 // Whenever adding a chart get the option to keep it appearing there
 
 const viewData = () => {
   return (
-    <View>
-      <Text>View Data</Text>
-      <Text>View Any data here</Text>
-      <Text>Select Object to view (todo) will list the icons</Text>
+    <View style={styles.container}>
+      <Title>View Data</Title>
+      <Text variant="bodyLarge">View Any data here</Text>
+      <Text variant="bodyMedium">Select Object to view (todo) will list the icons</Text>
       {/* Will display a list of all the entries */}
       {/* Visuzalization options : icons for Filter, Sort, Group */}
         {/* When clicking on filter populate associated fields based on the selected object */}
@@ -29,4 +30,9 @@ const viewData = () => {
 
 export default viewData
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+    gap: 8,
+  },
+})

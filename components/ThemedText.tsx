@@ -1,27 +1,17 @@
-import { Text, View, useColorScheme, ViewProps, StyleProp, TextStyle } from "react-native";
+import { StyleProp, TextStyle } from "react-native";
 import React, { ReactNode } from "react";
-import { Colors } from "../Styles/Theme";
+import { Text } from "react-native-paper";
 
-interface ThemedTextProps extends ViewProps {
+interface ThemedTextProps {
   children?: ReactNode;
   style?: StyleProp<TextStyle>;
+  variant?: "displayLarge" | "displayMedium" | "displaySmall" | "headlineLarge" | "headlineMedium" | "headlineSmall" | "titleLarge" | "titleMedium" | "titleSmall" | "bodyLarge" | "bodyMedium" | "bodySmall" | "labelLarge" | "labelMedium" | "labelSmall";
 }
 
-export default function ThemedText({ children, style, ...args }: ThemedTextProps) {
-  // Get the current theme from react natives hook that reads from the device
-  const themeName = useColorScheme();
-
-  const currTheme = Colors[themeName ?? "light"];
-  // SEt the current theme within the Colors object
-
+export default function ThemedText({ children, style, variant = "bodyMedium", ...args }: ThemedTextProps) {
   return (
-    // Pass any other arguments to the inner View compoenent if needed
-    // Apply Style to the text componenet
-    // SEt the text color to the currTheme's text property
-    // Pass in the Children prop, which get's the text inside the compoenent
-    // set is as the argumetn of the text component
-    <View {...args}>
-      <Text style={[{ color: currTheme.text }, style]}>{children}</Text>
-    </View>
+    <Text variant={variant} style={style} {...args}>
+      {children}
+    </Text>
   );
 }

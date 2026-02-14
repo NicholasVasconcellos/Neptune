@@ -1,7 +1,7 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React from "react";
-import { Link } from "expo-router";
-
+import { Text } from "react-native-paper";
+import Title from "../../components/Title";
 
 // Have this populate the trainign in real time
 // Display the timer
@@ -9,8 +9,9 @@ import { Link } from "expo-router";
 
 const viewTraining = () => {
   return (
-    <View>
-      <Text>Start a Training Now</Text>
+    <View style={styles.container}>
+      <Title>Start a Training Now</Title>
+      <Text variant="bodyLarge">Select a training to begin</Text>
       {/* Display List of Trainign with search bar at top by name */}
       {/* Same Display on the view data for selecting */}
     </View>
@@ -19,4 +20,9 @@ const viewTraining = () => {
 
 export default viewTraining;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+    gap: 8,
+  },
+});

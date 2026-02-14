@@ -1,28 +1,18 @@
-import { useColorScheme, View, ViewProps, StyleProp, ViewStyle } from "react-native";
-import { Colors } from "../Styles/Theme";
+import { StyleProp, ViewStyle } from "react-native";
+import { Card as PaperCard } from "react-native-paper";
+import React, { ReactNode } from "react";
 
-interface CardProps extends ViewProps {
+interface CardProps {
   style?: StyleProp<ViewStyle>;
+  children?: ReactNode;
+  mode?: "elevated" | "outlined" | "contained";
 }
 
-const Card = ({ style, ...args }: CardProps) => {
-  // Get The Color scheme from the device
-  // Get the Styles of that theme
-  // Colors is an object and theme is a string, use it as the key
-  const currTheme = Colors[useColorScheme() ?? "light"];
-
+const Card = ({ style, children, mode = "elevated", ...args }: CardProps) => {
   return (
-    <View
-      style={[
-        {
-          backgroundColor: currTheme.backgroundCard,
-          borderRadius: 5,
-          padding: 20,
-        },
-        style,
-      ]}
-      {...args}
-    ></View>
+    <PaperCard mode={mode} style={[{ marginVertical: 6 }, style]} {...args}>
+      <PaperCard.Content>{children}</PaperCard.Content>
+    </PaperCard>
   );
 };
 

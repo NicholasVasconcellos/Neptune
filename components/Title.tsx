@@ -1,32 +1,27 @@
-import { Text, View, useColorScheme, ViewProps, StyleProp, TextStyle } from "react-native";
+import { StyleProp, TextStyle } from "react-native";
 import React, { ReactNode } from "react";
-import { Colors } from "../Styles/Theme";
+import { Text } from "react-native-paper";
 
-interface TitleProps extends ViewProps {
+interface TitleProps {
   children?: ReactNode;
   style?: StyleProp<TextStyle>;
 }
 
 export default function Title({ children, style, ...args }: TitleProps) {
-  const themeName = useColorScheme();
-  const currTheme = Colors[themeName ?? "light"];
-
   return (
-    <View {...args}>
-      <Text
-        style={[
-          {
-            color: currTheme.text,
-            fontSize: 28,
-            fontWeight: "bold",
-            textAlign: "center",
-            marginTop: 40,
-          },
-          style,
-        ]}
-      >
-        {children}
-      </Text>
-    </View>
+    <Text
+      variant="headlineMedium"
+      style={[
+        {
+          fontWeight: "bold",
+          textAlign: "center",
+          marginTop: 40,
+        },
+        style,
+      ]}
+      {...args}
+    >
+      {children}
+    </Text>
   );
 }

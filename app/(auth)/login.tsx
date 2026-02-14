@@ -1,21 +1,17 @@
 import {
-  StyleSheet,
   View,
-  useColorScheme,
   Keyboard,
   Pressable,
   Platform,
+  StyleSheet,
 } from "react-native";
 import Button from "../../components/Button";
 import React, { useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { alertLog } from "../../utils/alertLog";
-import { Colors } from "../../Styles/Theme";
 import ThemedInput from "../../components/ThemedInput";
 
 export default function Login() {
-  // Create State Variables
-  const theme = Colors[useColorScheme() ?? "light"];
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -26,7 +22,6 @@ export default function Login() {
       email,
       password,
     });
-    // if error show native popup Dialog
     if (error) {
       alertLog("Error signing in big dog", error.message);
     }
@@ -35,7 +30,7 @@ export default function Login() {
 
   return (
     <Pressable onPress={() => Platform.OS !== "web" && Keyboard.dismiss()} accessible={false}>
-      <View accessibilityRole={"form" as any}>
+      <View style={styles.container} accessibilityRole={"form" as any}>
         <ThemedInput
           formTitle="Email"
           placeholder="email@domain.com"
@@ -51,14 +46,23 @@ export default function Login() {
           value={password}
           onChangeText={setPassword}
         />
-        {/*
-          if Loading disable the button
-          onClick callback is the signinWithemail
-        */}
-        <Button onClick={signInWithEmail} disabled={loading}>
+        <Button
+          onClick={signInWithEmail}
+          disabled={loading}
+          loading={loading}
+          icon="login"
+        >
           Sign In
         </Button>
       </View>
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    marginTop: 40,
+    padding: 12,
+    gap: 4,
+  },
+});

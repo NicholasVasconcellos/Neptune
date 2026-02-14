@@ -1,22 +1,17 @@
 import {
-  StyleSheet,
-  Text,
   View,
-  useColorScheme,
   Keyboard,
   Pressable,
   Platform,
+  StyleSheet,
 } from "react-native";
 import Button from "../../components/Button";
 import React, { useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { alertLog } from "../../utils/alertLog";
-import { Colors } from "../../Styles/Theme";
 import ThemedInput from "../../components/ThemedInput";
 
 export default function Register() {
-  // Create State Variables
-  const theme = Colors[useColorScheme() ?? "light"];
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,11 +25,10 @@ export default function Register() {
       email: email,
       password: password,
     });
-    // if error show native popup Dialog
     if (error) {
       alertLog("Shii Bro:", error.message);
     } else if (!session) {
-      alertLog("Check inbox for Email Verification! 📩");
+      alertLog("Check inbox for Email Verification!");
     }
     setLoading(false);
   }
@@ -42,25 +36,27 @@ export default function Register() {
   return (
     <Pressable onPress={() => Platform.OS !== "web" && Keyboard.dismiss()} accessible={false}>
       <View style={styles.container} accessibilityRole={"form" as any}>
-        <Text style={[styles.label, { color: theme.text }]}>Email</Text>
         <ThemedInput
-          styles={{ marginBottom: 20 }}
+          formTitle="Email"
           placeholder="email@domain.com"
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
         />
-        <Text style={[styles.label, { color: theme.text }]}>Set Password</Text>
-
         <ThemedInput
+          formTitle="Set Password"
           placeholder="Create New Password"
           secureTextEntry
           value={password}
           onChangeText={setPassword}
         />
-        {/* if Loading disable, onClick callback is the signinWithemail */}
-        <Button onClick={signUpWithEmail} disabled={loading}>
+        <Button
+          onClick={signUpWithEmail}
+          disabled={loading}
+          loading={loading}
+          icon="account-plus"
+        >
           Create Account
         </Button>
       </View>
@@ -70,14 +66,8 @@ export default function Register() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     marginTop: 40,
     padding: 12,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 4,
-    marginTop: 12,
+    gap: 4,
   },
 });

@@ -1,6 +1,7 @@
 import { StyleSheet, View, Image, useColorScheme, ScrollView } from "react-native";
 import React, { useEffect } from "react";
 import { router } from "expo-router";
+import { Divider } from "react-native-paper";
 import Card from "../../components/Card";
 import Button from "../../components/Button";
 import ThemedText from "../../components/ThemedText";
@@ -8,7 +9,6 @@ import { Colors } from "../../Styles/Theme";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
 import Logo from "../../assets/NeptuneAppIcon.png";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 const Home = () => {
   const theme = Colors[useColorScheme() ?? "light"];
@@ -26,56 +26,43 @@ const Home = () => {
       contentContainerStyle={styles.container}
     >
       <Card>
-        <ThemedText style={styles.title}>Welcome to Neptune Swim</ThemedText>
+        <ThemedText variant="titleLarge" style={{ fontWeight: "bold" }}>
+          Welcome to Neptune Swim
+        </ThemedText>
       </Card>
       <Image source={Logo} style={styles.image} resizeMode="contain" />
 
       <Card>
-        <ThemedText style={styles.title}>Welcome to Neptune Swim</ThemedText>
-        <ThemedText>Logged in as {session?.user?.email}</ThemedText>
+        <ThemedText variant="titleMedium" style={{ fontWeight: "bold" }}>
+          Welcome to Neptune Swim
+        </ThemedText>
+        <ThemedText variant="bodyMedium">
+          Logged in as {session?.user?.email}
+        </ThemedText>
       </Card>
 
-      <Button
-        icon={
-          <FontAwesome6 name="add" size={24} color={theme.text} />
-        }
-        href={"/addData"}
-      >
+      <Divider style={{ marginVertical: 8 }} />
+
+      <Button icon="plus" href={"/addData"}>
         Log Data
       </Button>
 
-      <Button
-        icon={
-          <FontAwesome6 name="chart-line" size={24} color={theme.text} />
-        }
-        href={"/viewData"}
-      >
+      <Button icon="chart-line" href={"/viewData"}>
         View Metrics
       </Button>
 
-      <Button
-        icon={
-          <FontAwesome6 name="scroll" size={24} color={theme.text} />
-        }
-        href={"/addTraining"}
-      >
+      <Button icon="script-text" href={"/addTraining"} mode="outlined">
         Add New Training
       </Button>
 
-      <Button
-        icon={
-          <FontAwesome6 name="play" size={24} color={theme.text} />
-        }
-        href={"/viewTraining"}
-      >
+      <Button icon="play" href={"/viewTraining"} mode="outlined">
         Start Training
       </Button>
 
       <Button
-        icon={
-          <FontAwesome6 name="right-from-bracket" size={24} color={theme.text} />
-        }
+        icon="logout"
         onClick={() => supabase.auth.signOut()}
+        mode="text"
       >
         Log Out
       </Button>
@@ -91,10 +78,6 @@ const styles = StyleSheet.create({
     alignItems: "stretch",
     gap: 4,
     paddingVertical: 20,
-  },
-  title: {
-    fontWeight: "bold",
-    fontSize: 18,
   },
   image: {
     width: 300,
