@@ -9,6 +9,7 @@ interface TypeaheadProps {
   formTitle?: string;
   placeholderText?: string;
   onSelect?: (item: Record<string, any>) => void;
+  onChangeText?: (text: string) => void;
   loading?: boolean;
   value?: string;
 }
@@ -19,6 +20,7 @@ const Typeahead = ({
   formTitle,
   placeholderText,
   onSelect,
+  onChangeText: onChangeTextProp,
   loading,
   value,
 }: TypeaheadProps) => {
@@ -35,6 +37,7 @@ const Typeahead = ({
   const onChangeText = (currText: string) => {
     // Update Input Value (queue for next tick)
     setInputValue(currText);
+    onChangeTextProp?.(currText);
 
     // if no Text input set to initial state
     if (!currText || currText.trim() === "") {
@@ -82,7 +85,6 @@ const Typeahead = ({
 
   return (
     <View
-      accessibilityRole={"form" as any}
       {...(Platform.OS === "web"
         ? { onSubmit: (e: any) => e.preventDefault() }
         : {})}

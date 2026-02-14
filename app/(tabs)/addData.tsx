@@ -18,6 +18,9 @@ import UnitToggle from "../../components/UnitToggle";
 import Button from "../../components/Button";
 import ButtonGrid from "../../components/ButtonGrid";
 
+// Forms
+import AthleteForm from "../../components/InputForms/AthleteForm";
+
 // Backend Data Utils
 import { getData, postData } from "../../utils/backendData";
 import { alertLog } from "../../utils/alertLog";
@@ -198,20 +201,7 @@ export default function addData() {
           selected={selected}
           onSelectionChange={setSelected}
         />
-        <Typeahead
-          formTitle={"Athlete"}
-          array={names}
-          propertyName={"Name"}
-          placeholderText={"Enter Name"}
-        ></Typeahead>
-        <Typeahead
-          formTitle={"Time"}
-          array={names}
-          propertyName={"Name"}
-          placeholderText={"Enter Time"}
-        ></Typeahead>
-        <UnitToggle></UnitToggle>
-        <Button>Submit</Button>
+        <AthleteForm></AthleteForm>
       </View>
     </Pressable>
   );

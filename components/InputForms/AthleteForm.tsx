@@ -55,7 +55,7 @@ export default function AthleteForm() {
     async function fetchTeams() {
       setTeamLoading(true);
       try {
-        setTeamData(await getData("Team"));
+        setTeamData(await getData("Teams"));
       } catch (e: any) {
         setTeamError("Failed to load teams");
       } finally {
@@ -66,7 +66,7 @@ export default function AthleteForm() {
     async function fetchGroups() {
       setGroupLoading(true);
       try {
-        setGroupData(await getData("Group"));
+        setGroupData(await getData("Groups"));
       } catch (e: any) {
         setGroupError("Failed to load groups");
       } finally {
@@ -154,7 +154,7 @@ export default function AthleteForm() {
         accessible={false}
       >
         <View style={styles.container} accessibilityRole={"form" as any}>
-          <Title>Add Athlete</Title>
+          <Title>New Swimmer</Title>
 
           <Typeahead
             array={athleteData}
@@ -163,6 +163,7 @@ export default function AthleteForm() {
             placeholderText="Enter athlete name"
             loading={athleteLoading}
             value={name}
+            onChangeText={setName}
             onSelect={(item) => setName(item.Name)}
           />
           <HelperText type="error" visible={!!nameError}>
