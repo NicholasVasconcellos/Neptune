@@ -2,13 +2,10 @@ import { useState } from "react";
 import {
   View,
   FlatList,
-  Pressable,
   StyleSheet,
-  useColorScheme,
 } from "react-native";
-import ThemedText from "./ThemedText";
-import ThemedInput from "./ThemedInput";
-import { Colors } from "../Styles/Theme";
+
+import { TextInput, List, Surface } from "react-native-paper";
 
 interface TypeaheadProps {
   array: Record<string, any>[];
@@ -25,8 +22,6 @@ const Typeahead = ({
   placeholderText,
   onSelect,
 }: TypeaheadProps) => {
-  const theme = Colors[useColorScheme() ?? "light"];
-  const styles = getStyles(theme);
   const [inputValue, setInputValue] = useState("");
   const [filteredArray, setFilteredArray] = useState<Record<string, any>[]>([]);
   const [isDisplayed, setIsDisplayed] = useState(false);
@@ -60,61 +55,48 @@ const Typeahead = ({
   };
 
   return (
-    <View
-      style={[styles.container, isDisplayed && styles.containerActive]}
-      accessibilityRole={"form" as any}
-    >
-      <ThemedInput
-        formTitle={formTitle}
+    <View accessibilityRole={"form" as any} style={[styles.container, isDisplayed && styles.containerActive]}>
+      <TextInput
+        label={formTitle}
         value={inputValue}
         onChangeText={onChangeText}
         placeholder={placeholderText}
-      ></ThemedInput>
+        mode="outlined"
+      ></TextInput>
       {isDisplayed && filteredArray.length > 0 && (
-        <FlatList
-          style={styles.suggestionsContainer}
-          data={filteredArray}
-          renderItem={({ item }) => (
-            <Pressable
-              style={styles.suggestionItem}
-              onPress={() => onOptionClick(item)}
-            >
-              <ThemedText>{item[propertyName]}</ThemedText>
-            </Pressable>
-          )}
-          keyExtractor={(entry) => String(entry.id)}
-        ></FlatList>
+        <Surface style={styles.suggestionsContainer} elevation={3}>
+          <FlatList
+            data={filteredArray}
+            renderItem={({ item }) => (
+              <List.Item
+                title={[item[propertyName]]}
+                onPress={() => onOptionClick(item)}
+              />
+            )}
+            keyExtractor={(entry) => String(entry.id)}
+            keyboardShouldPersistTaps="handled"
+          ></FlatList>
+        </Surface>
       )}
     </View>
   );
 };
 
-export default Typeahead;
+const styles = StyleSheet.create({
+  container: {
+    zIndex: 1,
+  },
+  containerActive: {
+    zIndex: 10,
+  },
+  suggestionsContainer: {
+    position: "absolute",
+    top: "100%",
+    left: 0,
+    right: 0,
+    maxHeight: 200,
+    zIndex: 2,
+  },
+});
 
-const getStyles = (theme: (typeof Colors)["dark"]) =>
-  StyleSheet.create({
-    container: {
-      padding: 12,
-      zIndex: 1,
-    },
-    containerActive: {
-      zIndex: 10,
-    },
-    suggestionsContainer: {
-      position: "absolute",
-      top: "100%",
-      left: 12,
-      right: 12,
-      maxHeight: 200,
-      borderWidth: 1,
-      borderColor: theme.border,
-      borderTopWidth: 0,
-      backgroundColor: theme.backgroundSuggestion,
-      zIndex: 2,
-    },
-    suggestionItem: {
-      padding: 10,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.borderLight,
-    },
-  });
+export default Typeahead;
