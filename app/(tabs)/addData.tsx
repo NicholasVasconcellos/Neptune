@@ -15,8 +15,8 @@ import { Colors, typography, spacing } from "../../Styles/Theme";
 import Title from "../../components/Title";
 import Typeahead from "../../components/Typeahead";
 
-// Supabase Data Submit
-import { supabase } from "../../lib/supabase";
+// Backend Data Utils
+import { getData, postData } from "../../utils/backendData";
 import { alertLog } from "../../utils/alertLog";
 
 const dataTypes = [
@@ -45,51 +45,28 @@ export default function addData() {
   const [objectArray, setObjectArray] = useState<any[]>([]);
 
   // Get table data
-  async function getData(tableName: string) {
+  async function fetchData(tableName: string) {
     setLoading(true);
-
-    // Get Logged in User ID
-    const user = (await supabase.auth.getUser()).data.user;
-
-    if (!user) {
-      alertLog("Failed to Authenticate Login");
-      setLoading(false);
-      return;
-    }
-
-    const { data, error } = await supabase
-      .from(tableName)
-      .select("*")
-      .eq("User ID", user.id);
-
-    if (error) {
-      alertLog("Couldn't get Data Bro:", error.message);
-    } else if (data) {
-      alertLog("Array Fetched", tableName);
-
+    try {
+      const data = await getData(tableName);
       setObjectArray(data);
+      alertLog("Array Fetched", tableName);
+    } catch (e: any) {
+      alertLog("Couldn't get Data Bro:", e.message);
     }
-
     setLoading(false);
   }
 
-  // Add user Function
-  async function postData(tableName: string, object: Record<string, any>) {
+  // Add data to table
+  async function submitData(tableName: string, object: Record<string, any>) {
     setLoading(true);
-
-    const { data, error } = await supabase
-      .from(tableName)
-      .insert(object)
-      .select();
-    // .select to return the new row if success
-
-    if (error) {
-      alertLog("Error Adding bro", error.message);
-    } else if (data) {
+    try {
+      await postData(tableName, object);
       alertLog("Added", name);
-
       setName("");
       setAge("");
+    } catch (e: any) {
+      alertLog("Error Adding bro", e.message);
     }
     setLoading(false);
   }
