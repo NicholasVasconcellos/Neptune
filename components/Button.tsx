@@ -1,18 +1,24 @@
-import { StyleSheet, Text, Pressable, useColorScheme } from "react-native";
-import React from "react";
+import { StyleSheet, Pressable, PressableProps, useColorScheme, StyleProp, ViewStyle } from "react-native";
+import React, { ReactNode } from "react";
 import { Colors } from "../Styles/Theme";
 import { typography } from "../Styles/Theme";
 import ThemedText from "./ThemedText";
 import { useRouter } from "expo-router";
-import Card from "./Card";
 
 // Button Component with icon, and colors use current theme
 // Href Link, if button links to something
 // ON Press = callbackfunction on click
 // icon: button icon if any
 // children get's the text content
-/** @type {React.FC<import('react-native').PressableProps & { onClick?: () => void, href?: string, icon?: React.ReactNode, containerStyle?: import('react-native').StyleProp<import('react-native').ViewStyle> }>} */
-const Button = ({ onClick, href, containerStyle, icon, children, ...args }) => {
+interface ButtonProps extends PressableProps {
+  onClick?: () => void;
+  href?: string;
+  icon?: ReactNode;
+  containerStyle?: StyleProp<ViewStyle>;
+  children?: ReactNode;
+}
+
+const Button = ({ onClick, href, containerStyle, icon, children, ...args }: ButtonProps) => {
   // Get the Current theme name from the hook
   // Select the corresponding section of colors
   const themeName = useColorScheme();
@@ -24,7 +30,7 @@ const Button = ({ onClick, href, containerStyle, icon, children, ...args }) => {
 
   function handlePress() {
     if (onClick) onClick();
-    if (href != null) router.push(href);
+    if (href != null) router.push(href as any);
   }
 
   return (

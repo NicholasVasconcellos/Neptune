@@ -1,19 +1,16 @@
 import {
   StyleSheet,
-  Text,
   View,
   useColorScheme,
-  Pressable,
-  TextInput,
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
-import Button from "../../components/Button.jsx";
+import Button from "../../components/Button";
 import React, { useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { alertLog } from "../../utils/alertLog";
 import { Colors } from "../../Styles/Theme";
-import ThemedInput from "../../components/ThemedInput.jsx";
+import ThemedInput from "../../components/ThemedInput";
 
 export default function Login() {
   // Create State Variables
@@ -37,7 +34,7 @@ export default function Login() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View accessibilityRole="form">
+      <View accessibilityRole={"form" as any}>
         <ThemedInput
           formTitle="Email"
           placeholder="email@domain.com"
@@ -53,9 +50,9 @@ export default function Login() {
           value={password}
           onChangeText={setPassword}
         />
-        {/* 
+        {/*
           if Loading disable the button
-          onClick callback is the signinWithemail 
+          onClick callback is the signinWithemail
         */}
         <Button onClick={signInWithEmail} disabled={loading}>
           Sign In
@@ -64,24 +61,3 @@ export default function Login() {
     </TouchableWithoutFeedback>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: 40,
-    padding: 12,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 4,
-    marginTop: 12,
-  },
-  input: {
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    marginBottom: 8,
-  },
-});

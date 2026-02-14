@@ -1,26 +1,18 @@
 import {
   StyleSheet,
   View,
-  Pressable,
   useColorScheme,
-  ScrollView,
-  Touchable,
   TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import React, { useState } from "react";
 
 // Styles
 import { Colors, typography, spacing } from "../../Styles/Theme";
 
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-
 // My components
 import Title from "../../components/Title";
-import ThemedInput from "../../components/ThemedInput";
 import Typeahead from "../../components/Typeahead";
-import ThemedText from "../../components/ThemedText";
-import Button from "../../components/Button";
 
 // Supabase Data Submit
 import { supabase } from "../../lib/supabase";
@@ -35,7 +27,7 @@ const dataTypes = [
 export default function addData() {
   const themeName = useColorScheme();
   const theme = Colors[themeName ?? "light"];
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState<string | null>(null);
 
   // State Variables
   const [name, setName] = useState("");
@@ -47,12 +39,12 @@ export default function addData() {
 
   // Get Data form Supabase table into array
   // Error from backend
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   // Data from backend
-  const [objectArray, setObjectArray] = useState([]);
+  const [objectArray, setObjectArray] = useState<any[]>([]);
 
   // Get table data
-  async function getData(tableName) {
+  async function getData(tableName: string) {
     setLoading(true);
 
     // Get Logged in User ID
@@ -65,7 +57,7 @@ export default function addData() {
     }
 
     const { data, error } = await supabase
-      .from({ tableName })
+      .from(tableName)
       .select("*")
       .eq("User ID", user.id);
 
@@ -81,11 +73,11 @@ export default function addData() {
   }
 
   // Add user Function
-  async function postData(tableName, object) {
+  async function postData(tableName: string, object: Record<string, any>) {
     setLoading(true);
 
     const { data, error } = await supabase
-      .from({ tableName })
+      .from(tableName)
       .insert(object)
       .select();
     // .select to return the new row if success
@@ -202,28 +194,6 @@ export default function addData() {
     { Name: "Zoe" },
   ];
   return (
-    // <TouchableWithoutFeedback>
-    //   <ScrollView style={{ flex: 1, backgroundColor: theme.background }}>
-    //     <ThemedText>Name</ThemedText>
-    //     <ThemedInput
-    //       placeholder="Enter Name"
-    //       value={name}
-    //       onChangeText={setName}
-    //     ></ThemedInput>
-    //     <ThemedText>Age</ThemedText>
-    //     <ThemedInput
-    //       placeholder="Enter Age"
-    //       keyboardType="numeric"
-    //       value={age}
-    //       onChangeText={setAge}
-    //     ></ThemedInput>
-
-    //     <Button onClick={addUser} disabled={loading}>
-    //       {" "}
-    //       Submit
-    //     </Button>
-    //   </ScrollView>
-    // </TouchableWithoutFeedback>
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View>
         <Title>Add your Data</Title>

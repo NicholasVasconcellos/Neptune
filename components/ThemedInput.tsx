@@ -1,19 +1,21 @@
-import { StyleSheet, TextInput, useColorScheme } from "react-native";
+import { StyleSheet, TextInput, TextInputProps, useColorScheme, StyleProp, TextStyle } from "react-native";
 import { Colors } from "../Styles/Theme";
 import React from "react";
-import { View } from "react-native-web";
+import { View } from "react-native";
 
 import ThemedText from "./ThemedText";
 
-/**
- * @param {import('react-native').TextInputProps & { styles?: import('react-native').StyleProp<import('react-native').TextStyle> }} props
- */
+interface ThemedInputProps extends TextInputProps {
+  formTitle?: string;
+  styles?: StyleProp<TextStyle>;
+}
+
 export default function ThemedInput({
   formTitle = "Sample Form",
   styles,
   ...args
-}) {
-  const theme = Colors[useColorScheme()] ?? Colors.light;
+}: ThemedInputProps) {
+  const theme = Colors[useColorScheme() ?? "light"];
 
   const localStyle = getStyles(theme);
 
@@ -25,7 +27,7 @@ export default function ThemedInput({
   );
 }
 
-const getStyles = (theme) =>
+const getStyles = (theme: (typeof Colors)["dark"]) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -46,7 +48,5 @@ const getStyles = (theme) =>
       marginBottom: 8,
       backgroundColor: theme.uiBackground,
       color: theme.text,
-      padding: 20,
-      borderRadius: 6,
     },
   });

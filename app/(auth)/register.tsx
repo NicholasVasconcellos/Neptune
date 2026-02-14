@@ -3,17 +3,15 @@ import {
   Text,
   View,
   useColorScheme,
-  Pressable,
-  TextInput,
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
-import Button from "../../components/Button.jsx";
+import Button from "../../components/Button";
 import React, { useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { alertLog } from "../../utils/alertLog";
 import { Colors } from "../../Styles/Theme";
-import ThemedInput from "../../components/ThemedInput.jsx";
+import ThemedInput from "../../components/ThemedInput";
 
 export default function Register() {
   // Create State Variables
@@ -42,7 +40,7 @@ export default function Register() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View style={styles.container} accessibilityRole="form">
+      <View style={styles.container} accessibilityRole={"form" as any}>
         <Text style={[styles.label, { color: theme.text }]}>Email</Text>
         <ThemedInput
           styles={{ marginBottom: 20 }}
@@ -80,12 +78,5 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginBottom: 4,
     marginTop: 12,
-  },
-  input: {
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    marginBottom: 8,
   },
 });

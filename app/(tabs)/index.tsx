@@ -11,12 +11,12 @@ import Logo from "../../assets/NeptuneAppIcon.png";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 const Home = () => {
-  const theme = Colors[useColorScheme()] || Colors.light;
+  const theme = Colors[useColorScheme() ?? "light"];
   const { session } = useAuth();
 
   useEffect(() => {
     if (!session) {
-      router.replace("../");
+      router.replace("../" as any);
     }
   }, [session]);
 
@@ -87,10 +87,8 @@ export default Home;
 
 const styles = StyleSheet.create({
   container: {
-    // Cross Axis:
-    // Center this child with the parent
-    alignSelf: "center", // center on Parent
-    alignItems: "stretch", // Stretch children to full width of parent
+    alignSelf: "center",
+    alignItems: "stretch",
     gap: 4,
     paddingVertical: 20,
   },
@@ -98,20 +96,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 18,
   },
-  card: {
-    backgroundColor: "#eee",
-    padding: 20,
-    borderRadius: 5,
-    boxShadow: "4px 4px rba(0,0,0,0.1)",
-  },
   image: {
     width: 300,
     height: 300,
     alignSelf: "center",
     marginBottom: 20,
-  },
-  link: {
-    marginVertical: 10,
-    borderBottomWidth: 1,
   },
 });

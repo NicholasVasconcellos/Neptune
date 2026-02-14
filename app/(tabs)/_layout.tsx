@@ -1,12 +1,10 @@
-import { StyleSheet, Text, View, useColorScheme } from "react-native";
+import { View, useColorScheme } from "react-native";
 import React from "react";
 import { Tabs } from "expo-router";
-import ThemedText from "../../components/ThemedText";
 import { Colors } from "../../Styles/Theme";
 
 // Icons
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import AntDesign from "@expo/vector-icons/AntDesign";
 
 // Expo Renders Layout file by default
 // Slot: Renders page content
@@ -18,7 +16,7 @@ const RootLayout = () => {
 
   // Get Color scheme
 
-  const theme = Colors[useColorScheme()] || Colors.light;
+  const theme = Colors[useColorScheme() ?? "light"];
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
@@ -84,9 +82,4 @@ const RootLayout = () => {
   );
 };
 
-// Use headshown: false to hide it
-
 export default RootLayout;
-
-// const styles = StyleSheet.create({
-// });

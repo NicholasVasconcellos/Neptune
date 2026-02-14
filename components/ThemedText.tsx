@@ -1,12 +1,17 @@
-import { StyleSheet, Text, View, useColorScheme } from "react-native";
-import React from "react";
+import { Text, View, useColorScheme, ViewProps, StyleProp, TextStyle } from "react-native";
+import React, { ReactNode } from "react";
 import { Colors } from "../Styles/Theme";
 
-export default function ThemedText({ children, style, ...args }) {
+interface ThemedTextProps extends ViewProps {
+  children?: ReactNode;
+  style?: StyleProp<TextStyle>;
+}
+
+export default function ThemedText({ children, style, ...args }: ThemedTextProps) {
   // Get the current theme from react natives hook that reads from the device
   const themeName = useColorScheme();
 
-  const currTheme = Colors[themeName] || Colors["light"];
+  const currTheme = Colors[themeName ?? "light"];
   // SEt the current theme within the Colors object
 
   return (

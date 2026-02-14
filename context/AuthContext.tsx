@@ -1,19 +1,20 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { supabase } from "../lib/supabase";
 import { AppState } from "react-native";
+import type { Session } from "@supabase/supabase-js";
 
-const AuthContext = createContext(
-  /** @type {{ session: import('@supabase/supabase-js').Session | null, loading: boolean }} */ ({
-    session: null,
-    loading: true,
-  }),
-);
+interface AuthContextType {
+  session: Session | null;
+  loading: boolean;
+}
 
-/** @param {{ children: React.ReactNode }} props */
-export function AuthProvider({ children }) {
-  const [session, setSession] = useState(
-    /** @type {import('@supabase/supabase-js').Session | null} */ (null),
-  );
+const AuthContext = createContext<AuthContextType>({
+  session: null,
+  loading: true,
+});
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

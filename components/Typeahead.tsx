@@ -10,20 +10,28 @@ import ThemedText from "./ThemedText";
 import ThemedInput from "./ThemedInput";
 import { Colors } from "../Styles/Theme";
 
+interface TypeaheadProps {
+  array: Record<string, any>[];
+  propertyName: string;
+  formTitle?: string;
+  placeholderText?: string;
+  onSelect?: (item: Record<string, any>) => void;
+}
+
 const Typeahead = ({
   array,
   propertyName,
   formTitle,
   placeholderText,
   onSelect,
-}) => {
-  const theme = Colors[useColorScheme()] ?? Colors.light;
+}: TypeaheadProps) => {
+  const theme = Colors[useColorScheme() ?? "light"];
   const styles = getStyles(theme);
   const [inputValue, setInputValue] = useState("");
-  const [filteredArray, setFilteredArray] = useState([]);
+  const [filteredArray, setFilteredArray] = useState<Record<string, any>[]>([]);
   const [isDisplayed, setIsDisplayed] = useState(false);
 
-  const onChangeText = (currText) => {
+  const onChangeText = (currText: string) => {
     // Update Input Value (for next tick)
     setInputValue(currText);
 
@@ -44,7 +52,7 @@ const Typeahead = ({
     setIsDisplayed(true); // Display
   };
 
-  const onOptionClick = (item) => {
+  const onOptionClick = (item: Record<string, any>) => {
     setInputValue(item[propertyName]);
     setIsDisplayed(false);
     // Call the parent callback function if it exists
@@ -54,7 +62,7 @@ const Typeahead = ({
   return (
     <View
       style={[styles.container, isDisplayed && styles.containerActive]}
-      accessibilityRole="form"
+      accessibilityRole={"form" as any}
     >
       <ThemedInput
         formTitle={formTitle}
@@ -83,7 +91,7 @@ const Typeahead = ({
 
 export default Typeahead;
 
-const getStyles = (theme) =>
+const getStyles = (theme: (typeof Colors)["dark"]) =>
   StyleSheet.create({
     container: {
       padding: 12,
