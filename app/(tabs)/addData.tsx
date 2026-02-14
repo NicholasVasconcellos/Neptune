@@ -14,21 +14,24 @@ import { Colors, typography, spacing } from "../../Styles/Theme";
 // My components
 import Title from "../../components/Title";
 import Typeahead from "../../components/Typeahead";
+import UnitToggle from "../../components/UnitToggle";
+import Button from "../../components/Button";
+import ButtonGrid from "../../components/ButtonGrid";
 
 // Backend Data Utils
 import { getData, postData } from "../../utils/backendData";
 import { alertLog } from "../../utils/alertLog";
 
 const dataTypes = [
-  { key: "time", label: "Time", icon: "stopwatch", set: "fa6" },
-  { key: "swimmer", label: "Swimmer", icon: "swimmer", set: "fa5" },
-  { key: "training", label: "Training", icon: "dumbbell", set: "fa6" },
+  { key: "time", label: "Time", icon: "stopwatch", set: "fa6" as const },
+  { key: "swimmer", label: "Swimmer", icon: "swimmer", set: "fa5" as const },
+  { key: "training", label: "Training", icon: "dumbbell", set: "fa6" as const },
 ];
 
 export default function addData() {
   const themeName = useColorScheme();
   const theme = Colors[themeName ?? "light"];
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string[]>([]);
 
   // State Variables
   const [name, setName] = useState("");
@@ -190,18 +193,25 @@ export default function addData() {
     >
       <View>
         <Title>Add your Data</Title>
+        <ButtonGrid
+          items={dataTypes}
+          selected={selected}
+          onSelectionChange={setSelected}
+        />
         <Typeahead
-          formTitle={"My Typeahed Form"}
+          formTitle={"Athlete"}
           array={names}
           propertyName={"Name"}
-          placeholderText={"blablabla..."}
+          placeholderText={"Enter Name"}
         ></Typeahead>
         <Typeahead
-          formTitle={"Second Form"}
+          formTitle={"Time"}
           array={names}
           propertyName={"Name"}
-          placeholderText={"blablabla..."}
+          placeholderText={"Enter Time"}
         ></Typeahead>
+        <UnitToggle></UnitToggle>
+        <Button>Submit</Button>
       </View>
     </Pressable>
   );
@@ -221,31 +231,5 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.md,
     marginBottom: spacing.xl,
     opacity: 0.7,
-  },
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: spacing.md,
-    marginBottom: spacing.xl,
-  },
-  gridItem: {
-    width: "30%",
-    aspectRatio: 1,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: spacing.sm,
-    borderWidth: 2,
-    borderColor: "transparent",
-  },
-  gridItemSelected: {
-    borderColor: Colors.primary,
-  },
-  pressed: {
-    opacity: 0.5,
-  },
-  gridLabel: {
-    fontSize: typography.sizes.l,
-    fontWeight: typography.weights.semibold,
   },
 });
