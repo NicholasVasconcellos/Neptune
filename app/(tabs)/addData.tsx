@@ -2,8 +2,9 @@ import {
   StyleSheet,
   View,
   useColorScheme,
-  TouchableWithoutFeedback,
+  Pressable,
   Keyboard,
+  Platform,
 } from "react-native";
 import React, { useState } from "react";
 
@@ -194,7 +195,7 @@ export default function addData() {
     { Name: "Zoe" },
   ];
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+    <Pressable onPress={() => Platform.OS !== "web" && Keyboard.dismiss()} accessible={false}>
       <View>
         <Title>Add your Data</Title>
         <Typeahead
@@ -210,7 +211,7 @@ export default function addData() {
           placeholderText={"blablabla..."}
         ></Typeahead>
       </View>
-    </TouchableWithoutFeedback>
+    </Pressable>
   );
 }
 

@@ -4,7 +4,8 @@ import {
   View,
   useColorScheme,
   Keyboard,
-  TouchableWithoutFeedback,
+  Pressable,
+  Platform,
 } from "react-native";
 import Button from "../../components/Button";
 import React, { useState } from "react";
@@ -39,7 +40,7 @@ export default function Register() {
   }
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+    <Pressable onPress={() => Platform.OS !== "web" && Keyboard.dismiss()} accessible={false}>
       <View style={styles.container} accessibilityRole={"form" as any}>
         <Text style={[styles.label, { color: theme.text }]}>Email</Text>
         <ThemedInput
@@ -63,7 +64,7 @@ export default function Register() {
           Create Account
         </Button>
       </View>
-    </TouchableWithoutFeedback>
+    </Pressable>
   );
 }
 

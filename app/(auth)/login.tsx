@@ -3,7 +3,8 @@ import {
   View,
   useColorScheme,
   Keyboard,
-  TouchableWithoutFeedback,
+  Pressable,
+  Platform,
 } from "react-native";
 import Button from "../../components/Button";
 import React, { useState } from "react";
@@ -33,7 +34,7 @@ export default function Login() {
   }
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+    <Pressable onPress={() => Platform.OS !== "web" && Keyboard.dismiss()} accessible={false}>
       <View accessibilityRole={"form" as any}>
         <ThemedInput
           formTitle="Email"
@@ -58,6 +59,6 @@ export default function Login() {
           Sign In
         </Button>
       </View>
-    </TouchableWithoutFeedback>
+    </Pressable>
   );
 }
