@@ -52,7 +52,7 @@ export default function addData() {
   const [objectArray, setObjectArray] = useState([]);
 
   // Get table data
-  async function getData(colName) {
+  async function getData(tableName) {
     setLoading(true);
 
     // Get Logged in User ID
@@ -65,14 +65,14 @@ export default function addData() {
     }
 
     const { data, error } = await supabase
-      .from({ colName })
+      .from({ tableName })
       .select("*")
       .eq("User ID", user.id);
 
     if (error) {
       alertLog("Couldn't get Data Bro:", error.message);
     } else if (data) {
-      alertLog("Array Fetched", colName);
+      alertLog("Array Fetched", tableName);
 
       setObjectArray(data);
     }
@@ -81,12 +81,12 @@ export default function addData() {
   }
 
   // Add user Function
-  async function addUser() {
+  async function postData(tableName, object) {
     setLoading(true);
 
     const { data, error } = await supabase
-      .from("Athletes")
-      .insert([{ Name: name, Age: age }])
+      .from({ tableName })
+      .insert(object)
       .select();
     // .select to return the new row if success
 
@@ -100,8 +100,6 @@ export default function addData() {
     }
     setLoading(false);
   }
-
-  const [tablename, setTablename] = useState("");
 
   // Test Typeahead
   const names = [
