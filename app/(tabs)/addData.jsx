@@ -52,32 +52,33 @@ export default function addData() {
   const [objectArray, setObjectArray] = useState([]);
 
   // Get table data
-  async function getData() {
-
-    
+  async function getData(colName) {
     setLoading(true);
 
     // Get Logged in User ID
     const user = (await supabase.auth.getUser()).data.user;
 
-    if(!user){
+    if (!user) {
+      alertLog("Failed to Authenticate Login");
       setLoading(false);
-      
+      return;
     }
 
-    const { data, error } = await supabase.from("Athletes").select();
+    const { data, error } = await supabase
+      .from({ colName })
+      .select("*")
+      .eq("User ID", user.id);
 
     if (error) {
       alertLog("Couldn't get Data Bro:", error.message);
     } else if (data) {
-      alertLog("Array Fetched", name);
+      alertLog("Array Fetched", colName);
 
-      setObjectArray(data.Name);
+      setObjectArray(data);
     }
 
     setLoading(false);
   }
-
 
   // Add user Function
   async function addUser() {
@@ -104,105 +105,104 @@ export default function addData() {
 
   // Test Typeahead
   const names = [
-    "Nick",
-    "Bre",
-    "Vic",
-    "Mar",
-    "Alex",
-    "Alexa",
-    "Alexander",
-    "Alicia",
-    "Allison",
-    "Ben",
-    "Benjamin",
-    "Bella",
-    "Brandon",
-    "Brianna",
-    "Caleb",
-    "Cameron",
-    "Carlos",
-    "Carla",
-    "Catherine",
-    "Daniel",
-    "Danielle",
-    "David",
-    "Diana",
-    "Dominic",
-    "Eli",
-    "Elijah",
-    "Emma",
-    "Emily",
-    "Ethan",
-    "Felix",
-    "Fiona",
-    "Frank",
-    "Faith",
-    "Gabriel",
-    "Gabriella",
-    "George",
-    "Grace",
-    "Hannah",
-    "Henry",
-    "Hector",
-    "Hailey",
-    "Isaac",
-    "Isabella",
-    "Ian",
-    "Ivy",
-    "Jack",
-    "Jackson",
-    "Jacob",
-    "Jasmine",
-    "Julia",
-    "Kevin",
-    "Katherine",
-    "Kyle",
-    "Kylie",
-    "Liam",
-    "Lucas",
-    "Luna",
-    "Lily",
-    "Logan",
-    "Mason",
-    "Mia",
-    "Michael",
-    "Mila",
-    "Matthew",
-    "Noah",
-    "Natalie",
-    "Nathan",
-    "Nora",
-    "Olivia",
-    "Owen",
-    "Oscar",
-    "Paul",
-    "Paula",
-    "Peter",
-    "Penelope",
-    "Quinn",
-    "Ryan",
-    "Rachel",
-    "Robert",
-    "Rose",
-    "Samuel",
-    "Sophia",
-    "Sebastian",
-    "Scarlett",
-    "Thomas",
-    "Taylor",
-    "Tristan",
-    "Tara",
-    "Uriel",
-    "Victor",
-    "Vanessa",
-    "William",
-    "Willow",
-    "Xavier",
-    "Yara",
-    "Zachary",
-    "Zoe",
+    { Name: "Nick" },
+    { Name: "Bre" },
+    { Name: "Vic" },
+    { Name: "Mar" },
+    { Name: "Alex" },
+    { Name: "Alexa" },
+    { Name: "Alexander" },
+    { Name: "Alicia" },
+    { Name: "Allison" },
+    { Name: "Ben" },
+    { Name: "Benjamin" },
+    { Name: "Bella" },
+    { Name: "Brandon" },
+    { Name: "Brianna" },
+    { Name: "Caleb" },
+    { Name: "Cameron" },
+    { Name: "Carlos" },
+    { Name: "Carla" },
+    { Name: "Catherine" },
+    { Name: "Daniel" },
+    { Name: "Danielle" },
+    { Name: "David" },
+    { Name: "Diana" },
+    { Name: "Dominic" },
+    { Name: "Eli" },
+    { Name: "Elijah" },
+    { Name: "Emma" },
+    { Name: "Emily" },
+    { Name: "Ethan" },
+    { Name: "Felix" },
+    { Name: "Fiona" },
+    { Name: "Frank" },
+    { Name: "Faith" },
+    { Name: "Gabriel" },
+    { Name: "Gabriella" },
+    { Name: "George" },
+    { Name: "Grace" },
+    { Name: "Hannah" },
+    { Name: "Henry" },
+    { Name: "Hector" },
+    { Name: "Hailey" },
+    { Name: "Isaac" },
+    { Name: "Isabella" },
+    { Name: "Ian" },
+    { Name: "Ivy" },
+    { Name: "Jack" },
+    { Name: "Jackson" },
+    { Name: "Jacob" },
+    { Name: "Jasmine" },
+    { Name: "Julia" },
+    { Name: "Kevin" },
+    { Name: "Katherine" },
+    { Name: "Kyle" },
+    { Name: "Kylie" },
+    { Name: "Liam" },
+    { Name: "Lucas" },
+    { Name: "Luna" },
+    { Name: "Lily" },
+    { Name: "Logan" },
+    { Name: "Mason" },
+    { Name: "Mia" },
+    { Name: "Michael" },
+    { Name: "Mila" },
+    { Name: "Matthew" },
+    { Name: "Noah" },
+    { Name: "Natalie" },
+    { Name: "Nathan" },
+    { Name: "Nora" },
+    { Name: "Olivia" },
+    { Name: "Owen" },
+    { Name: "Oscar" },
+    { Name: "Paul" },
+    { Name: "Paula" },
+    { Name: "Peter" },
+    { Name: "Penelope" },
+    { Name: "Quinn" },
+    { Name: "Ryan" },
+    { Name: "Rachel" },
+    { Name: "Robert" },
+    { Name: "Rose" },
+    { Name: "Samuel" },
+    { Name: "Sophia" },
+    { Name: "Sebastian" },
+    { Name: "Scarlett" },
+    { Name: "Thomas" },
+    { Name: "Taylor" },
+    { Name: "Tristan" },
+    { Name: "Tara" },
+    { Name: "Uriel" },
+    { Name: "Victor" },
+    { Name: "Vanessa" },
+    { Name: "William" },
+    { Name: "Willow" },
+    { Name: "Xavier" },
+    { Name: "Yara" },
+    { Name: "Zachary" },
+    { Name: "Zoe" },
   ];
-
   return (
     // <TouchableWithoutFeedback>
     //   <ScrollView style={{ flex: 1, backgroundColor: theme.background }}>
@@ -232,11 +232,13 @@ export default function addData() {
         <Typeahead
           formTitle={"My Typeahed Form"}
           array={names}
+          propertyName={"Name"}
           placeholderText={"blablabla..."}
         ></Typeahead>
         <Typeahead
           formTitle={"Second Form"}
           array={names}
+          propertyName={"Name"}
           placeholderText={"blablabla..."}
         ></Typeahead>
       </View>

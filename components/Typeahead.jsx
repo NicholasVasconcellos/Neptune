@@ -10,7 +10,13 @@ import ThemedText from "./ThemedText";
 import ThemedInput from "./ThemedInput";
 import { Colors } from "../Styles/Theme";
 
-const Typeahead = ({ array, formTitle, placeholderText }) => {
+const Typeahead = ({
+  array,
+  propertyName,
+  formTitle,
+  placeholderText,
+  onSelect,
+}) => {
   const theme = Colors[useColorScheme()] ?? Colors.light;
   const styles = getStyles(theme);
   const [inputValue, setInputValue] = useState("");
@@ -31,22 +37,25 @@ const Typeahead = ({ array, formTitle, placeholderText }) => {
     // Update the Filtered list
     // For each entry in array include it if it contains currText (case insensitive)
     const currArray = array.filter((entry) =>
-      entry.toLowerCase().includes(currText.toLowerCase()),
+      entry[propertyName].toLowerCase().includes(currText.toLowerCase()),
     );
 
     setFilteredArray(currArray);
     setIsDisplayed(true); // Display
   };
 
-  const onOptionClick = (option) => {
-    // Update input to match selection
-    setInputValue(option);
-    // Hide the display
+  const onOptionClick = (item) => {
+    setInputValue(item[propertyName]);
     setIsDisplayed(false);
+    // Call the parent callback function if it exists
+    onSelect?.(item);
   };
 
   return (
-    <View style={[styles.container, isDisplayed && styles.containerActive]} accessibilityRole="form">
+    <View
+      style={[styles.container, isDisplayed && styles.containerActive]}
+      accessibilityRole="form"
+    >
       <ThemedInput
         formTitle={formTitle}
         value={inputValue}
@@ -60,15 +69,12 @@ const Typeahead = ({ array, formTitle, placeholderText }) => {
           renderItem={({ item }) => (
             <Pressable
               style={styles.suggestionItem}
-              onPress={() => {
-                setInputValue(item);
-                setIsDisplayed(false);
-              }}
+              onPress={() => onOptionClick(item)}
             >
-              <ThemedText>{item}</ThemedText>
+              <ThemedText>{item[propertyName]}</ThemedText>
             </Pressable>
           )}
-          keyExtractor={(entry) => entry}
+          keyExtractor={(entry) => String(entry.id)}
         ></FlatList>
       )}
     </View>
