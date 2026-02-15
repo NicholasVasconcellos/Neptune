@@ -28,3 +28,18 @@ export async function postData(
   if (error) throw error;
   return data;
 }
+
+export async function updateData(
+  tableName: string,
+  id: number,
+  updates: Record<string, any>
+) {
+  const { data, error } = await supabase
+    .from(tableName)
+    .update(updates)
+    .eq("id", id)
+    .select();
+
+  if (error) throw error;
+  return data;
+}

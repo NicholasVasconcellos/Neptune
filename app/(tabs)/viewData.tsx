@@ -1,38 +1,23 @@
-import { StyleSheet, View } from 'react-native'
-import React from 'react'
-import { Text } from 'react-native-paper'
-import Title from '../../components/Title'
+import { StyleSheet, View } from "react-native";
+import React from "react";
+import Title from "../../components/Title";
+import ListView from "../../components/ListView";
+import AthleteForm from "../../components/InputForms/AthleteForm";
 
-// Dedicated Reporting page, allows you to select which data to view
-// Custom Filter, sorting, grouping
-// Get Charts you want, Pin a chart to you home page.
-// Whenever adding a chart get the option to keep it appearing there
-
-const viewData = () => {
+export default function viewData() {
   return (
     <View style={styles.container}>
       <Title>View Data</Title>
-      <Text variant="bodyLarge">View Any data here</Text>
-      <Text variant="bodyMedium">Select Object to view (todo) will list the icons</Text>
-      {/* Will display a list of all the entries */}
-      {/* Visuzalization options : icons for Filter, Sort, Group */}
-        {/* When clicking on filter populate associated fields based on the selected object */}
-        {/* when clickign on Sort populate associated fields based on the object */}
-        {/* Same for Grouping */}
-      {/* Filter removes entries based on criteria */}
-      {/* Sort changes the order based on a field */}
-
-      {/* Later Add Plotting, Choose X axis and Choose Y axis */}
-
+      <ListView
+        tableName="Athletes"
+        createForm={<AthleteForm />}
+      />
     </View>
-  )
+  );
 }
-
-export default viewData
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    gap: 8,
+    flex: 1,
   },
-})
+});

@@ -1,0 +1,31 @@
+table_name	column_name	data_type	is_nullable	column_default
+Athletes	id	bigint	NO	null
+Athletes	created_at	timestamp with time zone	NO	now()
+Athletes	Name	text	YES	null
+Athletes	Age	smallint	YES	null
+Athletes	Team ID	bigint	YES	null
+Athletes	Group ID	bigint	YES	null
+Athletes	User ID	uuid	YES	auth.uid()
+Groups	id	bigint	NO	null
+Groups	created_at	timestamp with time zone	NO	now()
+Groups	Name	text	YES	null
+Groups	Team ID	bigint	YES	null
+Groups	User ID	uuid	YES	null
+Teams	id	bigint	NO	null
+Teams	created_at	timestamp with time zone	NO	now()
+Teams	Name	text	YES	null
+Teams	User ID	uuid	YES	null
+Times	id	bigint	NO	null
+Times	created_at	timestamp with time zone	NO	now()
+Times	Time	real	YES	null
+Times	Stroke	text	YES	null
+Times	Distance	integer	YES	null
+Times	Distance Unit	text	YES	null
+Times	Athlete ID	bigint	YES	null
+Times	User ID	uuid	YES	null
+profiles	id	uuid	NO	null
+profiles	updated_at	timestamp with time zone	YES	null
+profiles	username	text	YES	null
+profiles	full_name	text	YES	null
+profiles	avatar_url	text	YES	null
+profiles	website	text	YES	null
