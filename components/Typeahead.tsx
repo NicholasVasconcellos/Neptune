@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { View, FlatList, StyleSheet, Platform } from "react-native";
 
-import { TextInput, List, Surface, Chip, ActivityIndicator } from "react-native-paper";
+import { TextInput, List, Surface, Chip, ActivityIndicator, HelperText } from "react-native-paper";
 
 interface TypeaheadProps {
   array: Record<string, any>[];
@@ -12,6 +12,8 @@ interface TypeaheadProps {
   onChangeText?: (text: string) => void;
   loading?: boolean;
   value?: string;
+  allowsNew?: boolean;
+  showOnEmpty?: boolean;
 }
 
 const Typeahead = ({
@@ -23,6 +25,8 @@ const Typeahead = ({
   onChangeText: onChangeTextProp,
   loading,
   value,
+  allowsNew = true,
+  showOnEmpty = false,
 }: TypeaheadProps) => {
   const [inputValue, setInputValue] = useState(value ?? "");
 
@@ -33,6 +37,14 @@ const Typeahead = ({
   const [filteredArray, setFilteredArray] = useState<Record<string, any>[]>([]);
   const [isDisplayed, setIsDisplayed] = useState(false);
   const [isNew, setIsNew] = useState(false);
+  const [hasNoMatch, setHasNoMatch] = useState(false);
+
+  const onFocus = () => {
+    if (showOnEmpty && (!inputValue || inputValue.trim() === "")) {
+      setFilteredArray(array);
+      setIsDisplayed(array.length > 0);
+    }
+  };
 
   const onChangeText = (currText: string) => {
     // Update Input Value (queue for next tick)
@@ -41,9 +53,15 @@ const Typeahead = ({
 
     // if no Text input set to initial state
     if (!currText || currText.trim() === "") {
-      setFilteredArray([]);
-      setIsDisplayed(false); // Hide Display
+      if (showOnEmpty) {
+        setFilteredArray(array);
+        setIsDisplayed(array.length > 0);
+      } else {
+        setFilteredArray([]);
+        setIsDisplayed(false);
+      }
       setIsNew(false);
+      setHasNoMatch(false);
       return;
     }
 
@@ -62,7 +80,8 @@ const Typeahead = ({
     });
 
     setFilteredArray(currArray);
-    setIsNew(!exactMatch);
+    setIsNew(!exactMatch && allowsNew);
+    setHasNoMatch(!exactMatch && !allowsNew && currArray.length === 0);
 
     // if no Match
     if (currArray.length === 0) {
@@ -95,10 +114,12 @@ const Typeahead = ({
           label={formTitle}
           value={inputValue}
           onChangeText={onChangeText}
+          onFocus={onFocus}
           // Dismis the list when out of focus (delay so that onSelect can run first)
           onBlur={() => setTimeout(() => setIsDisplayed(false), 100)}
           placeholder={placeholderText}
           mode="outlined"
+          error={hasNoMatch}
           right={
             loading ? (
               <TextInput.Icon
@@ -111,6 +132,11 @@ const Typeahead = ({
           <Chip mode="flat" style={styles.newChip} compact>
             New
           </Chip>
+        )}
+        {hasNoMatch && (
+          <HelperText type="error" visible>
+            No matching entry
+          </HelperText>
         )}
       </View>
       {isDisplayed && (
