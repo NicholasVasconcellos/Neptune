@@ -1,17 +1,31 @@
 import { StyleSheet, View } from "react-native";
-import React from "react";
+import { useState } from "react";
+import ButtonGrid from "../../components/ButtonGrid";
 import Title from "../../components/Title";
 import ListView from "../../components/ListView";
-import AthleteForm from "../../components/InputForms/AthleteForm";
+import { OBJECT_MAP } from "../../constants/objectMap";
+
 
 export default function viewData() {
+  const [selectedTable, setSelectedTable] = useState<string | null>("Athletes");
+
+  const metadata = selectedTable ? OBJECT_MAP[selectedTable] : null;
+  const FormComponent = metadata?.formComponent;
+
   return (
     <View style={styles.container}>
       <Title>View Data</Title>
-      <ListView
-        tableName="Athletes"
-        createForm={<AthleteForm />}
+      <ButtonGrid
+        items={["Athletes", "Teams", "Times"]}
+        selected={selectedTable}
+        onSelectionChange={setSelectedTable}
       />
+      {selectedTable && metadata && FormComponent && (
+        <ListView
+          tableName={metadata.tableName}
+          createForm={<FormComponent />}
+        />
+      )}
     </View>
   );
 }

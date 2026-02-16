@@ -3,18 +3,12 @@ import { StyleSheet, View, Pressable, Text, useColorScheme } from "react-native"
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Colors, spacing, typography } from "../Styles/Theme";
-
-interface ButtonGridItem {
-  key: string;
-  label: string;
-  icon: string;
-  set: "fa5" | "fa6";
-}
+import { OBJECT_MAP } from "../constants/objectMap";
 
 interface ButtonGridProps {
-  items: ButtonGridItem[];
-  selected: string[];
-  onSelectionChange: (selected: string[]) => void;
+  items: string[];
+  selected: string | null;
+  onSelectionChange: (selected: string | null) => void;
 }
 
 export default function ButtonGrid({
@@ -25,25 +19,29 @@ export default function ButtonGrid({
   const themeName = useColorScheme();
   const theme = Colors[themeName ?? "light"];
 
-  function toggleItem(key: string) {
-    if (selected.includes(key)) {
-      onSelectionChange(selected.filter((k) => k !== key));
+  function handlePress(tableName: string) {
+    if (selected === tableName) {
+      onSelectionChange(null);
     } else {
-      onSelectionChange([...selected, key]);
+      onSelectionChange(tableName);
     }
   }
 
   return (
     <View style={styles.grid}>
-      {items.map((item) => {
-        const isSelected = selected.includes(item.key);
+      {items.map((tableName) => {
+        const metadata = OBJECT_MAP[tableName];
+        if (!metadata) return null;
+
+        const isSelected = selected === tableName;
         const iconColor = isSelected ? Colors.primary : theme.text;
-        const IconComponent = item.set === "fa5" ? FontAwesome5 : FontAwesome6;
+        const IconComponent =
+          metadata.iconSet === "fa5" ? FontAwesome5 : FontAwesome6;
 
         return (
           <Pressable
-            key={item.key}
-            onPress={() => toggleItem(item.key)}
+            key={tableName}
+            onPress={() => handlePress(tableName)}
             style={({ pressed }) => [
               styles.gridItem,
               { backgroundColor: theme.backgroundCard },
@@ -52,9 +50,13 @@ export default function ButtonGrid({
             ]}
           >
             <Text style={[styles.gridLabel, { color: iconColor }]}>
-              {item.label}
+              {metadata.label}
             </Text>
-            <IconComponent name={item.icon as any} size={28} color={iconColor} />
+            <IconComponent
+              name={metadata.icon as any}
+              size={28}
+              color={iconColor}
+            />
           </Pressable>
         );
       })}
