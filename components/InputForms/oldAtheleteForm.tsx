@@ -24,6 +24,7 @@ export default function AthleteForm() {
   const [groupData, setGroupData] = useState<Record<string, any>[]>([]);
 
   // Loading states
+  const [athleteLoading, setAthleteLoading] = useState(false);
   const [teamLoading, setTeamLoading] = useState(false);
   const [groupLoading, setGroupLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
@@ -38,42 +39,34 @@ export default function AthleteForm() {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
-  async function fetchAthletes() {
-    try {
-      setAthleteData(await getData("Athletes"));
-    } catch (e: any) {
-      setNameError("Failed to load athletes");
-    }
-  }
-
-  async function fetchTeams() {
-    setTeamLoading(true);
-    try {
-      setTeamData(await getData("Teams"));
-    } catch (e: any) {
-      setTeamError("Failed to load teams");
-    } finally {
-      setTeamLoading(false);
-    }
-  }
-
-  // Fetch athletes and teams on mount
+  // Fetch typeahead data on mount
   useEffect(() => {
-    fetchAthletes();
-    fetchTeams();
-  }, []);
+    async function fetchAthletes() {
+      setAthleteLoading(true);
+      try {
+        setAthleteData(await getData("Athletes"));
+      } catch (e: any) {
+        setNameError("Failed to load athletes");
+      } finally {
+        setAthleteLoading(false);
+      }
+    }
 
-  // Fetch groups filtered by selected team
-  useEffect(() => {
-    if (teamId === null) {
-      setGroupData([]);
-      return;
+    async function fetchTeams() {
+      setTeamLoading(true);
+      try {
+        setTeamData(await getData("Teams"));
+      } catch (e: any) {
+        setTeamError("Failed to load teams");
+      } finally {
+        setTeamLoading(false);
+      }
     }
 
     async function fetchGroups() {
       setGroupLoading(true);
       try {
-        setGroupData(await getData("Groups", { "Team ID": teamId }));
+        setGroupData(await getData("Groups"));
       } catch (e: any) {
         setGroupError("Failed to load groups");
       } finally {
@@ -81,38 +74,10 @@ export default function AthleteForm() {
       }
     }
 
+    fetchAthletes();
+    fetchTeams();
     fetchGroups();
-  }, [teamId]);
-
-  function handleNameChange(text: string) {
-    setName(text);
-    // Check for duplicate against loaded athlete data
-    if (text.trim()) {
-      const duplicate = athleteData.some((a) => a.Name === text.trim());
-      setNameError(duplicate ? "Name already exists" : "");
-    } else {
-      setNameError("");
-    }
-  }
-
-  function handleTeamSelect(item: Record<string, any>) {
-    setTeamName(item.Name);
-    setTeamId(item.id);
-    // Clear group when team changes
-    setGroupId(null);
-    setGroupName("");
-  }
-
-  function handleTeamTextChange(text: string) {
-    setTeamName(text);
-    // Clear team ID if user is typing a new value
-    setTeamId(null);
-    // Clear group when team is cleared
-    if (!text.trim()) {
-      setGroupId(null);
-      setGroupName("");
-    }
-  }
+  }, []);
 
   function resetForm() {
     setName("");
@@ -121,10 +86,6 @@ export default function AthleteForm() {
     setTeamName("");
     setGroupId(null);
     setGroupName("");
-    setNameError("");
-    setAgeError("");
-    setTeamError("");
-    setGroupError("");
   }
 
   async function handleSubmit() {
@@ -140,12 +101,6 @@ export default function AthleteForm() {
     if (!name.trim()) {
       setNameError("Name is required");
       hasError = true;
-    } else {
-      const duplicate = athleteData.some((a) => a.Name === name.trim());
-      if (duplicate) {
-        setNameError("Name already exists");
-        hasError = true;
-      }
     }
 
     if (!age.trim()) {
@@ -163,42 +118,15 @@ export default function AthleteForm() {
       Age: Number(age),
     };
 
+    if (teamId !== null) athlete.Team = teamId;
+    if (groupId !== null) athlete.Group = groupId;
+
     setSubmitLoading(true);
     try {
-      const successMessages: string[] = [];
-
-      // Create new team if user typed a new name
-      let resolvedTeamId = teamId;
-      if (resolvedTeamId === null && teamName.trim()) {
-        const teamResult = await postData("Teams", { Name: teamName.trim() });
-        resolvedTeamId = teamResult[0]?.id;
-        successMessages.push(`Added new Team ${teamName.trim()}`);
-      }
-
-      // Create new group if user typed a new name
-      let resolvedGroupId = groupId;
-      if (resolvedGroupId === null && groupName.trim()) {
-        const groupPayload: Record<string, any> = { Name: groupName.trim() };
-        if (resolvedTeamId !== null) groupPayload["Team ID"] = resolvedTeamId;
-        const groupResult = await postData("Groups", groupPayload);
-        resolvedGroupId = groupResult[0]?.id;
-        successMessages.push(`Added new Group ${groupName.trim()}`);
-      }
-
-      if (resolvedTeamId !== null) athlete["Team ID"] = resolvedTeamId;
-      if (resolvedGroupId !== null) athlete["Group ID"] = resolvedGroupId;
-
       await postData("Athletes", athlete);
-      successMessages.push(`Added New Athlete ${name.trim()}`);
-
-      for (const msg of successMessages) {
-        console.log(msg);
-      }
-      setSnackbarMessage(successMessages.join("\n"));
+      setSnackbarMessage(`Successfully added ${name.trim()}`);
       setSnackbarVisible(true);
       resetForm();
-      fetchAthletes();
-      fetchTeams();
     } catch (e: any) {
       const msg = e.message ?? "An error occurred";
       const msgLower = msg.toLowerCase();
@@ -219,8 +147,6 @@ export default function AthleteForm() {
     }
   }
 
-  const showGroup = teamName.trim().length > 0;
-
   return (
     <>
       <Pressable
@@ -230,11 +156,15 @@ export default function AthleteForm() {
         <View style={styles.container} accessibilityRole={"form" as any}>
           <Title>New Swimmer</Title>
 
-          <ThemedInput
+          <Typeahead
+            array={athleteData}
+            propertyName="Name"
             formTitle="Athlete Name"
-            placeholder="Enter athlete name"
+            placeholderText="Enter athlete name"
+            loading={athleteLoading}
             value={name}
-            onChangeText={handleNameChange}
+            onChangeText={setName}
+            onSelect={(item) => setName(item.Name)}
           />
           <HelperText type="error" visible={!!nameError}>
             {nameError}
@@ -255,47 +185,37 @@ export default function AthleteForm() {
             array={teamData}
             propertyName="Name"
             formTitle="Team"
-            placeholderText="Select or create team (optional)"
+            placeholderText="Select team (optional)"
             loading={teamLoading}
             value={teamName}
-            allowsNew
-            showOnEmpty
-            onChangeText={handleTeamTextChange}
-            onSelect={handleTeamSelect}
+            onSelect={(item) => {
+              setTeamName(item.Name);
+              setTeamId(item.id);
+            }}
           />
           <HelperText type="error" visible={!!teamError}>
             {teamError}
           </HelperText>
 
-          {showGroup && (
-            <>
-              <Typeahead
-                array={groupData}
-                propertyName="Name"
-                formTitle="Group"
-                placeholderText="Select or create group (optional)"
-                loading={groupLoading}
-                value={groupName}
-                allowsNew
-                showOnEmpty
-                onChangeText={(text) => {
-                  setGroupName(text);
-                  setGroupId(null);
-                }}
-                onSelect={(item) => {
-                  setGroupName(item.Name);
-                  setGroupId(item.id);
-                }}
-              />
-              <HelperText type="error" visible={!!groupError}>
-                {groupError}
-              </HelperText>
-            </>
-          )}
+          <Typeahead
+            array={groupData}
+            propertyName="Name"
+            formTitle="Group"
+            placeholderText="Select group (optional)"
+            loading={groupLoading}
+            value={groupName}
+            onSelect={(item) => {
+              setGroupName(item.Name);
+              setGroupId(item.id);
+            }}
+          />
+          <HelperText type="error" visible={!!groupError}>
+            {groupError}
+          </HelperText>
 
           <Button
             onClick={handleSubmit}
-            disabled={submitLoading || !!nameError}
+            disabled={submitLoading}
             loading={submitLoading}
             icon="account-plus"
           >

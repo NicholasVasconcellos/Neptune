@@ -13,24 +13,26 @@ import {
 } from "../../constants/swimmingConstants";
 
 export default function TimeForm() {
-  const [time, setTime] = useState("");
-  const [stroke, setStroke] = useState("");
-  const [distance, setDistance] = useState("");
-  const [distanceUnit, setDistanceUnit] = useState("yards");
   const [athleteId, setAthleteId] = useState<number | null>(null);
   const [athleteName, setAthleteName] = useState("");
+  const [stroke, setStroke] = useState("");
+  const [distanceUnit, setDistanceUnit] = useState("yards");
+  const [distance, setDistance] = useState("");
+  const [time, setTime] = useState("");
 
   const [athleteData, setAthleteData] = useState<Record<string, any>[]>([]);
+  const [localStrokes, setLocalStrokes] = useState<string[]>([...SWIM_STROKES]);
   const [athleteLoading, setAthleteLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
 
-  const [timeError, setTimeError] = useState("");
+  const [swimmerError, setSwimmerError] = useState("");
+  const [strokeError, setStrokeError] = useState("");
   const [distanceError, setDistanceError] = useState("");
-  const [athleteError, setAthleteError] = useState("");
+  const [timeError, setTimeError] = useState("");
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
-  const strokeData = SWIM_STROKES.map((s, idx) => ({ id: idx, Name: s }));
+  const strokeData = localStrokes.map((s, idx) => ({ id: idx, Name: s }));
   const distanceData = (
     SWIM_DISTANCES as Record<string, number[]>
   )[distanceUnit].map((d: number) => ({
@@ -44,7 +46,7 @@ export default function TimeForm() {
       try {
         setAthleteData(await getData("Athletes"));
       } catch (e: any) {
-        setAthleteError("Failed to load athletes");
+        setSwimmerError("Failed to load athletes");
       } finally {
         setAthleteLoading(false);
       }
@@ -52,20 +54,55 @@ export default function TimeForm() {
     fetchAthletes();
   }, []);
 
+  function handleStrokeSelect(item: Record<string, any>) {
+    setStroke(item.Name);
+  }
+
+  function handleStrokeChange(text: string) {
+    setStroke(text);
+    // If the user typed a new stroke that doesn't exist, add it to local array
+    if (
+      text.trim() &&
+      !localStrokes.some((s) => s.toLowerCase() === text.trim().toLowerCase())
+    ) {
+      setLocalStrokes((prev) => [...prev, text.trim()]);
+    }
+  }
+
   function resetForm() {
     setTime("");
     setStroke("");
     setDistance("");
     setAthleteId(null);
     setAthleteName("");
+    setSwimmerError("");
+    setStrokeError("");
+    setDistanceError("");
+    setTimeError("");
   }
 
   async function handleSubmit() {
-    setTimeError("");
+    setSwimmerError("");
+    setStrokeError("");
     setDistanceError("");
-    setAthleteError("");
+    setTimeError("");
 
     let hasError = false;
+
+    if (athleteId === null) {
+      setSwimmerError("Swimmer is required");
+      hasError = true;
+    }
+
+    if (!stroke.trim()) {
+      setStrokeError("Stroke is required");
+      hasError = true;
+    }
+
+    if (!distance.trim()) {
+      setDistanceError("Distance is required");
+      hasError = true;
+    }
 
     if (!time.trim()) {
       setTimeError("Time is required");
@@ -75,21 +112,15 @@ export default function TimeForm() {
       hasError = true;
     }
 
-    if (!distance.trim()) {
-      setDistanceError("Distance is required");
-      hasError = true;
-    }
-
     if (hasError) return;
 
     const timeRecord: Record<string, any> = {
       Time: Number(time),
       Distance: Number(distance),
       "Distance Unit": distanceUnit,
+      Stroke: stroke.trim(),
+      "Athlete ID": athleteId,
     };
-
-    if (stroke.trim()) timeRecord.Stroke = stroke.trim();
-    if (athleteId !== null) timeRecord["Athlete ID"] = athleteId;
 
     setSubmitLoading(true);
     try {
@@ -113,26 +144,42 @@ export default function TimeForm() {
         <View style={styles.container}>
           <Title>New Time</Title>
 
-          <ThemedInput
-            formTitle="Time (seconds)"
-            placeholder="Enter time in seconds"
-            value={time}
-            onChangeText={setTime}
-            keyboardType="decimal-pad"
+          <Typeahead
+            array={athleteData}
+            propertyName="Name"
+            formTitle="Swimmer"
+            placeholderText="Search for swimmer"
+            loading={athleteLoading}
+            value={athleteName}
+            allowsNew={false}
+            showOnEmpty={false}
+            onChangeText={(text) => {
+              setAthleteName(text);
+              setAthleteId(null);
+            }}
+            onSelect={(item) => {
+              setAthleteName(item.Name);
+              setAthleteId(item.id);
+            }}
           />
-          <HelperText type="error" visible={!!timeError}>
-            {timeError}
+          <HelperText type="error" visible={!!swimmerError}>
+            {swimmerError}
           </HelperText>
 
           <Typeahead
             array={strokeData}
             propertyName="Name"
             formTitle="Stroke"
-            placeholderText="Select stroke (optional)"
+            placeholderText="Select or add stroke"
             value={stroke}
-            onChangeText={setStroke}
-            onSelect={(item) => setStroke(item.Name)}
+            allowsNew
+            showOnEmpty
+            onChangeText={handleStrokeChange}
+            onSelect={handleStrokeSelect}
           />
+          <HelperText type="error" visible={!!strokeError}>
+            {strokeError}
+          </HelperText>
 
           <SegmentedButtons
             style={styles.unitToggle}
@@ -150,6 +197,8 @@ export default function TimeForm() {
             formTitle="Distance"
             placeholderText="Select or enter distance"
             value={distance}
+            allowsNew
+            showOnEmpty
             onChangeText={setDistance}
             onSelect={(item) => setDistance(item.Name)}
           />
@@ -157,20 +206,15 @@ export default function TimeForm() {
             {distanceError}
           </HelperText>
 
-          <Typeahead
-            array={athleteData}
-            propertyName="Name"
-            formTitle="Athlete"
-            placeholderText="Select athlete (optional)"
-            loading={athleteLoading}
-            value={athleteName}
-            onSelect={(item) => {
-              setAthleteName(item.Name);
-              setAthleteId(item.id);
-            }}
+          <ThemedInput
+            formTitle="Time (seconds)"
+            placeholder="Enter time in seconds"
+            value={time}
+            onChangeText={setTime}
+            keyboardType="decimal-pad"
           />
-          <HelperText type="error" visible={!!athleteError}>
-            {athleteError}
+          <HelperText type="error" visible={!!timeError}>
+            {timeError}
           </HelperText>
 
           <Button
