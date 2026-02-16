@@ -40,6 +40,9 @@ export default function ListView({
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Lookup maps: FK column → { id → Name } for displaying names instead of IDs
+  const [fkLookups, setFkLookups] = useState<Record<string, Record<number, string>>>({});
+
   // Inline-add modal state
   const [modalVisible, setModalVisible] = useState(false);
   const [modalColumn, setModalColumn] = useState("");
@@ -54,7 +57,30 @@ export default function ListView({
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      setData(await getData(tableName));
+      const rows = await getData(tableName);
+      setData(rows);
+
+      // Build lookup maps for FK columns found in the data
+      const fkColumns = rows.length > 0
+        ? Object.keys(rows[0]).filter((col) => col in FK_TABLE_MAP)
+        : [];
+
+      const lookups: Record<string, Record<number, string>> = {};
+      await Promise.all(
+        fkColumns.map(async (col) => {
+          try {
+            const related = await getData(FK_TABLE_MAP[col]);
+            const map: Record<number, string> = {};
+            for (const item of related) {
+              map[item.id] = item.Name ?? String(item.id);
+            }
+            lookups[col] = map;
+          } catch {
+            lookups[col] = {};
+          }
+        })
+      );
+      setFkLookups(lookups);
     } catch (e: any) {
       alertLog("Error loading data", e.message);
     } finally {
@@ -82,12 +108,9 @@ export default function ListView({
       })
     : data;
 
-  // Handle tapping a populated FK cell
-  function handleCellPress(column: string, value: any) {
-    const relatedTable = FK_TABLE_MAP[column];
-    if (relatedTable) {
-      alertLog("Navigate", `${relatedTable}/${value}`);
-    }
+  // Handle tapping a populated cell (FK or Name)
+  function handleCellPress(targetTable: string, id: any) {
+    alertLog("Navigate", `${targetTable}/${id}`);
   }
 
   // Handle tapping an empty FK cell — open inline-add modal
@@ -128,7 +151,7 @@ export default function ListView({
     setIsFabExtended(currentScrollPosition <= 0);
   };
 
-  function renderCell(column: string, value: any, rowId: number) {
+  function renderCell(column: string, value: any, row: Record<string, any>) {
     const isFK = column in FK_TABLE_MAP;
 
     // FK cell with no value — show "+" button
@@ -137,16 +160,29 @@ export default function ListView({
         <IconButton
           icon="plus"
           size={16}
-          onPress={() => handleEmptyCellPress(column, rowId)}
+          onPress={() => handleEmptyCellPress(column, row.id)}
         />
       );
     }
 
-    // FK cell with value — clickable
+    // FK cell with value — show related name, clickable with ID internally
     if (isFK && value !== null) {
+      const displayName = fkLookups[column]?.[value] ?? String(value);
       return (
         <TouchableRipple
-          onPress={() => handleCellPress(column, value)}
+          onPress={() => handleCellPress(FK_TABLE_MAP[column], value)}
+          style={styles.cellTouchable}
+        >
+          <Text variant="bodyMedium">{displayName}</Text>
+        </TouchableRipple>
+      );
+    }
+
+    // Name column — clickable, navigates to this table's object
+    if (column === "Name" && value !== null && value !== undefined) {
+      return (
+        <TouchableRipple
+          onPress={() => handleCellPress(tableName, row.id)}
           style={styles.cellTouchable}
         >
           <Text variant="bodyMedium">{String(value)}</Text>
@@ -171,7 +207,7 @@ export default function ListView({
               <Text variant="labelSmall" style={styles.cellLabel}>
                 {col}
               </Text>
-              {renderCell(col, item[col], item.id)}
+              {renderCell(col, item[col], item)}
             </View>
           ))}
         </View>
@@ -306,6 +342,7 @@ const styles = StyleSheet.create({
   },
   cellText: {},
   cellTouchable: {
+    alignSelf: "flex-start",
     padding: 4,
     borderRadius: 4,
   },
