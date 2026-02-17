@@ -6,6 +6,9 @@ node_modules/
 # environment varibles
 .env
 
+# VS Code Settings
+.vscode/
+
 # Expo
 .expo/
 dist/
