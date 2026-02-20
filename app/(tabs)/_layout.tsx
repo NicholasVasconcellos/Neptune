@@ -41,16 +41,7 @@ const RootLayout = () => {
             ),
           }}
         ></Tabs.Screen>
-        <Tabs.Screen
-          name="addData"
-          options={{
-            title: "Log Data",
-            tabBarIcon: ({focused}) => (
-              <FontAwesome6 name="add" size={24} color={focused ? Colors.primary : theme.text} />
-            ),
-          }}
-        ></Tabs.Screen>
-        <Tabs.Screen
+<Tabs.Screen
           name="viewData"
           options={{
             title: "View Metrics",

@@ -43,11 +43,7 @@ const Home = () => {
 
       <Divider style={{ marginVertical: 8 }} />
 
-      <Button icon="plus" href={"/addData"}>
-        Log Data
-      </Button>
-
-      <Button icon="chart-line" href={"/viewData"}>
+<Button icon="chart-line" href={"/viewData"}>
         View Metrics
       </Button>
 
