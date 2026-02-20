@@ -5,6 +5,7 @@ import {
   Platform,
   StyleSheet,
 } from "react-native";
+import { HelperText } from "react-native-paper";
 import Button from "../../components/Button";
 import React, { useState } from "react";
 import { supabase } from "../../lib/supabase";
@@ -14,9 +15,40 @@ import ThemedInput from "../../components/ThemedInput";
 export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  function validatePasswords(pw: string, confirmPw: string): string {
+    if (confirmPw.length === 0) return "";
+    if (pw !== confirmPw) return "Passwords do not match";
+    if (pw.length < 6) return "Password must be at least 6 characters";
+    return "";
+  }
+
+  function handlePasswordChange(text: string) {
+    setPassword(text);
+    if (confirmPassword.length > 0) {
+      setPasswordError(validatePasswords(text, confirmPassword));
+    }
+  }
+
+  function handleConfirmPasswordChange(text: string) {
+    setConfirmPassword(text);
+    setPasswordError(validatePasswords(password, text));
+  }
+
   async function signUpWithEmail() {
+    if (confirmPassword.length === 0) {
+      setPasswordError("Please confirm your password");
+      return;
+    }
+    const validationError = validatePasswords(password, confirmPassword);
+    if (validationError) {
+      setPasswordError(validationError);
+      return;
+    }
+
     setLoading(true);
     const {
       data: { session },
@@ -28,7 +60,10 @@ export default function Register() {
     if (error) {
       alertLog("Shii Bro:", error.message);
     } else if (!session) {
-      alertLog("Check inbox for Email Verification!");
+      alertLog(
+        "Check Your Email",
+        "We've sent a confirmation link to your inbox. Please verify your email to get started."
+      );
     }
     setLoading(false);
   }
@@ -49,11 +84,21 @@ export default function Register() {
           placeholder="Create New Password"
           secureTextEntry
           value={password}
-          onChangeText={setPassword}
+          onChangeText={handlePasswordChange}
         />
+        <ThemedInput
+          formTitle="Confirm Password"
+          placeholder="Re-enter Password"
+          secureTextEntry
+          value={confirmPassword}
+          onChangeText={handleConfirmPasswordChange}
+        />
+        <HelperText type="error" visible={!!passwordError}>
+          {passwordError}
+        </HelperText>
         <Button
           onClick={signUpWithEmail}
-          disabled={loading}
+          disabled={loading || !!passwordError}
           loading={loading}
           icon="account-plus"
         >
