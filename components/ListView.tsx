@@ -1,5 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
-import { View, FlatList, StyleSheet, Modal } from "react-native";
+import {
+  View,
+  FlatList,
+  StyleSheet,
+  Modal,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from "react-native";
 import {
   Searchbar,
   ActivityIndicator,
@@ -23,6 +31,11 @@ const FK_TABLE_MAP: Record<string, string> = {
   "Team ID": "Teams",
   "Group ID": "Groups",
   "Athlete ID": "Athletes",
+};
+
+// Display labels for columns (overrides raw column names)
+const COLUMN_DISPLAY_NAMES: Record<string, string> = {
+  "Athlete ID": "Swimmer",
 };
 
 interface ListViewProps {
@@ -205,7 +218,7 @@ export default function ListView({
           {columns.map((col) => (
             <View key={col} style={styles.cell}>
               <Text variant="labelSmall" style={styles.cellLabel}>
-                {col}
+                {COLUMN_DISPLAY_NAMES[col] ?? col}
               </Text>
               {renderCell(col, item[col], item)}
             </View>
@@ -284,7 +297,10 @@ export default function ListView({
           animationType="slide"
           onRequestClose={() => setFabModalVisible(false)}
         >
-          <View style={styles.modalOverlay}>
+          <KeyboardAvoidingView
+            style={styles.modalOverlay}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+          >
             <Surface style={styles.fabModalContent} elevation={4}>
               <View style={styles.modalHeader}>
                 <Text variant="titleMedium">Add {tableName}</Text>
@@ -293,9 +309,14 @@ export default function ListView({
                   onPress={() => setFabModalVisible(false)}
                 />
               </View>
-              {createForm}
+              <ScrollView
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+              >
+                {createForm}
+              </ScrollView>
             </Surface>
-          </View>
+          </KeyboardAvoidingView>
         </Modal>
       )}
 
@@ -370,7 +391,8 @@ const styles = StyleSheet.create({
   fabModalContent: {
     borderRadius: 16,
     padding: 16,
-    maxHeight: "80%",
+    maxHeight: "85%",
+    flexShrink: 1,
   },
   modalHeader: {
     flexDirection: "row",

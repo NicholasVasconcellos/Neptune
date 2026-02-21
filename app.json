@@ -1,8 +1,8 @@
 {
   "expo": {
     "scheme": "myneptune",
-    "name": "demoApp",
-    "slug": "demoApp",
+    "name": "NeptuneSwim",
+    "slug": "NeptuneSwim",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/NeptuneAppIcon.png",

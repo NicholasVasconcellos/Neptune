@@ -1,4 +1,4 @@
-import { StyleSheet, View, Pressable, Keyboard, Platform } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React, { useState, useEffect } from "react";
 import { HelperText, Snackbar, SegmentedButtons } from "react-native-paper";
 
@@ -137,10 +137,6 @@ export default function TimeForm() {
 
   return (
     <>
-      <Pressable
-        onPress={() => Platform.OS !== "web" && Keyboard.dismiss()}
-        accessible={false}
-      >
         <View style={styles.container}>
           <Title>New Time</Title>
 
@@ -226,7 +222,6 @@ export default function TimeForm() {
             Add Time
           </Button>
         </View>
-      </Pressable>
 
       <Snackbar
         visible={snackbarVisible}

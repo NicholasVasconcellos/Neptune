@@ -1,4 +1,4 @@
-import { StyleSheet, View, Pressable, Keyboard, Platform } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React, { useState, useEffect } from "react";
 import { HelperText, Snackbar } from "react-native-paper";
 
@@ -223,10 +223,6 @@ export default function AthleteForm() {
 
   return (
     <>
-      <Pressable
-        onPress={() => Platform.OS !== "web" && Keyboard.dismiss()}
-        accessible={false}
-      >
         <View style={styles.container} accessibilityRole={"form" as any}>
           <Title>New Swimmer</Title>
 
@@ -302,7 +298,6 @@ export default function AthleteForm() {
             Add Athlete
           </Button>
         </View>
-      </Pressable>
 
       <Snackbar
         visible={snackbarVisible}

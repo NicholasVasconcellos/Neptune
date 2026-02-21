@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { View, FlatList, StyleSheet, Platform } from "react-native";
+import { View, ScrollView, StyleSheet, Platform } from "react-native";
 
 import { TextInput, List, Surface, Chip, ActivityIndicator, HelperText } from "react-native-paper";
 
@@ -141,17 +141,18 @@ const Typeahead = ({
       </View>
       {isDisplayed && (
         <Surface style={styles.suggestionsContainer} elevation={3}>
-          <FlatList
-            data={filteredArray}
-            renderItem={({ item }) => (
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            nestedScrollEnabled
+          >
+            {filteredArray.map((item) => (
               <List.Item
-                title={[item[propertyName]]}
+                key={String(item.id)}
+                title={item[propertyName]}
                 onPress={() => onOptionClick(item)}
               />
-            )}
-            keyExtractor={(entry) => String(entry.id)}
-            keyboardShouldPersistTaps="handled"
-          />
+            ))}
+          </ScrollView>
         </Surface>
       )}
     </View>

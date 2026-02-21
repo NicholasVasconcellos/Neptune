@@ -1,4 +1,4 @@
-import { StyleSheet, View, Pressable, Keyboard, Platform } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React, { useState, useEffect } from "react";
 import { HelperText, Snackbar, Chip } from "react-native-paper";
 
@@ -142,10 +142,6 @@ export default function TeamForm() {
 
   return (
     <>
-      <Pressable
-        onPress={() => Platform.OS !== "web" && Keyboard.dismiss()}
-        accessible={false}
-      >
         <View style={styles.container}>
           <Title>New Team</Title>
 
@@ -226,7 +222,6 @@ export default function TeamForm() {
             Add Team
           </Button>
         </View>
-      </Pressable>
 
       <Snackbar
         visible={snackbarVisible}
