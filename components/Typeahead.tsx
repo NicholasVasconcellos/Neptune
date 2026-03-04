@@ -116,7 +116,7 @@ const Typeahead = ({
           onChangeText={onChangeText}
           onFocus={onFocus}
           // Dismis the list when out of focus (delay so that onSelect can run first)
-          onBlur={() => setTimeout(() => setIsDisplayed(false), 100)}
+          onBlur={() => setTimeout(() => setIsDisplayed(false), Platform.OS === 'ios' ? 300 : 100)}
           placeholder={placeholderText}
           mode="outlined"
           error={hasNoMatch}
