@@ -31,7 +31,7 @@ const AddTraining = () => {
   }, [])
 
   const onDateChange = useCallback((_: unknown, selected?: Date) => {
-    setShowDatePicker(false)
+    if (Platform.OS === 'android') setShowDatePicker(false)
     if (selected) setDate(selected)
   }, [])
 
