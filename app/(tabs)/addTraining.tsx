@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Modal, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native'
-import { Button, Chip, Divider, Text, TextInput, TouchableRipple, useTheme } from 'react-native-paper'
+import { Button, Chip, Divider, IconButton, Text, TextInput, TouchableRipple, useTheme } from 'react-native-paper'
 import UnitToggle from '../../components/UnitToggle'
 import Typeahead from '../../components/Typeahead'
 import { getData, postData } from '../../utils/backendData'
@@ -56,6 +56,7 @@ const AddTraining = () => {
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [selectedDays, setSelectedDays] = useState<Set<Day>>(new Set())
   const [note, setNote] = useState('')
+  const [showNote, setShowNote] = useState(false)
   const [exercises, setExercises] = useState<Exercise[]>([])
   const [saving, setSaving] = useState(false)
 
@@ -143,6 +144,7 @@ const AddTraining = () => {
       setDate(new Date())
       setSelectedDays(new Set())
       setNote('')
+      setShowNote(false)
       setExercises([])
     } catch (e: any) {
       alertLog('Error', e.message)
@@ -153,32 +155,29 @@ const AddTraining = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Name */}
-      <Row label="Name">
-        <TextInput
-          mode="outlined"
-          value={name}
-          onChangeText={setName}
-          style={styles.input}
-          dense
-        />
-      </Row>
+      {/* Compact Header */}
+      {/* Training Name - full width prominent input */}
+      <TextInput
+        mode="outlined"
+        value={name}
+        onChangeText={setName}
+        placeholder="Training name"
+        style={styles.nameInput}
+      />
 
-      {/* Team */}
-      <Row label="Team" alignTop>
-        <Typeahead
-          array={teams}
-          propertyName="Name"
-          placeholderText="Search teams..."
-          allowsNew={false}
-          showOnEmpty
-          onSelect={item => setTeamId(item.id)}
-          onChangeText={text => { if (!text.trim()) setTeamId(null) }}
-        />
-      </Row>
-
-      {/* Date */}
-      <Row label="Date">
+      {/* Row 1: Team + Date */}
+      <View style={styles.headerRow}>
+        <View style={styles.teamWrapper}>
+          <Typeahead
+            array={teams}
+            propertyName="Name"
+            placeholderText="Team..."
+            allowsNew={false}
+            showOnEmpty
+            onSelect={item => setTeamId(item.id)}
+            onChangeText={text => { if (!text.trim()) setTeamId(null) }}
+          />
+        </View>
         <TouchableRipple
           onPress={() => setShowDatePicker(prev => !prev)}
           style={[styles.dateTouchable, { borderColor: theme.colors.outline }]}
@@ -186,7 +185,8 @@ const AddTraining = () => {
         >
           <Text style={styles.dateText}>{formattedDate}</Text>
         </TouchableRipple>
-      </Row>
+      </View>
+
       {showDatePicker && Platform.OS === 'web' && (
         <input
           type="date"
@@ -223,8 +223,8 @@ const AddTraining = () => {
         </Modal>
       )}
 
-      {/* Days Picker */}
-      <Row label="Days">
+      {/* Row 2: Days + Unit + Add Note */}
+      <View style={styles.headerRow}>
         <View style={styles.chipsRow}>
           {DAYS.map(day => {
             const active = selectedDays.has(day)
@@ -243,24 +243,29 @@ const AddTraining = () => {
             )
           })}
         </View>
-      </Row>
+        <View style={styles.headerActions}>
+          <UnitToggle />
+          <IconButton
+            icon={showNote ? 'note-text' : 'note-text-outline'}
+            size={20}
+            onPress={() => setShowNote(prev => !prev)}
+            style={styles.noteIconButton}
+          />
+        </View>
+      </View>
 
-      {/* Unit Toggle */}
-      <Row label="Unit">
-        <UnitToggle />
-      </Row>
-
-      {/* Note */}
-      <Row label="Note" alignTop>
+      {/* Collapsible Note */}
+      {showNote && (
         <TextInput
           mode="outlined"
           value={note}
           onChangeText={setNote}
+          placeholder="Training note..."
           multiline
           numberOfLines={3}
-          style={styles.input}
+          style={styles.noteInput}
         />
-      </Row>
+      )}
 
       <Divider style={styles.divider} />
 
@@ -397,50 +402,36 @@ const AddTraining = () => {
   )
 }
 
-function Row({
-  label,
-  children,
-  alignTop = false,
-}: {
-  label: string
-  children: React.ReactNode
-  alignTop?: boolean
-}) {
-  return (
-    <View style={[styles.row, alignTop && styles.rowTop]}>
-      <Text variant="labelLarge" style={styles.label}>
-        {label}
-      </Text>
-      <View style={styles.inputWrapper}>{children}</View>
-    </View>
-  )
-}
-
 export default AddTraining
 
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    gap: 4,
+    gap: 6,
   },
-  row: {
+  nameInput: {
+    fontSize: 16,
+  },
+  headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 52,
+    gap: 8,
+    flexWrap: 'wrap',
   },
-  rowTop: {
-    alignItems: 'flex-start',
-    paddingTop: 8,
-  },
-  label: {
-    width: 90,
-    flexShrink: 0,
-  },
-  inputWrapper: {
+  teamWrapper: {
     flex: 1,
+    minWidth: 120,
   },
-  input: {
-    flex: 1,
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  noteIconButton: {
+    margin: 0,
+  },
+  noteInput: {
+    width: '100%',
   },
   dateTouchable: {
     borderWidth: 1,

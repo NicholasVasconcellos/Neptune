@@ -1,0 +1,4 @@
+* typeahed touch not working on @addTraining.tsx, for the Team form
+* The Week day chips, should remain the same size on focused mode, do not include the checkbox, just change the color
+* Exercises Form should allow for duplicate exercise names
+* Implemenet validation checks before submitting Training: no required fields left blank, create comprehensive error messages for each case as well. ex: Trainign must have at least one exercise etc.
