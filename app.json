@@ -5,7 +5,7 @@
     "slug": "NeptuneSwim",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/NeptuneAppIcon.png",
+    "icon": "./assets/Icon - Neptune Swim - Andressa - No BG.png",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "splash": {
@@ -19,7 +19,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/Icon - Neptune Swim - Andressa - No BG.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true
