@@ -20,6 +20,44 @@ export function formatTimeShort(seconds: number): string {
 }
 
 /**
+ * Parses a time string (MM:SS.ms or plain seconds) into total seconds.
+ * e.g. "1:30.22" → 90.22, "90" → 90, "" → null
+ */
+export function parseTimeToSeconds(input: string): number | null {
+  const trimmed = input.trim();
+  if (!trimmed) return null;
+  if (trimmed.includes(":")) {
+    const parts = trimmed.split(":");
+    if (parts.length !== 2) return null;
+    const minutes = parseInt(parts[0], 10);
+    const seconds = parseFloat(parts[1]);
+    if (isNaN(minutes) || isNaN(seconds) || minutes < 0 || seconds < 0)
+      return null;
+    return minutes * 60 + seconds;
+  }
+  const val = parseFloat(trimmed);
+  if (isNaN(val) || val <= 0) return null;
+  return val;
+}
+
+/**
+ * Cleans and auto-formats time input: strips non-numeric chars
+ * except `:` and `.`, auto-inserts colon after 2 digits.
+ */
+export function cleanTimeInput(text: string): string {
+  let cleaned = text.replace(/[^0-9:.]/g, "");
+  const hasColon = cleaned.includes(":");
+  const hasDot = cleaned.includes(".");
+  if (!hasColon && !hasDot) {
+    const digits = cleaned.replace(/[^0-9]/g, "");
+    if (digits.length > 2) {
+      cleaned = digits.slice(0, 2) + ":" + digits.slice(2);
+    }
+  }
+  return cleaned;
+}
+
+/**
  * Formats an ISO date string into short display: M/D
  * e.g. "2025-03-15T..." → "3/15"
  */

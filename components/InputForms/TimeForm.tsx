@@ -6,6 +6,7 @@ import { Text, TextInput, Button, SegmentedControl, Snackbar } from "@/component
 import Typeahead from "@/components/Typeahead";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { getData, postData } from "@/utils/backendData";
+import { parseTimeToSeconds, cleanTimeInput } from "@/utils/timeFormatting";
 import {
   SWIM_STROKES,
   SWIM_DISTANCES,
@@ -41,39 +42,7 @@ export default function TimeForm({ onSuccess, initialAthleteId, initialAthleteNa
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
   function handleTimeChange(text: string) {
-    let cleaned = text.replace(/[^0-9:.]/g, "");
-    const hasColon = cleaned.includes(":");
-    const hasDot = cleaned.includes(".");
-
-    // Auto-insert colon after 2 digits when no colon or dot is present yet
-    if (!hasColon && !hasDot) {
-      const digits = cleaned.replace(/[^0-9]/g, "");
-      if (digits.length > 2) {
-        cleaned = digits.slice(0, 2) + ":" + digits.slice(2);
-      }
-    }
-
-    setTime(cleaned);
-  }
-
-  function parseTimeToSeconds(input: string): number | null {
-    const trimmed = input.trim();
-    if (!trimmed) return null;
-
-    if (trimmed.includes(":")) {
-      const parts = trimmed.split(":");
-      if (parts.length !== 2) return null;
-      const minutes = parseInt(parts[0], 10);
-      const seconds = parseFloat(parts[1]);
-      if (isNaN(minutes) || isNaN(seconds) || minutes < 0 || seconds < 0) {
-        return null;
-      }
-      return minutes * 60 + seconds;
-    }
-
-    const val = parseFloat(trimmed);
-    if (isNaN(val) || val <= 0) return null;
-    return val;
+    setTime(cleanTimeInput(text));
   }
 
   const strokeData = localStrokes.map((s, idx) => ({ id: idx, Name: s }));

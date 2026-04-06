@@ -5,6 +5,7 @@ import { Text, TextInput, Chip } from "@/components/ui";
 import Typeahead from "@/components/Typeahead";
 import { SWIM_DISTANCES } from "@/constants/swimmingConstants";
 import { useThemeColors } from "@/hooks/useThemeColors";
+import { parseTimeToSeconds, formatTime, cleanTimeInput } from "@/utils/timeFormatting";
 
 const ENERGY_SYSTEMS = ["N1", "N2", "N3", "N4"] as const;
 
@@ -14,7 +15,7 @@ export type Exercise = {
   note: string;
   repetitions: string;
   distance: string;
-  interval: string; // mm:ss
+  interval: string; // MM:SS.ms
   energySystem: string | null;
   confirmed: boolean;
 };
@@ -30,22 +31,7 @@ interface ExerciseRowProps {
   onUpdate: (field: keyof Exercise, value: string | number | boolean | null) => void;
   onConfirm: () => void;
   onDelete: () => void;
-}
-
-function parseInterval(mmss: string): number | null {
-  if (!mmss.trim()) return null;
-  const parts = mmss.split(":");
-  if (parts.length !== 2) return null;
-  const mm = parseInt(parts[0], 10);
-  const ss = parseInt(parts[1], 10);
-  if (isNaN(mm) || isNaN(ss)) return null;
-  return mm * 60 + ss;
-}
-
-function formatSeconds(totalSec: number): string {
-  const m = Math.floor(totalSec / 60);
-  const s = totalSec % 60;
-  return `${m}:${String(s).padStart(2, "0")}`;
+  readOnly?: boolean;
 }
 
 export default function ExerciseRow({
@@ -59,6 +45,7 @@ export default function ExerciseRow({
   onUpdate,
   onConfirm,
   onDelete,
+  readOnly = false,
 }: ExerciseRowProps) {
   const colors = useThemeColors();
   const repRef = useRef<RNTextInput>(null);
@@ -67,7 +54,7 @@ export default function ExerciseRow({
 
   const rep = parseInt(exercise.repetitions, 10) || 0;
   const dist = parseInt(exercise.distance, 10) || 0;
-  const intervalSec = parseInterval(exercise.interval);
+  const intervalSec = parseTimeToSeconds(exercise.interval);
   const exerciseTotalDist = rep * dist;
   const exerciseTotalTime = intervalSec ? rep * intervalSec : 0;
 
@@ -89,7 +76,8 @@ export default function ExerciseRow({
 
     return (
       <Pressable
-        onPress={() => onUpdate("confirmed", false)}
+        onPress={readOnly ? undefined : () => onUpdate("confirmed", false)}
+        disabled={readOnly}
         accessibilityRole="button"
         accessibilityLabel={`Edit ${exercise.name || `Exercise ${index + 1}`}`}
         className="border border-border rounded-lg p-3 mb-2 bg-background-card"
@@ -125,10 +113,10 @@ export default function ExerciseRow({
           </View>
           <View className="items-end gap-0.5 ml-4">
             <Text className="font-medium">
-              {exerciseTotalTime > 0 ? formatSeconds(exerciseTotalTime) : "--"}
+              {exerciseTotalTime > 0 ? formatTime(exerciseTotalTime) : "--"}
             </Text>
             <Text variant="body-sm" className="text-foreground-muted">
-              ({rollingTime > 0 ? formatSeconds(rollingTime) : "--"})
+              ({rollingTime > 0 ? formatTime(rollingTime) : "--"})
             </Text>
           </View>
         </View>
@@ -185,6 +173,7 @@ export default function ExerciseRow({
         </View>
         <View className="flex-1">
           <Typeahead
+            ref={distRef}
             array={distanceOptions}
             propertyName="Name"
             formTitle="Distance"
@@ -206,9 +195,9 @@ export default function ExerciseRow({
             ref={intervalRef}
             label="Interval"
             value={exercise.interval}
-            onChangeText={(v) => onUpdate("interval", v)}
-            placeholder="mm:ss"
-            keyboardType="numeric"
+            onChangeText={(v) => onUpdate("interval", cleanTimeInput(v))}
+            placeholder="MM:SS.ms"
+            keyboardType="decimal-pad"
           />
         </View>
       </View>

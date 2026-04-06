@@ -62,22 +62,17 @@ export default function Button({
         ...(pressed && !disabled ? { opacity: 0.8 } : undefined),
       })}
     >
-      {loading ? (
-        <ActivityIndicator size="small" color={textColor} />
+      {loading && <ActivityIndicator size="small" color={textColor} />}
+      {!loading && icon && <View>{icon}</View>}
+      {typeof children === "string" ? (
+        <Text
+          className="font-semibold text-base"
+          style={{ color: textColor, opacity: disabled ? 0.5 : loading ? 0.6 : 1 }}
+        >
+          {children}
+        </Text>
       ) : (
-        <>
-          {icon && <View>{icon}</View>}
-          {typeof children === "string" ? (
-            <Text
-              className="font-semibold text-base"
-              style={{ color: textColor, opacity: disabled ? 0.5 : 1 }}
-            >
-              {children}
-            </Text>
-          ) : (
-            children
-          )}
-        </>
+        children
       )}
     </Pressable>
   );

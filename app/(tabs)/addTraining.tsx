@@ -27,10 +27,12 @@ import Typeahead from "@/components/Typeahead";
 import ExerciseRow, {
   type Exercise,
 } from "@/components/training/ExerciseRow";
+import TrainingViewMode from "@/components/training/TrainingViewMode";
 import { getData, postData, updateData, deleteData, deleteByFilter } from "@/utils/backendData";
 import { alertLog } from "@/utils/alertLog";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { exportTrainingCSV, exportTrainingPDF } from "@/utils/exportTraining";
+import { parseTimeToSeconds, formatTime } from "@/utils/timeFormatting";
 
 const DateTimePicker =
   Platform.OS !== "web"
@@ -42,32 +44,17 @@ type Day = (typeof DAYS)[number];
 
 const YARDS_TO_METERS = 0.9144;
 
-function parseInterval(mmss: string): number | null {
-  if (!mmss.trim()) return null;
-  const parts = mmss.split(":");
-  if (parts.length !== 2) return null;
-  const mm = parseInt(parts[0], 10);
-  const ss = parseInt(parts[1], 10);
-  if (isNaN(mm) || isNaN(ss)) return null;
-  return mm * 60 + ss;
-}
-
-function formatSecondsToInterval(totalSec: number | null): string {
-  if (!totalSec) return "";
-  const m = Math.floor(totalSec / 60);
-  const s = totalSec % 60;
-  return `${m}:${String(s).padStart(2, "0")}`;
-}
-
 // ─── Training List View ─────────────────────────────────────────────────
 
 function TrainingListView({
   onAdd,
   onEdit,
+  onDelete,
   refreshKey,
 }: {
   onAdd: () => void;
   onEdit: (training: Record<string, any>) => void;
+  onDelete: (training: Record<string, any>) => void;
   refreshKey: number;
 }) {
   const colors = useThemeColors();
@@ -145,6 +132,7 @@ function TrainingListView({
         renderItem={({ item }) => (
           <Pressable
             onPress={() => onEdit(item)}
+            onLongPress={() => onDelete(item)}
             className="px-4 py-3 border-b border-border-light"
           >
             <View className="flex-row items-center justify-between">
@@ -245,7 +233,7 @@ function TrainingListView({
 const AddTraining = () => {
   const colors = useThemeColors();
   const nextExerciseId = useRef(1);
-  const [view, setView] = useState<"list" | "create" | "edit">("list");
+  const [view, setView] = useState<"list" | "view" | "edit" | "create">("list");
   const [editingTrainingId, setEditingTrainingId] = useState<number | null>(null);
   const [listRefreshKey, setListRefreshKey] = useState(0);
   const [showSaveAsModal, setShowSaveAsModal] = useState(false);
@@ -268,6 +256,7 @@ const AddTraining = () => {
     { id: number; Name: string }[]
   >([]);
   const [saving, setSaving] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
 
   // Validation errors
   const [nameError, setNameError] = useState("");
@@ -295,17 +284,26 @@ const AddTraining = () => {
       .catch(() => {});
   }, []);
 
+  const teamName = useMemo(() => {
+    if (!teamId) return undefined;
+    return teams.find((t) => t.id === teamId)?.Name;
+  }, [teamId, teams]);
+
   const toggleDay = useCallback((day: Day) => {
     setSelectedDays((prev) => {
       const next = new Set(prev);
       next.has(day) ? next.delete(day) : next.add(day);
       return next;
     });
+    setHasChanges(true);
   }, []);
 
   const onDateChange = useCallback((_: unknown, selected?: Date) => {
     if (Platform.OS === "android") setShowDatePicker(false);
-    if (selected) setDate(selected);
+    if (selected) {
+      setDate(selected);
+      setHasChanges(true);
+    }
   }, []);
 
   const formattedDate = useMemo(
@@ -332,6 +330,7 @@ const AddTraining = () => {
         confirmed: false,
       },
     ]);
+    setHasChanges(true);
   }, []);
 
   const updateExercise = useCallback(
@@ -350,6 +349,7 @@ const AddTraining = () => {
         delete updated[field];
         return { ...prev, [id]: updated };
       });
+      if (field !== "confirmed") setHasChanges(true);
     },
     [],
   );
@@ -362,6 +362,7 @@ const AddTraining = () => {
 
   const deleteExercise = useCallback((id: number) => {
     setExercises((prev) => prev.filter((ex) => ex.id !== id));
+    setHasChanges(true);
   }, []);
 
   // Compute rolling totals
@@ -371,7 +372,7 @@ const AddTraining = () => {
     return exercises.map((ex) => {
       const rep = parseInt(ex.repetitions, 10) || 0;
       const dist = parseInt(ex.distance, 10) || 0;
-      const intervalSec = parseInterval(ex.interval) ?? 0;
+      const intervalSec = parseTimeToSeconds(ex.interval) ?? 0;
       cumDist += rep * dist;
       cumTime += rep * intervalSec;
       return { rollingDistance: cumDist, rollingTime: cumTime };
@@ -401,8 +402,8 @@ const AddTraining = () => {
       if (!ex.name.trim()) errs.name = "Name required";
       if (!ex.distance.trim()) errs.distance = "Distance required";
       if (!ex.repetitions.trim()) errs.repetitions = "Reps required";
-      if (ex.interval.trim() && !parseInterval(ex.interval)) {
-        errs.interval = "Invalid mm:ss";
+      if (ex.interval.trim() && parseTimeToSeconds(ex.interval) === null) {
+        errs.interval = "Invalid time — use MM:SS.ms";
       }
       if (Object.keys(errs).length > 0) {
         newExErrors[ex.id] = errs;
@@ -449,7 +450,7 @@ const AddTraining = () => {
             Name: ex.name.trim(),
             Distance: distanceMeters || null,
             Repetitions: parseInt(ex.repetitions, 10) || null,
-            Interval: parseInterval(ex.interval),
+            Interval: parseTimeToSeconds(ex.interval),
             "Energy System": ex.energySystem,
             Note: ex.note.trim() || null,
           });
@@ -477,11 +478,12 @@ const AddTraining = () => {
     setExercises([]);
     setNameError("");
     setExerciseErrors({});
+    setHasChanges(false);
   }
 
-  // ─── Open for Edit ─────────────────────────────────────────────────
+  // ─── Open for View ──────────────────────────────────────────────────
 
-  async function openForEdit(training: Record<string, any>) {
+  async function openForView(training: Record<string, any>) {
     resetForm();
     setEditingTrainingId(training.id);
     setName(training.Name ?? "");
@@ -505,7 +507,7 @@ const AddTraining = () => {
         note: row.Note ?? "",
         repetitions: row.Repetitions != null ? String(row.Repetitions) : "",
         distance: row.Distance != null ? String(row.Distance) : "",
-        interval: formatSecondsToInterval(row.Interval),
+        interval: row.Interval != null ? formatTime(row.Interval) : "",
         energySystem: row["Energy System"] ?? null,
         confirmed: true,
       }));
@@ -514,7 +516,7 @@ const AddTraining = () => {
       alertLog("Error", "Could not load exercises: " + e.message);
     }
 
-    setView("edit");
+    setView("view");
   }
 
   // ─── Update Existing Training ─────────────────────────────────────
@@ -545,7 +547,7 @@ const AddTraining = () => {
             Name: ex.name.trim(),
             Distance: distanceMeters || null,
             Repetitions: parseInt(ex.repetitions, 10) || null,
-            Interval: parseInterval(ex.interval),
+            Interval: parseTimeToSeconds(ex.interval),
             "Energy System": ex.energySystem,
             Note: ex.note.trim() || null,
           });
@@ -590,7 +592,7 @@ const AddTraining = () => {
             Name: ex.name.trim(),
             Distance: distanceMeters || null,
             Repetitions: parseInt(ex.repetitions, 10) || null,
-            Interval: parseInterval(ex.interval),
+            Interval: parseTimeToSeconds(ex.interval),
             "Energy System": ex.energySystem,
             Note: ex.note.trim() || null,
           });
@@ -610,14 +612,60 @@ const AddTraining = () => {
     }
   }
 
-  // ─── Delete Training ──────────────────────────────────────────────
+  // ─── Discard Changes ───────────────────────────────────────────────
 
-  function confirmDeleteTraining() {
-    if (!editingTrainingId) return;
+  function confirmDiscard() {
+    if (Platform.OS === "web") {
+      if (window.confirm("Discard all changes?")) {
+        resetForm();
+        setEditingTrainingId(null);
+        setView("list");
+      }
+    } else {
+      Alert.alert("Discard Changes", "Discard all changes?", [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Discard",
+          style: "destructive",
+          onPress: () => {
+            resetForm();
+            setEditingTrainingId(null);
+            setView("list");
+          },
+        },
+      ]);
+    }
+  }
 
+  // ─── Confirm Save (Edit Mode) ─────────────────────────────────────
+
+  function confirmSave() {
+    if (Platform.OS === "web") {
+      if (window.confirm("Override existing training?")) {
+        updateTraining();
+      }
+    } else {
+      Alert.alert("Save Training", "How would you like to save?", [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Save As Copy",
+          onPress: () => {
+            if (!validate()) return;
+            setSaveAsName(name.trim() + " (Copy)");
+            setShowSaveAsModal(true);
+          },
+        },
+        { text: "Override", style: "destructive", onPress: updateTraining },
+      ]);
+    }
+  }
+
+  // ─── Delete from List ──────────────────────────────────────────────
+
+  function handleDeleteFromList(training: Record<string, any>) {
     if (Platform.OS === "web") {
       if (window.confirm("Delete this training? This cannot be undone.")) {
-        performDelete();
+        performDeleteFromList(training.id);
       }
     } else {
       Alert.alert(
@@ -625,26 +673,23 @@ const AddTraining = () => {
         "Delete this training? This cannot be undone.",
         [
           { text: "Cancel", style: "cancel" },
-          { text: "Delete", style: "destructive", onPress: performDelete },
+          {
+            text: "Delete",
+            style: "destructive",
+            onPress: () => performDeleteFromList(training.id),
+          },
         ],
       );
     }
   }
 
-  async function performDelete() {
-    if (!editingTrainingId) return;
-    setSaving(true);
+  async function performDeleteFromList(id: number) {
     try {
-      await deleteData("Trainings", editingTrainingId);
+      await deleteData("Trainings", id);
       alertLog("Deleted", "Training deleted.");
-      resetForm();
-      setEditingTrainingId(null);
       setListRefreshKey((k) => k + 1);
-      setView("list");
     } catch (e: any) {
       alertLog("Error", e.message);
-    } finally {
-      setSaving(false);
     }
   }
 
@@ -658,62 +703,104 @@ const AddTraining = () => {
           setEditingTrainingId(null);
           setView("create");
         }}
-        onEdit={openForEdit}
+        onEdit={openForView}
+        onDelete={handleDeleteFromList}
         refreshKey={listRefreshKey}
       />
     );
   }
 
-  // ─── Create View ────────────────────────────────────────────────────
+  // ─── View Mode ────────────────────────────────────────────────────
+
+  if (view === "view") {
+    return (
+      <View className="flex-1 bg-background">
+        <View className="flex-row items-center justify-between px-4 py-2 border-b border-border-light">
+          <Pressable
+            onPress={() => {
+              setEditingTrainingId(null);
+              setView("list");
+            }}
+            className="flex-row items-center gap-1"
+          >
+            <Ionicons name="chevron-back" size={22} color={colors.primary} />
+            <Text className="text-primary">Back</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => {
+              setHasChanges(false);
+              setView("edit");
+            }}
+            className="flex-row items-center gap-1"
+          >
+            <Ionicons name="create-outline" size={20} color={colors.primary} />
+            <Text className="text-primary">Edit</Text>
+          </Pressable>
+        </View>
+        <TrainingViewMode
+          name={name}
+          date={date}
+          selectedDays={selectedDays}
+          teamName={teamName}
+          notes={notes}
+          exercises={exercises}
+          unit={unit}
+        />
+      </View>
+    );
+  }
+
+  // ─── Create / Edit Form ───────────────────────────────────────────
 
   return (
     <View className="flex-1 bg-background">
-      {/* Top bar with back + actions */}
+      {/* Top bar */}
       <View className="flex-row items-center justify-between px-4 py-2 border-b border-border-light">
-        <Pressable
-          onPress={() => {
-            setEditingTrainingId(null);
-            setView("list");
-          }}
-          className="flex-row items-center gap-1"
-        >
-          <Ionicons
-            name="chevron-back"
-            size={22}
-            color={colors.primary}
-          />
-          <Text className="text-primary">Back</Text>
-        </Pressable>
+        {view === "edit" ? (
+          <Pressable
+            onPress={confirmDiscard}
+            className="flex-row items-center gap-1"
+          >
+            <Ionicons name="trash-outline" size={20} color={colors.danger} />
+            <Text className="text-danger">Discard</Text>
+          </Pressable>
+        ) : (
+          <Pressable
+            onPress={() => {
+              setEditingTrainingId(null);
+              setView("list");
+            }}
+            className="flex-row items-center gap-1"
+          >
+            <Ionicons name="chevron-back" size={22} color={colors.primary} />
+            <Text className="text-primary">Back</Text>
+          </Pressable>
+        )}
         <View className="flex-row items-center gap-2">
           {view === "edit" && (
-            <>
-              <IconButton
-                icon="trash-outline"
-                color={colors.danger}
-                size={20}
-                onPress={confirmDeleteTraining}
-                accessibilityLabel="Delete training"
-              />
-              <Button
-                variant="outlined"
-                onPress={() => {
-                  if (!validate()) return;
-                  setSaveAsName(name.trim() + " (Copy)");
-                  setShowSaveAsModal(true);
-                }}
-                disabled={saving}
-              >
-                Save As
-              </Button>
-            </>
+            <Button
+              variant="outlined"
+              onPress={() => {
+                if (!validate()) return;
+                setSaveAsName(name.trim() + " (Copy)");
+                setShowSaveAsModal(true);
+              }}
+              disabled={saving}
+              icon={<Ionicons name="copy-outline" size={18} color={colors.primary} />}
+            >
+              Save As
+            </Button>
           )}
-          <Button
-            onPress={view === "edit" ? updateTraining : saveTraining}
-            loading={saving}
-            disabled={saving}
-          >
-            {view === "edit" ? "Update" : "Save Training"}
-          </Button>
+          {(view !== "edit" || hasChanges) && (
+            <Button
+              onPress={view === "edit" ? confirmSave : saveTraining}
+              loading={saving}
+              disabled={saving}
+              icon={<Ionicons name="save-outline" size={18} color={colors.onPrimary} />}
+            >
+              {view === "edit" ? "Save" : "Save Training"}
+            </Button>
+          )}
         </View>
       </View>
 
@@ -727,6 +814,7 @@ const AddTraining = () => {
           value={name}
           onChangeText={(t) => {
             setName(t);
+            setHasChanges(true);
             if (t.trim()) setNameError("");
           }}
           error={!!nameError}
@@ -740,7 +828,10 @@ const AddTraining = () => {
             { value: "yards", label: "Yards" },
           ]}
           selected={unit}
-          onChange={(v) => setUnit(v as "meters" | "yards")}
+          onChange={(v) => {
+            setUnit(v as "meters" | "yards");
+            setHasChanges(true);
+          }}
         />
 
         {/* Team + Date row */}
@@ -754,9 +845,13 @@ const AddTraining = () => {
               allowsNew={false}
               showOnEmpty
               value={teamId ? teams.find((t) => t.id === teamId)?.Name ?? "" : ""}
-              onSelect={(item) => setTeamId(item.id)}
+              onSelect={(item) => {
+                setTeamId(item.id);
+                setHasChanges(true);
+              }}
               onChangeText={(text) => {
                 if (!text.trim()) setTeamId(null);
+                setHasChanges(true);
               }}
             />
           </View>
@@ -775,8 +870,10 @@ const AddTraining = () => {
             value={date.toISOString().split("T")[0]}
             onChange={(e) => {
               setShowDatePicker(false);
-              if (e.target.value)
+              if (e.target.value) {
                 setDate(new Date(e.target.value + "T00:00:00"));
+                setHasChanges(true);
+              }
             }}
             onBlur={() => setShowDatePicker(false)}
             autoFocus
@@ -844,7 +941,10 @@ const AddTraining = () => {
         {showNotes && (
           <TextInput
             value={notes}
-            onChangeText={setNotes}
+            onChangeText={(t) => {
+              setNotes(t);
+              setHasChanges(true);
+            }}
             placeholder="Training notes..."
             multiline
             numberOfLines={3}
