@@ -250,3 +250,4 @@ Components inside React Native `Modal` lose Paper theme context — re-wrap:
 | Modal losing Paper theme | Re-wrap with `ThemeProvider` |
 | Hardcoded API keys | `expo-constants` + EAS Secrets |
 | Testing push notifications in Expo Go | Use a development build |
+| Spaces in asset filenames | Metro URL-encodes paths → `ENOENT`. Use kebab-case filenames |

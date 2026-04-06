@@ -3,7 +3,19 @@
   "compilerOptions": {
     "strict": true,
     "jsx": "react-jsx",
-    "types": ["jest", "node"]
+    "types": [
+      "jest",
+      "node"
+    ]
   },
-  "exclude": ["node_modules", "**/node_modules/*"]
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "types/**/*.d.ts",
+    "nativewind-env.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/node_modules/*"
+  ]
 }
