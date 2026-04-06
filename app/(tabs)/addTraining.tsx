@@ -1,506 +1,593 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { Modal, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native'
-import { Button, Chip, Divider, IconButton, Text, TextInput, TouchableRipple, useTheme } from 'react-native-paper'
-import UnitToggle from '../../components/UnitToggle'
-import Typeahead from '../../components/Typeahead'
-import { getData, postData } from '../../utils/backendData'
-import { alertLog } from '../../utils/alertLog'
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  View,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import {
+  Button,
+  Chip,
+  Divider,
+  Text,
+  TextInput,
+  SegmentedControl,
+  IconButton,
+  FAB,
+  SearchBar,
+} from "../../components/ui";
+import Typeahead from "../../components/Typeahead";
+import ExerciseRow, {
+  type Exercise,
+} from "../../components/training/ExerciseRow";
+import { getData, postData } from "../../utils/backendData";
+import { alertLog } from "../../utils/alertLog";
 
-// DateTimePicker is not supported on web
 const DateTimePicker =
-  Platform.OS !== 'web'
-    ? require('@react-native-community/datetimepicker').default
-    : null
+  Platform.OS !== "web"
+    ? require("@react-native-community/datetimepicker").default
+    : null;
 
-const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const
+const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
+type Day = (typeof DAYS)[number];
 
-type Day = typeof DAYS[number]
-
-const ENERGY_SYSTEMS: { label: string; value: number }[] = [
-  { label: 'N1', value: 1 },
-  { label: 'N2', value: 2 },
-  { label: 'N3', value: 3 },
-  { label: 'N4', value: 4 },
-]
-
-type Exercise = {
-  id: number
-  name: string
-  distance: string
-  repetitions: string
-  interval: string       // mm:ss format
-  energySystem: number | null
-  note: string
-  totalDistance: string  // display-only, calculated client-side
-  totalTime: string      // display-only, calculated client-side
-}
+const YARDS_TO_METERS = 0.9144;
 
 function parseInterval(mmss: string): number | null {
-  if (!mmss.trim()) return null
-  const parts = mmss.split(':')
-  if (parts.length !== 2) return null
-  const mm = parseInt(parts[0], 10)
-  const ss = parseInt(parts[1], 10)
-  if (isNaN(mm) || isNaN(ss)) return null
-  return mm * 60 + ss
+  if (!mmss.trim()) return null;
+  const parts = mmss.split(":");
+  if (parts.length !== 2) return null;
+  const mm = parseInt(parts[0], 10);
+  const ss = parseInt(parts[1], 10);
+  if (isNaN(mm) || isNaN(ss)) return null;
+  return mm * 60 + ss;
 }
 
-let nextExerciseId = 1
+let nextExerciseId = 1;
 
-const AddTraining = () => {
-  const theme = useTheme()
-  const [name, setName] = useState('')
-  const [teamId, setTeamId] = useState<number | null>(null)
-  const [teams, setTeams] = useState<Record<string, any>[]>([])
-  const [date, setDate] = useState(new Date())
-  const [showDatePicker, setShowDatePicker] = useState(false)
-  const [selectedDays, setSelectedDays] = useState<Set<Day>>(new Set())
-  const [note, setNote] = useState('')
-  const [showNote, setShowNote] = useState(false)
-  const [exercises, setExercises] = useState<Exercise[]>([])
-  const [saving, setSaving] = useState(false)
+// ─── Training List View ─────────────────────────────────────────────────
+
+function TrainingListView({ onAdd }: { onAdd: () => void }) {
+  const [trainings, setTrainings] = useState<Record<string, any>[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
-    getData('Teams').then(setTeams).catch(() => {})
-  }, [])
+    getData("Trainings")
+      .then(setTrainings)
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const filtered = search.trim()
+    ? trainings.filter((t) =>
+        (t.Name ?? "").toLowerCase().includes(search.toLowerCase()),
+      )
+    : trainings;
+
+  if (loading) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <ActivityIndicator size="large" color="#4fc3f7" />
+      </View>
+    );
+  }
+
+  return (
+    <View className="flex-1">
+      <Text variant="headline" className="text-center mt-6 mb-2">
+        Trainings
+      </Text>
+      <SearchBar
+        value={search}
+        onChangeText={setSearch}
+        placeholder="Search trainings..."
+      />
+      <FlatList
+        data={filtered}
+        keyExtractor={(item) => String(item.id)}
+        contentContainerStyle={{ paddingBottom: 80 }}
+        renderItem={({ item }) => (
+          <View className="px-4 py-3 border-b border-border-light">
+            <Text className="font-semibold">{item.Name ?? "Untitled"}</Text>
+            <View className="flex-row gap-3 mt-1">
+              {item.Date && (
+                <Text variant="body-sm" className="text-foreground-muted">
+                  {item.Date}
+                </Text>
+              )}
+              {item.Notes && (
+                <Text
+                  variant="body-sm"
+                  className="text-foreground-muted"
+                  numberOfLines={1}
+                >
+                  {item.Notes}
+                </Text>
+              )}
+            </View>
+          </View>
+        )}
+        ListEmptyComponent={
+          <Text className="text-center mt-10 opacity-60">
+            No trainings yet
+          </Text>
+        }
+      />
+      <FAB
+        icon="add"
+        label="New Training"
+        onPress={onAdd}
+        className="absolute right-4 bottom-4"
+      />
+    </View>
+  );
+}
+
+// ─── Training Creation Form ─────────────────────────────────────────────
+
+const AddTraining = () => {
+  const [view, setView] = useState<"list" | "create">("list");
+
+  // Training fields
+  const [name, setName] = useState("");
+  const [unit, setUnit] = useState<"meters" | "yards">("meters");
+  const [teamId, setTeamId] = useState<number | null>(null);
+  const [teams, setTeams] = useState<Record<string, any>[]>([]);
+  const [date, setDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedDays, setSelectedDays] = useState<Set<Day>>(new Set());
+  const [notes, setNotes] = useState("");
+  const [showNotes, setShowNotes] = useState(false);
+
+  // Exercises
+  const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [exerciseNames, setExerciseNames] = useState<
+    { id: number; Name: string }[]
+  >([]);
+  const [saving, setSaving] = useState(false);
+
+  // Validation errors
+  const [nameError, setNameError] = useState("");
+  const [exerciseErrors, setExerciseErrors] = useState<
+    Record<number, Record<string, string>>
+  >({});
+
+  useEffect(() => {
+    getData("Teams")
+      .then(setTeams)
+      .catch(() => {});
+    // Fetch distinct exercise names for autocomplete
+    getData("Exercises")
+      .then((rows) => {
+        const seen = new Set<string>();
+        const unique: { id: number; Name: string }[] = [];
+        for (const r of rows) {
+          if (r.Name && !seen.has(r.Name)) {
+            seen.add(r.Name);
+            unique.push({ id: r.id, Name: r.Name });
+          }
+        }
+        setExerciseNames(unique);
+      })
+      .catch(() => {});
+  }, []);
+
+  const toggleDay = useCallback((day: Day) => {
+    setSelectedDays((prev) => {
+      const next = new Set(prev);
+      next.has(day) ? next.delete(day) : next.add(day);
+      return next;
+    });
+  }, []);
+
+  const onDateChange = useCallback((_: unknown, selected?: Date) => {
+    if (Platform.OS === "android") setShowDatePicker(false);
+    if (selected) setDate(selected);
+  }, []);
+
+  const formattedDate = useMemo(
+    () =>
+      date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }),
+    [date],
+  );
 
   const addExercise = useCallback(() => {
-    setExercises(prev => [
+    setExercises((prev) => [
       ...prev,
       {
         id: nextExerciseId++,
-        name: '',
-        distance: '',
-        repetitions: '',
-        interval: '',
+        name: "",
+        note: "",
+        repetitions: "",
+        distance: "",
+        interval: "",
         energySystem: null,
-        note: '',
-        totalDistance: '',
-        totalTime: '',
+        confirmed: false,
       },
-    ])
-  }, [])
+    ]);
+  }, []);
 
-  const updateExercise = useCallback((id: number, field: keyof Exercise, value: string | number | null) => {
-    setExercises(prev =>
-      prev.map(ex => (ex.id === id ? { ...ex, [field]: value } : ex)),
-    )
-  }, [])
+  const updateExercise = useCallback(
+    (
+      id: number,
+      field: keyof Exercise,
+      value: string | number | boolean | null,
+    ) => {
+      setExercises((prev) =>
+        prev.map((ex) => (ex.id === id ? { ...ex, [field]: value } : ex)),
+      );
+      // Clear field error
+      setExerciseErrors((prev) => {
+        if (!prev[id]) return prev;
+        const updated = { ...prev[id] };
+        delete updated[field];
+        return { ...prev, [id]: updated };
+      });
+    },
+    [],
+  );
 
-  const toggleDay = useCallback((day: Day) => {
-    setSelectedDays(prev => {
-      const next = new Set(prev)
-      next.has(day) ? next.delete(day) : next.add(day)
-      return next
-    })
-  }, [])
+  const confirmExercise = useCallback((id: number) => {
+    setExercises((prev) =>
+      prev.map((ex) => (ex.id === id ? { ...ex, confirmed: true } : ex)),
+    );
+  }, []);
 
-  const onDateChange = useCallback((_: unknown, selected?: Date) => {
-    if (Platform.OS === 'android') setShowDatePicker(false)
-    if (selected) setDate(selected)
-  }, [])
+  const deleteExercise = useCallback((id: number) => {
+    setExercises((prev) => prev.filter((ex) => ex.id !== id));
+  }, []);
 
-  const formattedDate = useMemo(
-    () => date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-    [date],
-  )
-
-  const saveTraining = useCallback(async () => {
-    if (!name.trim()) {
-      alertLog('Validation', 'Training name is required.')
-      return
-    }
-
-    setSaving(true)
-    try {
-      const [training] = await postData('Trainings', {
-        Name: name.trim(),
-        Notes: note.trim() || null,
-        Team: teamId ?? null,
-        Date: date.toISOString().split('T')[0],
-        Days: JSON.stringify([...selectedDays]),
-      })
-
-      if (exercises.length > 0) {
-        await Promise.all(
-          exercises.map(ex =>
-            postData('Exercises', {
-              Name: ex.name.trim(),
-              Distance: ex.distance ? parseInt(ex.distance, 10) : null,
-              Repetitions: ex.repetitions ? parseInt(ex.repetitions, 10) : null,
-              Interval: parseInterval(ex.interval),
-              'Energy System': ex.energySystem ?? null,
-              Note: ex.note.trim() || null,
-              Training: training.id,
-            }),
-          ),
-        )
+  // Compute rolling totals
+  const rollingTotals = useMemo(() => {
+    let cumDist = 0;
+    let cumTime = 0;
+    return exercises.map((ex) => {
+      const rep = parseInt(ex.repetitions, 10) || 0;
+      const dist = parseInt(ex.distance, 10) || 0;
+      const parts = ex.interval.split(":");
+      let intervalSec = 0;
+      if (parts.length === 2) {
+        const mm = parseInt(parts[0], 10);
+        const ss = parseInt(parts[1], 10);
+        if (!isNaN(mm) && !isNaN(ss)) intervalSec = mm * 60 + ss;
       }
+      cumDist += rep * dist;
+      cumTime += rep * intervalSec;
+      return { rollingDistance: cumDist, rollingTime: cumTime };
+    });
+  }, [exercises]);
 
-      alertLog('Saved', 'Training saved successfully.')
-      // Reset form
-      setName('')
-      setTeamId(null)
-      setDate(new Date())
-      setSelectedDays(new Set())
-      setNote('')
-      setShowNote(false)
-      setExercises([])
-    } catch (e: any) {
-      alertLog('Error', e.message)
-    } finally {
-      setSaving(false)
+  // ─── Validation & Submit ────────────────────────────────────────────
+
+  function validate(): boolean {
+    let valid = true;
+    const newExErrors: Record<number, Record<string, string>> = {};
+
+    if (!name.trim()) {
+      setNameError("Training name is required");
+      valid = false;
+    } else {
+      setNameError("");
     }
-  }, [name, note, teamId, date, selectedDays, exercises])
+
+    if (exercises.length === 0) {
+      alertLog("Validation", "At least one exercise is required.");
+      valid = false;
+    }
+
+    for (const ex of exercises) {
+      const errs: Record<string, string> = {};
+      if (!ex.name.trim()) errs.name = "Name required";
+      if (!ex.distance.trim()) errs.distance = "Distance required";
+      if (!ex.repetitions.trim()) errs.repetitions = "Reps required";
+      if (ex.interval.trim() && !parseInterval(ex.interval)) {
+        errs.interval = "Invalid mm:ss";
+      }
+      if (Object.keys(errs).length > 0) {
+        newExErrors[ex.id] = errs;
+        valid = false;
+      }
+    }
+
+    setExerciseErrors(newExErrors);
+
+    if (!valid && Object.keys(newExErrors).length > 0) {
+      // Un-confirm exercises with errors so user can fix them
+      const errorIds = new Set(Object.keys(newExErrors).map(Number));
+      setExercises((prev) =>
+        prev.map((ex) =>
+          errorIds.has(ex.id) ? { ...ex, confirmed: false } : ex,
+        ),
+      );
+    }
+
+    return valid;
+  }
+
+  async function saveTraining() {
+    if (!validate()) return;
+
+    setSaving(true);
+    try {
+      const [training] = await postData("Trainings", {
+        Name: name.trim(),
+        Notes: notes.trim() || null,
+        Team: teamId ?? null,
+        Date: date.toISOString().split("T")[0],
+        Days: JSON.stringify([...selectedDays]),
+      });
+
+      await Promise.all(
+        exercises.map((ex) => {
+          let distanceMeters = parseInt(ex.distance, 10) || 0;
+          if (unit === "yards") {
+            distanceMeters = Math.round(distanceMeters * YARDS_TO_METERS);
+          }
+          return postData("Exercises", {
+            "Training ID": training.id,
+            Name: ex.name.trim(),
+            Distance: distanceMeters || null,
+            Repetitions: parseInt(ex.repetitions, 10) || null,
+            Interval: parseInterval(ex.interval),
+            "Energy System": ex.energySystem,
+            Note: ex.note.trim() || null,
+          });
+        }),
+      );
+
+      alertLog("Saved", "Training saved successfully.");
+      // Reset and go back to list
+      resetForm();
+      setView("list");
+    } catch (e: any) {
+      alertLog("Error", e.message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  function resetForm() {
+    setName("");
+    setTeamId(null);
+    setDate(new Date());
+    setSelectedDays(new Set());
+    setNotes("");
+    setShowNotes(false);
+    setExercises([]);
+    setNameError("");
+    setExerciseErrors({});
+  }
+
+  // ─── List View ──────────────────────────────────────────────────────
+
+  if (view === "list") {
+    return (
+      <TrainingListView
+        onAdd={() => {
+          resetForm();
+          setView("create");
+        }}
+      />
+    );
+  }
+
+  // ─── Create View ────────────────────────────────────────────────────
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {/* Compact Header */}
-      {/* Training Name - full width prominent input */}
-      <TextInput
-        mode="outlined"
-        value={name}
-        onChangeText={setName}
-        placeholder="Training name"
-        style={styles.nameInput}
-      />
-
-      {/* Row 1: Team + Date */}
-      <View style={styles.headerRow}>
-        <View style={styles.teamWrapper}>
-          <Typeahead
-            array={teams}
-            propertyName="Name"
-            placeholderText="Team..."
-            allowsNew={false}
-            showOnEmpty
-            onSelect={item => setTeamId(item.id)}
-            onChangeText={text => { if (!text.trim()) setTeamId(null) }}
-          />
-        </View>
-        <TouchableRipple
-          onPress={() => setShowDatePicker(prev => !prev)}
-          style={[styles.dateTouchable, { borderColor: theme.colors.outline }]}
-          borderless={false}
+    <View className="flex-1 bg-background">
+      {/* Top bar with back + submit */}
+      <View className="flex-row items-center justify-between px-4 py-2 border-b border-border-light">
+        <Pressable
+          onPress={() => setView("list")}
+          className="flex-row items-center gap-1"
         >
-          <Text style={styles.dateText}>{formattedDate}</Text>
-        </TouchableRipple>
+          <Ionicons
+            name="chevron-back"
+            size={22}
+            color="var(--color-primary)"
+          />
+          <Text className="text-primary">Back</Text>
+        </Pressable>
+        <Button onPress={saveTraining} loading={saving} disabled={saving}>
+          Save Training
+        </Button>
       </View>
 
-      {showDatePicker && Platform.OS === 'web' && (
-        <input
-          type="date"
-          value={date.toISOString().split('T')[0]}
-          onChange={e => {
-            setShowDatePicker(false)
-            if (e.target.value) setDate(new Date(e.target.value + 'T00:00:00'))
+      <ScrollView
+        contentContainerStyle={{ padding: 16, gap: 8, paddingBottom: 100 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* ── Header Section ── */}
+        <TextInput
+          placeholder="Training name"
+          value={name}
+          onChangeText={(t) => {
+            setName(t);
+            if (t.trim()) setNameError("");
           }}
-          onBlur={() => setShowDatePicker(false)}
-          autoFocus
-          style={{
-            backgroundColor: theme.colors.surface,
-            color: theme.colors.onSurface,
-            border: `1px solid ${theme.colors.outline}`,
-            borderRadius: 4,
-            padding: '8px 12px',
-            fontSize: 14,
-            width: '100%',
-            boxSizing: 'border-box' as const,
-            colorScheme: theme.dark ? 'dark' : 'light',
-          }}
+          error={!!nameError}
+          errorMessage={nameError}
         />
-      )}
-      {showDatePicker && Platform.OS === 'android' && DateTimePicker && (
-        <DateTimePicker value={date} mode="date" display="default" onChange={onDateChange} />
-      )}
-      {Platform.OS === 'ios' && DateTimePicker && (
-        <Modal transparent visible={showDatePicker} animationType="fade">
-          <Pressable style={styles.modalBackdrop} onPress={() => setShowDatePicker(false)}>
-            <Pressable style={[styles.modalCard, { backgroundColor: theme.colors.surface }]}>
-              <DateTimePicker value={date} mode="date" display="inline" onChange={onDateChange} />
-            </Pressable>
-          </Pressable>
-        </Modal>
-      )}
 
-      {/* Row 2: Days + Unit + Add Note */}
-      <View style={styles.headerRow}>
-        <View style={styles.chipsRow}>
-          {DAYS.map(day => {
-            const active = selectedDays.has(day)
-            return (
+        {/* Unit toggle */}
+        <SegmentedControl
+          options={[
+            { value: "meters", label: "Meters" },
+            { value: "yards", label: "Yards" },
+          ]}
+          selected={unit}
+          onChange={(v) => setUnit(v as "meters" | "yards")}
+        />
+
+        {/* Team + Date row */}
+        <View className="flex-row items-center gap-2 flex-wrap">
+          <View className="flex-1 min-w-[120px]">
+            <Typeahead
+              array={teams}
+              propertyName="Name"
+              formTitle="Group"
+              placeholderText="Select group..."
+              allowsNew={false}
+              showOnEmpty
+              onSelect={(item) => setTeamId(item.id)}
+              onChangeText={(text) => {
+                if (!text.trim()) setTeamId(null);
+              }}
+            />
+          </View>
+          <Pressable
+            onPress={() => setShowDatePicker((prev) => !prev)}
+            className="border border-border rounded-md px-3 py-2.5"
+          >
+            <Text>{formattedDate}</Text>
+          </Pressable>
+        </View>
+
+        {/* Date pickers per platform */}
+        {showDatePicker && Platform.OS === "web" && (
+          <input
+            type="date"
+            value={date.toISOString().split("T")[0]}
+            onChange={(e) => {
+              setShowDatePicker(false);
+              if (e.target.value)
+                setDate(new Date(e.target.value + "T00:00:00"));
+            }}
+            onBlur={() => setShowDatePicker(false)}
+            autoFocus
+            style={{
+              padding: "8px 12px",
+              fontSize: 14,
+              width: "100%",
+              boxSizing: "border-box" as const,
+            }}
+          />
+        )}
+        {showDatePicker && Platform.OS === "android" && DateTimePicker && (
+          <DateTimePicker
+            value={date}
+            mode="date"
+            display="default"
+            onChange={onDateChange}
+          />
+        )}
+        {Platform.OS === "ios" && DateTimePicker && (
+          <Modal transparent visible={showDatePicker} animationType="fade">
+            <Pressable
+              className="flex-1 bg-black/40 items-center justify-center"
+              onPress={() => setShowDatePicker(false)}
+            >
+              <Pressable className="self-stretch mx-4 rounded-xl bg-background-card overflow-hidden">
+                <DateTimePicker
+                  value={date}
+                  mode="date"
+                  display="inline"
+                  onChange={onDateChange}
+                />
+              </Pressable>
+            </Pressable>
+          </Modal>
+        )}
+
+        {/* Days row */}
+        <View className="flex-row items-center gap-2 flex-wrap">
+          <View className="flex-row flex-wrap gap-1.5 flex-1">
+            {DAYS.map((day) => (
               <Chip
                 key={day}
-                selected={active}
+                label={day}
+                selected={selectedDays.has(day)}
                 onPress={() => toggleDay(day)}
-                style={[styles.chip, active && { backgroundColor: theme.colors.primary }]}
-                selectedColor={active ? theme.colors.onPrimary : undefined}
-                textStyle={active ? { color: theme.colors.onPrimary } : undefined}
                 compact
-              >
-                {day}
-              </Chip>
-            )
-          })}
-        </View>
-        <View style={styles.headerActions}>
-          <UnitToggle />
+              />
+            ))}
+          </View>
           <IconButton
-            icon={showNote ? 'note-text' : 'note-text-outline'}
+            icon={
+              showNotes ? "document-text" : ("document-text-outline" as any)
+            }
             size={20}
-            onPress={() => setShowNote(prev => !prev)}
-            style={styles.noteIconButton}
+            onPress={() => setShowNotes((v) => !v)}
           />
         </View>
-      </View>
 
-      {/* Collapsible Note */}
-      {showNote && (
-        <TextInput
-          mode="outlined"
-          value={note}
-          onChangeText={setNote}
-          placeholder="Training note..."
-          multiline
-          numberOfLines={3}
-          style={styles.noteInput}
-        />
-      )}
+        {/* Collapsible notes */}
+        {showNotes && (
+          <TextInput
+            value={notes}
+            onChangeText={setNotes}
+            placeholder="Training notes..."
+            multiline
+            numberOfLines={3}
+          />
+        )}
 
-      <Divider style={styles.divider} />
+        <Divider className="my-2" />
 
-      {/* Exercises */}
-      <Text variant="titleMedium" style={styles.sectionTitle}>Exercises</Text>
-
-      {exercises.map((ex, index) => (
-        <View key={ex.id} style={[styles.exerciseCard, { borderColor: theme.colors.outlineVariant }]}>
-          <Text variant="labelMedium" style={styles.exerciseIndex}>Exercise {index + 1}</Text>
-          <View style={styles.exerciseGrid}>
-
-            <View style={styles.exerciseCell}>
-              <Text variant="labelSmall" style={styles.cellLabel}>Name</Text>
-              <TextInput
-                mode="outlined"
-                value={ex.name}
-                onChangeText={v => updateExercise(ex.id, 'name', v)}
-                dense
-              />
-            </View>
-
-            <View style={styles.exerciseCell}>
-              <Text variant="labelSmall" style={styles.cellLabel}>Distance</Text>
-              <TextInput
-                mode="outlined"
-                value={ex.distance}
-                onChangeText={v => updateExercise(ex.id, 'distance', v)}
-                keyboardType="numeric"
-                dense
-              />
-            </View>
-
-            <View style={styles.exerciseCell}>
-              <Text variant="labelSmall" style={styles.cellLabel}>Repetitions</Text>
-              <TextInput
-                mode="outlined"
-                value={ex.repetitions}
-                onChangeText={v => updateExercise(ex.id, 'repetitions', v)}
-                keyboardType="numeric"
-                dense
-              />
-            </View>
-
-            <View style={styles.exerciseCell}>
-              <Text variant="labelSmall" style={styles.cellLabel}>Interval (mm:ss)</Text>
-              <TextInput
-                mode="outlined"
-                value={ex.interval}
-                onChangeText={v => updateExercise(ex.id, 'interval', v)}
-                placeholder="00:00"
-                keyboardType="numeric"
-                dense
-              />
-            </View>
-
-            <View style={[styles.exerciseCell, styles.exerciseCellFull]}>
-              <Text variant="labelSmall" style={styles.cellLabel}>Energy System</Text>
-              <View style={styles.chipsRow}>
-                {ENERGY_SYSTEMS.map(es => {
-                  const active = ex.energySystem === es.value
-                  return (
-                    <Chip
-                      key={es.value}
-                      selected={active}
-                      onPress={() => updateExercise(ex.id, 'energySystem', active ? null : es.value)}
-                      style={[styles.chip, active && { backgroundColor: theme.colors.primary }]}
-                      selectedColor={active ? theme.colors.onPrimary : undefined}
-                      textStyle={active ? { color: theme.colors.onPrimary } : undefined}
-                      compact
-                    >
-                      {es.label}
-                    </Chip>
-                  )
-                })}
-              </View>
-            </View>
-
-            <View style={styles.exerciseCell}>
-              <Text variant="labelSmall" style={styles.cellLabel}>Total Distance</Text>
-              <TextInput
-                mode="outlined"
-                value={ex.totalDistance}
-                onChangeText={v => updateExercise(ex.id, 'totalDistance', v)}
-                keyboardType="numeric"
-                dense
-              />
-            </View>
-
-            <View style={styles.exerciseCell}>
-              <Text variant="labelSmall" style={styles.cellLabel}>Total Time</Text>
-              <TextInput
-                mode="outlined"
-                value={ex.totalTime}
-                onChangeText={v => updateExercise(ex.id, 'totalTime', v)}
-                dense
-              />
-            </View>
-
-            <View style={[styles.exerciseCell, styles.exerciseCellFull]}>
-              <Text variant="labelSmall" style={styles.cellLabel}>Note</Text>
-              <TextInput
-                mode="outlined"
-                value={ex.note}
-                onChangeText={v => updateExercise(ex.id, 'note', v)}
-                dense
-              />
-            </View>
-
-          </View>
+        {/* ── Exercise Section ── */}
+        <View className="flex-row items-center justify-between mb-2">
+          <Text variant="title">Exercises</Text>
+          {exercises.length > 0 && (
+            <Text variant="body-sm" className="text-foreground-muted">
+              {exercises.length} exercise{exercises.length !== 1 ? "s" : ""}
+            </Text>
+          )}
         </View>
-      ))}
 
-      <Button
-        mode="outlined"
-        icon="plus"
-        onPress={addExercise}
-        style={styles.addExerciseButton}
-      >
-        Add Exercise
-      </Button>
+        {/* Column headers for confirmed exercises */}
+        {exercises.some((ex) => ex.confirmed) && (
+          <View className="flex-row items-center px-3 mb-1">
+            <View className="flex-1" />
+            <Text
+              variant="label-sm"
+              className="opacity-60 w-16 text-right"
+            >
+              Dist
+            </Text>
+            <Text
+              variant="label-sm"
+              className="opacity-60 w-16 text-right ml-4"
+            >
+              Time
+            </Text>
+          </View>
+        )}
 
-      <Divider style={styles.divider} />
+        {exercises.map((ex, i) => (
+          <ExerciseRow
+            key={ex.id}
+            exercise={ex}
+            index={i}
+            unit={unit}
+            exerciseNames={exerciseNames}
+            rollingDistance={rollingTotals[i]?.rollingDistance ?? 0}
+            rollingTime={rollingTotals[i]?.rollingTime ?? 0}
+            errors={exerciseErrors[ex.id] ?? {}}
+            onUpdate={(field, value) => updateExercise(ex.id, field, value)}
+            onConfirm={() => confirmExercise(ex.id)}
+            onDelete={() => deleteExercise(ex.id)}
+          />
+        ))}
 
-      <Button
-        mode="contained"
-        onPress={saveTraining}
-        loading={saving}
-        disabled={saving}
-        style={styles.saveButton}
-      >
-        Save Training
-      </Button>
-    </ScrollView>
-  )
-}
+        <Button
+          variant="outlined"
+          onPress={addExercise}
+          icon={<Ionicons name="add" size={18} color="#4fc3f7" />}
+        >
+          Add Exercise
+        </Button>
+      </ScrollView>
+    </View>
+  );
+};
 
-export default AddTraining
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-    gap: 6,
-  },
-  nameInput: {
-    fontSize: 16,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    flexWrap: 'wrap',
-  },
-  teamWrapper: {
-    flex: 1,
-    minWidth: 120,
-  },
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  noteIconButton: {
-    margin: 0,
-  },
-  noteInput: {
-    width: '100%',
-  },
-  dateTouchable: {
-    borderWidth: 1,
-    borderRadius: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-  },
-  dateText: {
-    fontSize: 14,
-  },
-  chipsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 6,
-  },
-  chip: {
-    marginBottom: 2,
-  },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalCard: {
-    alignSelf: 'stretch',
-    marginHorizontal: 16,
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
-  divider: {
-    marginVertical: 12,
-  },
-  sectionTitle: {
-    marginBottom: 8,
-  },
-  exerciseCard: {
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 12,
-    gap: 8,
-  },
-  exerciseIndex: {
-    opacity: 0.6,
-    marginBottom: 4,
-  },
-  exerciseGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-  },
-  exerciseCell: {
-    minWidth: 120,
-    flex: 1,
-    gap: 2,
-  },
-  exerciseCellFull: {
-    minWidth: '100%',
-    flexBasis: '100%',
-  },
-  cellLabel: {
-    opacity: 0.6,
-  },
-  addExerciseButton: {
-    marginTop: 4,
-    marginBottom: 4,
-  },
-  saveButton: {
-    marginBottom: 16,
-  },
-})
+export default AddTraining;
