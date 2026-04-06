@@ -129,7 +129,7 @@ const Typeahead = ({
             placeholderTextColor={colors.placeholder}
             className="flex-1 py-3 text-sm text-foreground"
           />
-          {loading && <ActivityIndicator size="small" color="#4fc3f7" />}
+          {loading && <ActivityIndicator size="small" color={colors.primary} />}
           {isNew && <Chip label="New" compact className="ml-1" />}
         </View>
         {hasNoMatch && (

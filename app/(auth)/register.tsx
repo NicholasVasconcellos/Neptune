@@ -2,6 +2,7 @@ import { View, Keyboard, Pressable, Platform } from "react-native";
 import React, { useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Button, TextInput, Text } from "../../components/ui";
+import { useThemeColors } from "../../hooks/useThemeColors";
 import { supabase } from "../../lib/supabase";
 import { alertLog } from "../../utils/alertLog";
 
@@ -11,6 +12,7 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
+  const colors = useThemeColors();
 
   function validatePasswords(pw: string, confirmPw: string): string {
     if (confirmPw.length === 0) return "";
@@ -93,7 +95,7 @@ export default function Register() {
           disabled={loading || !!passwordError}
           loading={loading}
           icon={
-            <Ionicons name="person-add-outline" size={20} color="#fff" />
+            <Ionicons name="person-add-outline" size={20} color={colors.onPrimary} />
           }
         >
           Create Account

@@ -6,7 +6,6 @@ import {
   ScrollView,
   View,
   FlatList,
-  ActivityIndicator,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {
@@ -19,6 +18,8 @@ import {
   IconButton,
   FAB,
   SearchBar,
+  LoadingIndicator,
+  EmptyState,
 } from "../../components/ui";
 import Typeahead from "../../components/Typeahead";
 import ExerciseRow, {
@@ -69,11 +70,7 @@ function TrainingListView({ onAdd }: { onAdd: () => void }) {
     : trainings;
 
   if (loading) {
-    return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" color="#4fc3f7" />
-      </View>
-    );
+    return <LoadingIndicator />;
   }
 
   return (
@@ -112,9 +109,7 @@ function TrainingListView({ onAdd }: { onAdd: () => void }) {
           </View>
         )}
         ListEmptyComponent={
-          <Text className="text-center mt-10 opacity-60">
-            No trainings yet
-          </Text>
+          <EmptyState message="No trainings yet" icon="barbell-outline" />
         }
       />
       <FAB
@@ -388,7 +383,7 @@ const AddTraining = () => {
           <Ionicons
             name="chevron-back"
             size={22}
-            color="#4fc3f7"
+            color={colors.primary}
           />
           <Text className="text-primary">Back</Text>
         </Pressable>
@@ -398,7 +393,7 @@ const AddTraining = () => {
       </View>
 
       <ScrollView
-        contentContainerStyle={{ padding: 16, gap: 8, paddingBottom: 100 }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 16, gap: 8, paddingBottom: 100 }}
         keyboardShouldPersistTaps="handled"
       >
         {/* ── Header Section ── */}
@@ -479,7 +474,7 @@ const AddTraining = () => {
           <Modal transparent visible={showDatePicker} animationType="fade">
             <Pressable
               className="flex-1 items-center justify-center"
-              style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
+              style={{ backgroundColor: colors.overlay }}
               onPress={() => setShowDatePicker(false)}
             >
               <Pressable
@@ -580,7 +575,7 @@ const AddTraining = () => {
         <Button
           variant="outlined"
           onPress={addExercise}
-          icon={<Ionicons name="add" size={18} color="#4fc3f7" />}
+          icon={<Ionicons name="add" size={18} color={colors.primary} />}
         >
           Add Exercise
         </Button>

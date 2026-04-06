@@ -4,7 +4,6 @@ import {
   FlatList,
   ScrollView,
   Pressable,
-  ActivityIndicator,
 } from "react-native";
 import {
   Text,
@@ -14,6 +13,8 @@ import {
   IconButton,
   Divider,
   Snackbar,
+  LoadingIndicator,
+  EmptyState,
 } from "./ui";
 import Typeahead from "./Typeahead";
 import { getData, updateData } from "../utils/backendData";
@@ -230,11 +231,7 @@ export default function ListView({
   }
 
   if (loading) {
-    return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" color="#4fc3f7" />
-      </View>
-    );
+    return <LoadingIndicator />;
   }
 
   return (
@@ -252,9 +249,7 @@ export default function ListView({
         onScroll={onFlatListScroll}
         contentContainerStyle={{ paddingBottom: 80 }}
         ListEmptyComponent={
-          <Text className="text-center mt-10 opacity-60">
-            No results found
-          </Text>
+          <EmptyState message="No results found" icon="search-outline" />
         }
       />
 

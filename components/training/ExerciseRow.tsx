@@ -90,6 +90,8 @@ export default function ExerciseRow({
     return (
       <Pressable
         onPress={() => onUpdate("confirmed", false)}
+        accessibilityRole="button"
+        accessibilityLabel={`Edit ${exercise.name || `Exercise ${index + 1}`}`}
         className="border border-border rounded-lg p-3 mb-2 bg-background-card"
       >
         <View className="flex-row items-center justify-between">
@@ -248,7 +250,7 @@ export default function ExerciseRow({
         className="flex-row items-center justify-center gap-2 bg-success/15 rounded-lg py-2.5 mt-1"
         style={({ pressed }) => (pressed ? { opacity: 0.7 } : undefined)}
       >
-        <Ionicons name="checkmark-circle" size={20} color="#00c853" />
+        <Ionicons name="checkmark-circle" size={20} color={colors.success} />
         <Text className="text-success font-medium">Confirm Exercise</Text>
       </Pressable>
     </View>

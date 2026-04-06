@@ -4,10 +4,11 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 
 import { Text, TextInput, Button, Snackbar } from "../ui";
 import Typeahead from "../Typeahead";
-
+import { useThemeColors } from "../../hooks/useThemeColors";
 import { getData, postData } from "../../utils/backendData";
 
 export default function AthleteForm({ onSuccess }: { onSuccess?: (msg: string) => void } = {}) {
+  const colors = useThemeColors();
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
   const [teamId, setTeamId] = useState<number | null>(null);
@@ -204,7 +205,7 @@ export default function AthleteForm({ onSuccess }: { onSuccess?: (msg: string) =
           onPress={handleSubmit}
           disabled={submitLoading || !!nameError}
           loading={submitLoading}
-          icon={<Ionicons name="person-add-outline" size={18} color="#fff" />}
+          icon={<Ionicons name="person-add-outline" size={18} color={colors.onPrimary} />}
         >
           Add Athlete
         </Button>

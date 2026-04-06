@@ -4,6 +4,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 
 import { Text, TextInput, Button, SegmentedControl, Snackbar } from "../ui";
 import Typeahead from "../Typeahead";
+import { useThemeColors } from "../../hooks/useThemeColors";
 import { getData, postData } from "../../utils/backendData";
 import {
   SWIM_STROKES,
@@ -11,6 +12,7 @@ import {
 } from "../../constants/swimmingConstants";
 
 export default function TimeForm({ onSuccess }: { onSuccess?: (msg: string) => void } = {}) {
+  const colors = useThemeColors();
   const [athleteId, setAthleteId] = useState<number | null>(null);
   const [athleteName, setAthleteName] = useState("");
   const [stroke, setStroke] = useState("");
@@ -230,7 +232,7 @@ export default function TimeForm({ onSuccess }: { onSuccess?: (msg: string) => v
           onPress={handleSubmit}
           disabled={submitLoading}
           loading={submitLoading}
-          icon={<Ionicons name="timer-outline" size={18} color="#fff" />}
+          icon={<Ionicons name="timer-outline" size={18} color={colors.onPrimary} />}
         >
           Add Time
         </Button>

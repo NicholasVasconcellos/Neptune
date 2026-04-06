@@ -1,13 +1,15 @@
-import { View, Image, ActivityIndicator } from "react-native";
+import { View, Image } from "react-native";
 import React, { useEffect } from "react";
 import { router } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Card, Button, Text } from "../components/ui";
+import { Card, Button, Text, LoadingIndicator } from "../components/ui";
 import Logo from "../assets/NeptuneAppIcon.png";
 import { useAuth } from "../context/AuthContext";
+import { useThemeColors } from "../hooks/useThemeColors";
 
 const Home = () => {
   const { session, loading } = useAuth();
+  const colors = useThemeColors();
 
   useEffect(() => {
     if (!loading && session) {
@@ -16,11 +18,7 @@ const Home = () => {
   }, [session, loading]);
 
   if (loading) {
-    return (
-      <View className="flex-1 items-center justify-center bg-background">
-        <ActivityIndicator size="large" color="#4fc3f7" />
-      </View>
-    );
+    return <LoadingIndicator className="bg-background" />;
   }
 
   if (session) return null;
@@ -39,14 +37,14 @@ const Home = () => {
       />
       <Button
         href="/login"
-        icon={<Ionicons name="log-in-outline" size={20} color="#fff" />}
+        icon={<Ionicons name="log-in-outline" size={20} color={colors.onPrimary} />}
       >
         Login To Account
       </Button>
       <Button
         href="/register"
         variant="outlined"
-        icon={<Ionicons name="person-add-outline" size={20} color="#4fc3f7" />}
+        icon={<Ionicons name="person-add-outline" size={20} color={colors.primary} />}
       >
         Create new Account
       </Button>
