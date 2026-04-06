@@ -60,6 +60,8 @@ export default function Button({
     <Pressable
       onPress={handlePress}
       disabled={disabled || loading}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: disabled || loading }}
       className={`my-1.5 flex-row items-center justify-center gap-2 ${styles.base} ${disabled ? styles.disabled : ""} ${className}`}
       style={({ pressed }) =>
         pressed && !disabled ? { opacity: 0.8 } : undefined

@@ -1,6 +1,6 @@
 import { View, Keyboard, Pressable, Platform } from "react-native";
 import React, { useState } from "react";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { Button, TextInput, Text } from "../../components/ui";
 import { supabase } from "../../lib/supabase";
 import { alertLog } from "../../utils/alertLog";

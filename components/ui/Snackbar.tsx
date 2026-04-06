@@ -7,6 +7,7 @@ interface SnackbarProps {
   onDismiss: () => void;
   duration?: number;
   children: React.ReactNode;
+  className?: string;
 }
 
 export default function Snackbar({
@@ -14,6 +15,7 @@ export default function Snackbar({
   onDismiss,
   duration = 3000,
   children,
+  className = "",
 }: SnackbarProps) {
   const opacity = React.useRef(new Animated.Value(0)).current;
 
@@ -45,7 +47,7 @@ export default function Snackbar({
     <Animated.View
       style={{ opacity, position: "absolute", bottom: 24, left: 16, right: 16 }}
     >
-      <View className="rounded-lg bg-foreground px-4 py-3">
+      <View className={`rounded-lg bg-foreground px-4 py-3 ${className}`}>
         <Text className="text-background text-sm">{children}</Text>
       </View>
     </Animated.View>

@@ -22,6 +22,7 @@ export default function SegmentedControl({
 }: SegmentedControlProps) {
   return (
     <View
+      accessibilityRole="tablist"
       className={`flex-row rounded-lg bg-background-secondary overflow-hidden border border-border ${className}`}
     >
       {options.map((option) => {
@@ -30,6 +31,8 @@ export default function SegmentedControl({
           <Pressable
             key={option.value}
             onPress={() => onChange(option.value)}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: isActive }}
             className={`flex-1 items-center py-2.5 px-3 ${
               isActive ? "bg-unit-active" : ""
             }`}

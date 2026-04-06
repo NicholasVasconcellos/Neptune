@@ -1,7 +1,8 @@
 import React from "react";
 import { View, Pressable } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import Text from "./Text";
+import { useThemeColors } from "../../hooks/useThemeColors";
 
 interface ChipProps {
   label?: string;
@@ -22,6 +23,8 @@ export default function Chip({
   compact = false,
   className = "",
 }: ChipProps) {
+  const colors = useThemeColors();
+
   const selectedClass = selected
     ? "bg-primary/20 border-primary"
     : "bg-background-card border-border";
@@ -31,6 +34,8 @@ export default function Chip({
   return (
     <Pressable
       onPress={onPress}
+      accessibilityRole={onPress ? "button" : undefined}
+      accessibilityState={{ selected }}
       className={`flex-row items-center gap-1 rounded-full border ${selectedClass} ${padding} ${className}`}
       style={({ pressed }) => (pressed && onPress ? { opacity: 0.7 } : undefined)}
     >
@@ -41,8 +46,13 @@ export default function Chip({
         {label ?? children}
       </Text>
       {onClose && (
-        <Pressable onPress={onClose} hitSlop={6}>
-          <Ionicons name="close-circle" size={16} color="var(--color-foreground-muted)" />
+        <Pressable
+          onPress={onClose}
+          hitSlop={6}
+          accessibilityRole="button"
+          accessibilityLabel={`Remove ${label ?? ""}`}
+        >
+          <Ionicons name="close-circle" size={16} color={colors.foregroundMuted} />
         </Pressable>
       )}
     </Pressable>

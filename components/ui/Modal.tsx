@@ -6,8 +6,9 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import Text from "./Text";
+import { useThemeColors } from "../../hooks/useThemeColors";
 
 interface ModalProps {
   visible: boolean;
@@ -24,6 +25,8 @@ export default function Modal({
   children,
   className = "",
 }: ModalProps) {
+  const colors = useThemeColors();
+
   return (
     <RNModal
       visible={visible}
@@ -41,11 +44,16 @@ export default function Modal({
           {title && (
             <View className="flex-row items-center justify-between mb-2">
               <Text variant="title">{title}</Text>
-              <Pressable onPress={onClose} hitSlop={8}>
+              <Pressable
+                onPress={onClose}
+                hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel="Close"
+              >
                 <Ionicons
                   name="close"
                   size={24}
-                  color="var(--color-foreground)"
+                  color={colors.foreground}
                 />
               </Pressable>
             </View>

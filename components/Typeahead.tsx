@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Text, Chip } from "./ui";
+import { useThemeColors } from "../hooks/useThemeColors";
 
 interface TypeaheadProps {
   array: Record<string, any>[];
@@ -34,6 +35,7 @@ const Typeahead = ({
   allowsNew = true,
   showOnEmpty = false,
 }: TypeaheadProps) => {
+  const colors = useThemeColors();
   const [inputValue, setInputValue] = useState(value ?? "");
 
   useEffect(() => {
@@ -124,7 +126,7 @@ const Typeahead = ({
               )
             }
             placeholder={placeholderText}
-            placeholderTextColor="var(--color-placeholder)"
+            placeholderTextColor={colors.placeholder}
             className="flex-1 py-3 text-sm text-foreground"
           />
           {loading && <ActivityIndicator size="small" color="#4fc3f7" />}

@@ -5,8 +5,9 @@ import {
   Pressable,
   type TextInputProps as RNTextInputProps,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import Text from "./Text";
+import { useThemeColors } from "../../hooks/useThemeColors";
 
 interface TextInputProps extends RNTextInputProps {
   label?: string;
@@ -30,6 +31,7 @@ const TextInput = forwardRef<RNTextInput, TextInputProps>(
     },
     ref,
   ) => {
+    const colors = useThemeColors();
     const [focused, setFocused] = useState(false);
     const [passwordVisible, setPasswordVisible] = useState(false);
 
@@ -54,7 +56,7 @@ const TextInput = forwardRef<RNTextInput, TextInputProps>(
           <RNTextInput
             ref={ref}
             className={`flex-1 py-3 text-sm text-foreground ${className}`}
-            placeholderTextColor="var(--color-placeholder)"
+            placeholderTextColor={colors.placeholder}
             secureTextEntry={secureTextEntry && !passwordVisible}
             onFocus={(e) => {
               setFocused(true);
@@ -70,11 +72,15 @@ const TextInput = forwardRef<RNTextInput, TextInputProps>(
             <Pressable
               onPress={() => setPasswordVisible((v) => !v)}
               hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel={
+                passwordVisible ? "Hide password" : "Show password"
+              }
             >
               <Ionicons
                 name={passwordVisible ? "eye-off-outline" : "eye-outline"}
                 size={20}
-                color="var(--color-foreground-muted)"
+                color={colors.foregroundMuted}
               />
             </Pressable>
           )}

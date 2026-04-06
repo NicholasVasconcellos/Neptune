@@ -2,15 +2,18 @@ import { View } from "react-native";
 import React from "react";
 import { Tabs } from "expo-router";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { useThemeColors } from "../../hooks/useThemeColors";
 
 const TabsLayout = () => {
+  const colors = useThemeColors();
+
   return (
     <View className="flex-1 bg-background">
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarActiveTintColor: "#4fc3f7",
-          tabBarStyle: { backgroundColor: "var(--color-background)" },
+          tabBarActiveTintColor: colors.primary,
+          tabBarStyle: { backgroundColor: colors.background },
           sceneStyle: { backgroundColor: "transparent" },
         }}
       >
@@ -22,7 +25,7 @@ const TabsLayout = () => {
               <FontAwesome6
                 name="house"
                 size={24}
-                color={focused ? "#4fc3f7" : "var(--color-foreground)"}
+                color={focused ? colors.primary : colors.foreground}
               />
             ),
           }}
@@ -35,7 +38,7 @@ const TabsLayout = () => {
               <FontAwesome6
                 name="chart-line"
                 size={24}
-                color={focused ? "#4fc3f7" : "var(--color-foreground)"}
+                color={focused ? colors.primary : colors.foreground}
               />
             ),
           }}
@@ -48,7 +51,7 @@ const TabsLayout = () => {
               <FontAwesome6
                 name="scroll"
                 size={24}
-                color={focused ? "#4fc3f7" : "var(--color-foreground)"}
+                color={focused ? colors.primary : colors.foreground}
               />
             ),
           }}
@@ -61,7 +64,7 @@ const TabsLayout = () => {
               <FontAwesome6
                 name="play"
                 size={24}
-                color={focused ? "#4fc3f7" : "var(--color-foreground)"}
+                color={focused ? colors.primary : colors.foreground}
               />
             ),
           }}

@@ -4,6 +4,7 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Text } from "./ui";
 import { OBJECT_MAP } from "../constants/objectMap";
+import { useThemeColors } from "../hooks/useThemeColors";
 
 interface ButtonGridProps {
   items: string[];
@@ -16,6 +17,8 @@ export default function ButtonGrid({
   selected,
   onSelectionChange,
 }: ButtonGridProps) {
+  const colors = useThemeColors();
+
   function handlePress(tableName: string) {
     if (selected === tableName) {
       onSelectionChange(null);
@@ -54,7 +57,7 @@ export default function ButtonGrid({
             <IconComponent
               name={metadata.icon as any}
               size={28}
-              color={isSelected ? "#4fc3f7" : "var(--color-foreground)"}
+              color={isSelected ? colors.primary : colors.foreground}
             />
           </Pressable>
         );

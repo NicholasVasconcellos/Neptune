@@ -1,7 +1,7 @@
 import { View, Image, ScrollView } from "react-native";
 import React, { useEffect } from "react";
 import { router } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { Card, Button, Text, Divider } from "../../components/ui";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";

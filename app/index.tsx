@@ -1,7 +1,7 @@
 import { View, Image, ActivityIndicator } from "react-native";
 import React, { useEffect } from "react";
 import { router } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { Card, Button, Text } from "../components/ui";
 import Logo from "../assets/NeptuneAppIcon.png";
 import { useAuth } from "../context/AuthContext";

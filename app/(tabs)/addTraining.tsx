@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Modal,
   Platform,
@@ -8,7 +8,7 @@ import {
   FlatList,
   ActivityIndicator,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import {
   Button,
   Chip,
@@ -46,8 +46,6 @@ function parseInterval(mmss: string): number | null {
   if (isNaN(mm) || isNaN(ss)) return null;
   return mm * 60 + ss;
 }
-
-let nextExerciseId = 1;
 
 // ─── Training List View ─────────────────────────────────────────────────
 
@@ -131,6 +129,7 @@ function TrainingListView({ onAdd }: { onAdd: () => void }) {
 // ─── Training Creation Form ─────────────────────────────────────────────
 
 const AddTraining = () => {
+  const nextExerciseId = useRef(1);
   const [view, setView] = useState<"list" | "create">("list");
 
   // Training fields
@@ -204,7 +203,7 @@ const AddTraining = () => {
     setExercises((prev) => [
       ...prev,
       {
-        id: nextExerciseId++,
+        id: nextExerciseId.current++,
         name: "",
         note: "",
         repetitions: "",
@@ -253,13 +252,7 @@ const AddTraining = () => {
     return exercises.map((ex) => {
       const rep = parseInt(ex.repetitions, 10) || 0;
       const dist = parseInt(ex.distance, 10) || 0;
-      const parts = ex.interval.split(":");
-      let intervalSec = 0;
-      if (parts.length === 2) {
-        const mm = parseInt(parts[0], 10);
-        const ss = parseInt(parts[1], 10);
-        if (!isNaN(mm) && !isNaN(ss)) intervalSec = mm * 60 + ss;
-      }
+      const intervalSec = parseInterval(ex.interval) ?? 0;
       cumDist += rep * dist;
       cumTime += rep * intervalSec;
       return { rollingDistance: cumDist, rollingTime: cumTime };
@@ -323,7 +316,7 @@ const AddTraining = () => {
         Notes: notes.trim() || null,
         Team: teamId ?? null,
         Date: date.toISOString().split("T")[0],
-        Days: JSON.stringify([...selectedDays]),
+        Days: [...selectedDays],
       });
 
       await Promise.all(
@@ -393,7 +386,7 @@ const AddTraining = () => {
           <Ionicons
             name="chevron-back"
             size={22}
-            color="var(--color-primary)"
+            color="#4fc3f7"
           />
           <Text className="text-primary">Back</Text>
         </Pressable>

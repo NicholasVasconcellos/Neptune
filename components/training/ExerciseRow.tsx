@@ -1,9 +1,10 @@
 import React, { useRef } from "react";
 import { View, TextInput as RNTextInput, Pressable } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { Text, TextInput, Chip } from "../ui";
 import Typeahead from "../Typeahead";
 import { SWIM_DISTANCES } from "../../constants/swimmingConstants";
+import { useThemeColors } from "../../hooks/useThemeColors";
 
 const ENERGY_SYSTEMS = ["N1", "N2", "N3", "N4"] as const;
 
@@ -59,6 +60,7 @@ export default function ExerciseRow({
   onConfirm,
   onDelete,
 }: ExerciseRowProps) {
+  const colors = useThemeColors();
   const repRef = useRef<RNTextInput>(null);
   const distRef = useRef<RNTextInput>(null);
   const intervalRef = useRef<RNTextInput>(null);
@@ -69,9 +71,10 @@ export default function ExerciseRow({
   const exerciseTotalDist = rep * dist;
   const exerciseTotalTime = intervalSec ? rep * intervalSec : 0;
 
-  const distanceOptions = (
-    SWIM_DISTANCES as Record<string, number[]>
-  )[unit].map((d) => ({ id: d, Name: String(d) }));
+  const distanceOptions = SWIM_DISTANCES[unit].map((d) => ({
+    id: d,
+    Name: String(d),
+  }));
 
   // Confirmed view — compact display
   if (exercise.confirmed) {
@@ -140,7 +143,7 @@ export default function ExerciseRow({
         </Text>
         <View className="flex-row gap-1">
           <Pressable onPress={onDelete} hitSlop={8}>
-            <Ionicons name="trash-outline" size={18} color="var(--color-danger)" />
+            <Ionicons name="trash-outline" size={18} color={colors.danger} />
           </Pressable>
         </View>
       </View>
