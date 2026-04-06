@@ -1,7 +1,7 @@
 import { ComponentType } from "react";
-import AthleteForm from "../components/InputForms/AthleteForm";
-import TeamForm from "../components/InputForms/TeamForm";
-import TimeForm from "../components/InputForms/TimeForm";
+import AthleteForm from "@/components/InputForms/AthleteForm";
+import TeamForm from "@/components/InputForms/TeamForm";
+import TimeForm from "@/components/InputForms/TimeForm";
 
 export interface TableMetadata {
   tableName: string;

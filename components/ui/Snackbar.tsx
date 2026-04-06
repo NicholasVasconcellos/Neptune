@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { View, Animated } from "react-native";
 import Text from "./Text";
-import { useThemeColors } from "../../hooks/useThemeColors";
+import { useThemeColors } from "@/hooks/useThemeColors";
 
 interface SnackbarProps {
   visible: boolean;

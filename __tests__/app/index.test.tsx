@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen } from "@testing-library/react-native";
-import Home from "../../app/index";
-import { useAuth } from "../../context/AuthContext";
+import Home from "@/app/index";
+import { useAuth } from "@/context/AuthContext";
 
 // Type the mocked useAuth for easy manipulation
 const mockedUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;

@@ -1,6 +1,6 @@
 import React from "react";
 import { render, fireEvent, screen } from "@testing-library/react-native";
-import ExerciseRow, { type Exercise } from "../../../components/training/ExerciseRow";
+import ExerciseRow, { type Exercise } from "@/components/training/ExerciseRow";
 
 // Re-implement parseInterval locally for unit tests on the logic
 function parseInterval(mmss: string): number | null {

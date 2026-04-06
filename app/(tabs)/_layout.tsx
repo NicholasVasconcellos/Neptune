@@ -2,7 +2,7 @@ import { View } from "react-native";
 import React from "react";
 import { Tabs } from "expo-router";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { useThemeColors } from "../../hooks/useThemeColors";
+import { useThemeColors } from "@/hooks/useThemeColors";
 
 const TabsLayout = () => {
   const colors = useThemeColors();

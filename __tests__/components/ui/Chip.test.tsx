@@ -1,6 +1,6 @@
 import React from "react";
 import { render, fireEvent, screen } from "@testing-library/react-native";
-import Chip from "../../../components/ui/Chip";
+import Chip from "@/components/ui/Chip";
 
 describe("Chip", () => {
   it("renders with a label", () => {

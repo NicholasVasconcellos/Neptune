@@ -2,14 +2,14 @@ import { View } from "react-native";
 import React, { useState, useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-import { Text, TextInput, Button, SegmentedControl, Snackbar } from "../ui";
-import Typeahead from "../Typeahead";
-import { useThemeColors } from "../../hooks/useThemeColors";
-import { getData, postData } from "../../utils/backendData";
+import { Text, TextInput, Button, SegmentedControl, Snackbar } from "@/components/ui";
+import Typeahead from "@/components/Typeahead";
+import { useThemeColors } from "@/hooks/useThemeColors";
+import { getData, postData } from "@/utils/backendData";
 import {
   SWIM_STROKES,
   SWIM_DISTANCES,
-} from "../../constants/swimmingConstants";
+} from "@/constants/swimmingConstants";
 
 export default function TimeForm({ onSuccess }: { onSuccess?: (msg: string) => void } = {}) {
   const colors = useThemeColors();

@@ -1,6 +1,6 @@
 import React from "react";
 import { View, ActivityIndicator } from "react-native";
-import { useThemeColors } from "../../hooks/useThemeColors";
+import { useThemeColors } from "@/hooks/useThemeColors";
 
 interface LoadingIndicatorProps {
   size?: "small" | "large";

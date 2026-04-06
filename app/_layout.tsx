@@ -1,9 +1,9 @@
-import "../global.css";
+import "@/global.css";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import React from "react";
 import { Stack } from "expo-router";
 
-import { AuthProvider } from "../context/AuthContext";
+import { AuthProvider } from "@/context/AuthContext";
 
 const RootLayout = () => {
   return (

@@ -1,5 +1,5 @@
 import { useColorScheme } from "react-native";
-import { Colors } from "../Styles/Theme";
+import { Colors } from "@/Styles/Theme";
 
 /**
  * Returns resolved theme colors for use in native props (icon color, tabBarStyle, etc.)

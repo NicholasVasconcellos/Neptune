@@ -1,5 +1,5 @@
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import { Colors } from "../../Styles/Theme";
+import { Colors } from "@/Styles/Theme";
 import { useColorScheme } from "react-native";
 
 // Allow Overwrite of Size or Color, if none provided will use

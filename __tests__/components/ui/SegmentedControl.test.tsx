@@ -1,6 +1,6 @@
 import React from "react";
 import { render, fireEvent, screen } from "@testing-library/react-native";
-import SegmentedControl from "../../../components/ui/SegmentedControl";
+import SegmentedControl from "@/components/ui/SegmentedControl";
 
 const OPTIONS = [
   { value: "meters", label: "Meters" },

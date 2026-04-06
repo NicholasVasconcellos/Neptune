@@ -2,7 +2,7 @@ import React from "react";
 import { Pressable } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Text from "./Text";
-import { useThemeColors } from "../../hooks/useThemeColors";
+import { useThemeColors } from "@/hooks/useThemeColors";
 
 interface FABProps {
   icon: keyof typeof Ionicons.glyphMap;

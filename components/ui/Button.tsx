@@ -2,7 +2,7 @@ import React from "react";
 import { Pressable, ActivityIndicator, View } from "react-native";
 import { useRouter } from "expo-router";
 import Text from "./Text";
-import { useThemeColors } from "../../hooks/useThemeColors";
+import { useThemeColors } from "@/hooks/useThemeColors";
 
 type ButtonVariant = "contained" | "outlined" | "text";
 

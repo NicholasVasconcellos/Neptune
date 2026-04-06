@@ -2,10 +2,10 @@ import { View } from "react-native";
 import React, { useState, useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-import { Text, TextInput, Button, Chip, Snackbar } from "../ui";
-import Typeahead from "../Typeahead";
-import { useThemeColors } from "../../hooks/useThemeColors";
-import { getData, postData, updateData } from "../../utils/backendData";
+import { Text, TextInput, Button, Chip, Snackbar } from "@/components/ui";
+import Typeahead from "@/components/Typeahead";
+import { useThemeColors } from "@/hooks/useThemeColors";
+import { getData, postData, updateData } from "@/utils/backendData";
 
 export default function TeamForm({ onSuccess }: { onSuccess?: (msg: string) => void } = {}) {
   const colors = useThemeColors();

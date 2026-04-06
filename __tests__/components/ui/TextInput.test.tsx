@@ -1,6 +1,6 @@
 import React from "react";
 import { render, fireEvent, screen } from "@testing-library/react-native";
-import TextInput from "../../../components/ui/TextInput";
+import TextInput from "@/components/ui/TextInput";
 
 describe("TextInput", () => {
   it("renders with a label", () => {

@@ -1,7 +1,7 @@
 import React from "react";
 import { View, TextInput, Pressable } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useThemeColors } from "../../hooks/useThemeColors";
+import { useThemeColors } from "@/hooks/useThemeColors";
 
 interface SearchBarProps {
   value: string;

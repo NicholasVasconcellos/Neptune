@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "@testing-library/react-native";
-import TabsLayout from "../app/(tabs)/_layout";
+import TabsLayout from "@/app/(tabs)/_layout";
 
 // FontAwesome5 and expo-font mocks are handled in __tests__/setup.ts
 

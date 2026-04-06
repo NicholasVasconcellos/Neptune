@@ -1,10 +1,10 @@
 import { View, Keyboard, Pressable, Platform } from "react-native";
 import React, { useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Button, TextInput, Text } from "../../components/ui";
-import { useThemeColors } from "../../hooks/useThemeColors";
-import { supabase } from "../../lib/supabase";
-import { alertLog } from "../../utils/alertLog";
+import { Button, TextInput, Text } from "@/components/ui";
+import { useThemeColors } from "@/hooks/useThemeColors";
+import { supabase } from "@/lib/supabase";
+import { alertLog } from "@/utils/alertLog";
 
 export default function Register() {
   const [email, setEmail] = useState("");

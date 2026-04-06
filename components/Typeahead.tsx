@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Text, Chip } from "./ui";
-import { useThemeColors } from "../hooks/useThemeColors";
+import { useThemeColors } from "@/hooks/useThemeColors";
 
 interface TypeaheadProps {
   array: Record<string, any>[];

@@ -2,10 +2,10 @@ import { View, Image } from "react-native";
 import React, { useEffect } from "react";
 import { router } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Card, Button, Text, LoadingIndicator } from "../components/ui";
-import Logo from "../assets/NeptuneAppIcon.png";
-import { useAuth } from "../context/AuthContext";
-import { useThemeColors } from "../hooks/useThemeColors";
+import { Card, Button, Text, LoadingIndicator } from "@/components/ui";
+import Logo from "@/assets/NeptuneAppIcon.png";
+import { useAuth } from "@/context/AuthContext";
+import { useThemeColors } from "@/hooks/useThemeColors";
 
 const Home = () => {
   const { session, loading } = useAuth();

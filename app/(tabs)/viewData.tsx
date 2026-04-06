@@ -1,9 +1,9 @@
 import { View } from "react-native";
 import { useState } from "react";
-import ButtonGrid from "../../components/ButtonGrid";
-import { Text } from "../../components/ui";
-import ListView from "../../components/ListView";
-import { OBJECT_MAP } from "../../constants/objectMap";
+import ButtonGrid from "@/components/ButtonGrid";
+import { Text } from "@/components/ui";
+import ListView from "@/components/ListView";
+import { OBJECT_MAP } from "@/constants/objectMap";
 
 export default function viewData() {
   const [selectedTable, setSelectedTable] = useState<string | null>("Athletes");

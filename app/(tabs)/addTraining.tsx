@@ -20,14 +20,14 @@ import {
   SearchBar,
   LoadingIndicator,
   EmptyState,
-} from "../../components/ui";
-import Typeahead from "../../components/Typeahead";
+} from "@/components/ui";
+import Typeahead from "@/components/Typeahead";
 import ExerciseRow, {
   type Exercise,
-} from "../../components/training/ExerciseRow";
-import { getData, postData } from "../../utils/backendData";
-import { alertLog } from "../../utils/alertLog";
-import { useThemeColors } from "../../hooks/useThemeColors";
+} from "@/components/training/ExerciseRow";
+import { getData, postData } from "@/utils/backendData";
+import { alertLog } from "@/utils/alertLog";
+import { useThemeColors } from "@/hooks/useThemeColors";
 
 const DateTimePicker =
   Platform.OS !== "web"

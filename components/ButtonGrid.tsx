@@ -3,8 +3,8 @@ import { View, Pressable } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Text } from "./ui";
-import { OBJECT_MAP } from "../constants/objectMap";
-import { useThemeColors } from "../hooks/useThemeColors";
+import { OBJECT_MAP } from "@/constants/objectMap";
+import { useThemeColors } from "@/hooks/useThemeColors";
 
 interface ButtonGridProps {
   items: string[];

@@ -2,11 +2,11 @@ import { View, Image, ScrollView } from "react-native";
 import React, { useEffect } from "react";
 import { router } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Card, Button, Text, Divider } from "../../components/ui";
-import { useAuth } from "../../context/AuthContext";
-import { useThemeColors } from "../../hooks/useThemeColors";
-import { supabase } from "../../lib/supabase";
-import Logo from "../../assets/neptune-logo-no-bg.png";
+import { Card, Button, Text, Divider } from "@/components/ui";
+import { useAuth } from "@/context/AuthContext";
+import { useThemeColors } from "@/hooks/useThemeColors";
+import { supabase } from "@/lib/supabase";
+import Logo from "@/assets/neptune-logo-no-bg.png";
 
 const Home = () => {
   const { session } = useAuth();

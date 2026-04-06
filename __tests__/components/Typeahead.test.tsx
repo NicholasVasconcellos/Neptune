@@ -1,6 +1,6 @@
 import React from "react";
 import { render, fireEvent, screen } from "@testing-library/react-native";
-import Typeahead from "../../components/Typeahead";
+import Typeahead from "@/components/Typeahead";
 
 const ITEMS = [
   { id: 1, Name: "Freestyle Sprint" },

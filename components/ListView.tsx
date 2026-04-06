@@ -17,8 +17,8 @@ import {
   EmptyState,
 } from "./ui";
 import Typeahead from "./Typeahead";
-import { getData, updateData } from "../utils/backendData";
-import { alertLog } from "../utils/alertLog";
+import { getData, updateData } from "@/utils/backendData";
+import { alertLog } from "@/utils/alertLog";
 
 const SYSTEM_COLUMNS = ["id", "created_at", "User ID"];
 

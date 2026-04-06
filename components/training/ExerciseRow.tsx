@@ -1,10 +1,10 @@
 import React, { useRef } from "react";
 import { View, TextInput as RNTextInput, Pressable } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Text, TextInput, Chip } from "../ui";
-import Typeahead from "../Typeahead";
-import { SWIM_DISTANCES } from "../../constants/swimmingConstants";
-import { useThemeColors } from "../../hooks/useThemeColors";
+import { Text, TextInput, Chip } from "@/components/ui";
+import Typeahead from "@/components/Typeahead";
+import { SWIM_DISTANCES } from "@/constants/swimmingConstants";
+import { useThemeColors } from "@/hooks/useThemeColors";
 
 const ENERGY_SYSTEMS = ["N1", "N2", "N3", "N4"] as const;
 

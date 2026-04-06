@@ -1,6 +1,6 @@
 import React from "react";
 import { render, fireEvent, screen } from "@testing-library/react-native";
-import Button from "../../../components/ui/Button";
+import Button from "@/components/ui/Button";
 
 // Access the mocked router for assertions
 const mockRouter = require("expo-router").useRouter();
