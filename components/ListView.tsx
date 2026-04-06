@@ -17,6 +17,7 @@ import {
   EmptyState,
 } from "./ui";
 import Typeahead from "./Typeahead";
+import { useRouter } from "expo-router";
 import { getData, updateData } from "@/utils/backendData";
 import { alertLog } from "@/utils/alertLog";
 
@@ -49,6 +50,7 @@ export default function ListView({
   displayColumns,
   createForm,
 }: ListViewProps) {
+  const router = useRouter();
   const label = displayName ?? tableName;
   const [data, setData] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,13 +71,6 @@ export default function ListView({
 
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-
-  const handleFormSuccess = useCallback((msg: string) => {
-    setFabModalVisible(false);
-    setSnackbarMessage(msg);
-    setSnackbarVisible(true);
-    fetchData();
-  }, [fetchData]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -115,6 +110,13 @@ export default function ListView({
     fetchData();
   }, [fetchData]);
 
+  const handleFormSuccess = useCallback((msg: string) => {
+    setFabModalVisible(false);
+    setSnackbarMessage(msg);
+    setSnackbarVisible(true);
+    fetchData();
+  }, [fetchData]);
+
   const columns =
     displayColumns ??
     (data.length > 0
@@ -130,7 +132,11 @@ export default function ListView({
     : data;
 
   function handleCellPress(targetTable: string, id: any) {
-    alertLog("Navigate", `${targetTable}/${id}`);
+    if (targetTable === "Athletes") {
+      router.push(`/athlete/${id}`);
+    } else {
+      alertLog("Navigate", `${targetTable}/${id}`);
+    }
   }
 
   async function handleEmptyCellPress(column: string, rowId: number) {
