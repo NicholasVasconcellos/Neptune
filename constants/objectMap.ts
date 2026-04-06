@@ -19,9 +19,9 @@ export const OBJECT_MAP: Record<string, TableMetadata> = {
     iconSet: "fa5",
     formComponent: AthleteForm,
   },
-  Teams: {
+  Groups: {
     tableName: "Teams",
-    label: "Teams",
+    label: "Groups",
     icon: "people-group",
     iconSet: "fa6",
     formComponent: TeamForm,
