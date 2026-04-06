@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-background: #f0f4f8;
+    --color-background-secondary: rgba(0, 0, 0, 0.05);
+    --color-background-card: #ffffff;
+    --color-background-input: #ffffff;
+    --color-background-suggestion: #e1f5fe;
+    --color-surface: #ffffff;
+    --color-foreground: #1a2b3c;
+    --color-foreground-secondary: rgba(26, 43, 60, 0.7);
+    --color-foreground-muted: rgba(26, 43, 60, 0.5);
+    --color-foreground-disabled: rgba(26, 43, 60, 0.3);
+    --color-placeholder: rgba(26, 43, 60, 0.3);
+    --color-border: rgba(0, 0, 0, 0.1);
+    --color-border-light: rgba(0, 0, 0, 0.05);
+    --color-nav: #e8e7ef;
+    --color-icon: #686477;
+    --color-icon-focused: #201e2b;
+    --color-ui: #d6d5e1;
+    --color-danger-light: rgba(255, 82, 82, 0.1);
+    --color-danger-bg: rgba(255, 82, 82, 0.05);
+    --color-input-focused: rgba(79, 195, 247, 0.05);
+    --color-unit-active: rgba(79, 195, 247, 0.15);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-background: #0c1929;
+      --color-background-secondary: rgba(0, 0, 0, 0.2);
+      --color-background-card: rgba(255, 255, 255, 0.08);
+      --color-background-input: rgba(255, 255, 255, 0.08);
+      --color-background-suggestion: #1a3a5c;
+      --color-surface: rgba(255, 255, 255, 0.08);
+      --color-foreground: #ffffff;
+      --color-foreground-secondary: rgba(255, 255, 255, 0.7);
+      --color-foreground-muted: rgba(255, 255, 255, 0.6);
+      --color-foreground-disabled: rgba(255, 255, 255, 0.4);
+      --color-placeholder: rgba(255, 255, 255, 0.4);
+      --color-border: rgba(255, 255, 255, 0.1);
+      --color-border-light: rgba(255, 255, 255, 0.15);
+      --color-nav: #201e2b;
+      --color-icon: #9595a5;
+      --color-icon-focused: #ffffff;
+      --color-ui: #2f2b3d;
+      --color-danger-light: rgba(255, 82, 82, 0.3);
+      --color-danger-bg: rgba(255, 82, 82, 0.1);
+      --color-input-focused: rgba(79, 195, 247, 0.1);
+      --color-unit-active: rgba(79, 195, 247, 0.2);
+    }
+  }
+}
