@@ -17,6 +17,7 @@ export function useThemeColors() {
     foregroundDisabled: theme.textDisabled,
     background: theme.background,
     backgroundCard: theme.backgroundCard,
+    backgroundModal: theme.backgroundModal,
     placeholder: theme.placeholder,
     border: theme.border,
     primary: Colors.primary,

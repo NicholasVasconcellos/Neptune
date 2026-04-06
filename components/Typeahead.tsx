@@ -140,8 +140,8 @@ const Typeahead = ({
       </View>
       {isDisplayed && (
         <View
-          className="absolute top-full left-0 right-0 max-h-[200px] rounded-md bg-background-card border border-border shadow-lg"
-          style={{ zIndex: 2 }}
+          className="max-h-[200px] rounded-md border border-border mt-1"
+          style={{ backgroundColor: colors.backgroundModal, zIndex: 2 }}
         >
           <ScrollView keyboardShouldPersistTaps="handled" nestedScrollEnabled>
             {filteredArray.map((item) => (

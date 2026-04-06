@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   FlatList,
@@ -13,6 +13,7 @@ import {
   Modal,
   IconButton,
   Divider,
+  Snackbar,
 } from "./ui";
 import Typeahead from "./Typeahead";
 import { getData, updateData } from "../utils/backendData";
@@ -25,21 +26,29 @@ const FK_TABLE_MAP: Record<string, string> = {
   "Athlete ID": "Athletes",
 };
 
+const FK_DISPLAY_NAMES: Record<string, string> = {
+  "Team ID": "Groups",
+};
+
 const COLUMN_DISPLAY_NAMES: Record<string, string> = {
   "Athlete ID": "Swimmer",
+  "Team ID": "Group",
 };
 
 interface ListViewProps {
   tableName: string;
+  displayName?: string;
   displayColumns?: string[];
   createForm?: React.ReactNode;
 }
 
 export default function ListView({
   tableName,
+  displayName,
   displayColumns,
   createForm,
 }: ListViewProps) {
+  const label = displayName ?? tableName;
   const [data, setData] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -56,6 +65,16 @@ export default function ListView({
 
   const [fabModalVisible, setFabModalVisible] = useState(false);
   const [isFabExtended, setIsFabExtended] = useState(true);
+
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  const handleFormSuccess = useCallback((msg: string) => {
+    setFabModalVisible(false);
+    setSnackbarMessage(msg);
+    setSnackbarVisible(true);
+    fetchData();
+  }, [fetchData]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -221,7 +240,7 @@ export default function ListView({
   return (
     <View className="flex-1">
       <SearchBar
-        placeholder={`Search ${tableName} by name...`}
+        placeholder={`Search ${label} by name...`}
         onChangeText={setSearchQuery}
         value={searchQuery}
       />
@@ -243,12 +262,12 @@ export default function ListView({
       <Modal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        title={`Select ${FK_TABLE_MAP[modalColumn]}`}
+        title={`Select ${FK_DISPLAY_NAMES[modalColumn] ?? FK_TABLE_MAP[modalColumn]}`}
       >
         <Typeahead
           array={modalOptions}
           propertyName="Name"
-          formTitle={`Search ${FK_TABLE_MAP[modalColumn]}`}
+          formTitle={`Search ${FK_DISPLAY_NAMES[modalColumn] ?? FK_TABLE_MAP[modalColumn]}`}
           placeholderText="Type to search..."
           loading={modalLoading}
           onSelect={handleModalSelect}
@@ -259,23 +278,35 @@ export default function ListView({
       <Modal
         visible={fabModalVisible}
         onClose={() => setFabModalVisible(false)}
-        title={`Add ${tableName}`}
+        title={`Add ${label}`}
       >
         <ScrollView
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {createForm}
+          {React.isValidElement(createForm)
+            ? React.cloneElement(createForm as React.ReactElement<any>, {
+                onSuccess: handleFormSuccess,
+              })
+            : createForm}
         </ScrollView>
       </Modal>
 
       <FAB
         icon="add"
-        label={`Add ${tableName}`}
+        label={`Add ${label}`}
         extended={isFabExtended}
         onPress={() => setFabModalVisible(true)}
         className="absolute right-4 bottom-4"
       />
+
+      <Snackbar
+        visible={snackbarVisible}
+        onDismiss={() => setSnackbarVisible(false)}
+        duration={3000}
+      >
+        {snackbarMessage}
+      </Snackbar>
     </View>
   );
 }

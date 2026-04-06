@@ -5,22 +5,31 @@ import Text from "./Text";
 
 const variantStyles = {
   contained: {
-    base: "bg-primary rounded-lg px-6 py-3",
+    base: "rounded-lg px-6 py-3",
     pressed: "opacity-80",
-    text: "text-white font-semibold text-base",
-    disabled: "bg-primary/40",
+    text: "font-semibold text-base",
+    textColor: "#ffffff",
+    disabled: "opacity-40",
+    bg: "#4fc3f7",
+    borderStyle: undefined as any,
   },
   outlined: {
-    base: "border border-primary rounded-lg px-6 py-3 bg-transparent",
-    pressed: "bg-primary/10",
-    text: "text-primary font-semibold text-base",
-    disabled: "border-primary/40",
+    base: "rounded-lg px-6 py-3",
+    pressed: "opacity-80",
+    text: "font-semibold text-base",
+    textColor: "#4fc3f7",
+    disabled: "opacity-40",
+    bg: "transparent",
+    borderStyle: { borderWidth: 1, borderColor: "#4fc3f7" } as any,
   },
   text: {
-    base: "px-4 py-2 bg-transparent",
-    pressed: "bg-primary/10 rounded-lg",
-    text: "text-primary font-semibold text-base",
+    base: "px-4 py-2",
+    pressed: "opacity-80",
+    text: "font-semibold text-base",
+    textColor: "#4fc3f7",
     disabled: "opacity-40",
+    bg: "transparent",
+    borderStyle: undefined as any,
   },
 } as const;
 
@@ -63,9 +72,11 @@ export default function Button({
       accessibilityRole="button"
       accessibilityState={{ disabled: disabled || loading }}
       className={`my-1.5 flex-row items-center justify-center gap-2 ${styles.base} ${disabled ? styles.disabled : ""} ${className}`}
-      style={({ pressed }) =>
-        pressed && !disabled ? { opacity: 0.8 } : undefined
-      }
+      style={({ pressed }) => ({
+        backgroundColor: styles.bg,
+        ...styles.borderStyle,
+        ...(pressed && !disabled ? { opacity: 0.8 } : undefined),
+      })}
     >
       {loading ? (
         <ActivityIndicator
@@ -77,7 +88,8 @@ export default function Button({
           {icon && <View>{icon}</View>}
           {typeof children === "string" ? (
             <Text
-              className={`${styles.text} ${disabled ? "opacity-50" : ""}`}
+              className={styles.text}
+              style={{ color: styles.textColor, opacity: disabled ? 0.5 : 1 }}
             >
               {children}
             </Text>

@@ -16,6 +16,7 @@ module.exports = {
           DEFAULT: "var(--color-background)",
           secondary: "var(--color-background-secondary)",
           card: "var(--color-background-card)",
+          modal: "var(--color-background-modal)",
           input: "var(--color-background-input)",
           suggestion: "var(--color-background-suggestion)",
         },

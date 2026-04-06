@@ -10,7 +10,7 @@ import {
   SWIM_DISTANCES,
 } from "../../constants/swimmingConstants";
 
-export default function TimeForm() {
+export default function TimeForm({ onSuccess }: { onSuccess?: (msg: string) => void } = {}) {
   const [athleteId, setAthleteId] = useState<number | null>(null);
   const [athleteName, setAthleteName] = useState("");
   const [stroke, setStroke] = useState("");
@@ -126,8 +126,13 @@ export default function TimeForm() {
     setSubmitLoading(true);
     try {
       await postData("Times", timeRecord);
-      setSnackbarMessage("Successfully added time");
-      setSnackbarVisible(true);
+      const msg = "Successfully added time";
+      if (onSuccess) {
+        onSuccess(msg);
+      } else {
+        setSnackbarMessage(msg);
+        setSnackbarVisible(true);
+      }
       resetForm();
     } catch (e: any) {
       setTimeError(e.message ?? "An error occurred");

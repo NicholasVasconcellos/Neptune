@@ -7,7 +7,7 @@ import Typeahead from "../Typeahead";
 
 import { getData, postData } from "../../utils/backendData";
 
-export default function AthleteForm() {
+export default function AthleteForm({ onSuccess }: { onSuccess?: (msg: string) => void } = {}) {
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
   const [teamId, setTeamId] = useState<number | null>(null);
@@ -132,8 +132,13 @@ export default function AthleteForm() {
       for (const msg of successMessages) {
         console.log(msg);
       }
-      setSnackbarMessage(successMessages.join("\n"));
-      setSnackbarVisible(true);
+      const msg = successMessages.join("\n");
+      if (onSuccess) {
+        onSuccess(msg);
+      } else {
+        setSnackbarMessage(msg);
+        setSnackbarVisible(true);
+      }
       resetForm();
       fetchAthletes();
       fetchTeams();

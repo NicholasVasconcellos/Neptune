@@ -26,6 +26,7 @@ import ExerciseRow, {
 } from "../../components/training/ExerciseRow";
 import { getData, postData } from "../../utils/backendData";
 import { alertLog } from "../../utils/alertLog";
+import { useThemeColors } from "../../hooks/useThemeColors";
 
 const DateTimePicker =
   Platform.OS !== "web"
@@ -129,6 +130,7 @@ function TrainingListView({ onAdd }: { onAdd: () => void }) {
 // ─── Training Creation Form ─────────────────────────────────────────────
 
 const AddTraining = () => {
+  const colors = useThemeColors();
   const nextExerciseId = useRef(1);
   const [view, setView] = useState<"list" | "create">("list");
 
@@ -476,10 +478,14 @@ const AddTraining = () => {
         {Platform.OS === "ios" && DateTimePicker && (
           <Modal transparent visible={showDatePicker} animationType="fade">
             <Pressable
-              className="flex-1 bg-black/40 items-center justify-center"
+              className="flex-1 items-center justify-center"
+              style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
               onPress={() => setShowDatePicker(false)}
             >
-              <Pressable className="self-stretch mx-4 rounded-xl bg-background-card overflow-hidden">
+              <Pressable
+                className="self-stretch mx-4 rounded-xl overflow-hidden"
+                style={{ backgroundColor: colors.backgroundModal }}
+              >
                 <DateTimePicker
                   value={date}
                   mode="date"

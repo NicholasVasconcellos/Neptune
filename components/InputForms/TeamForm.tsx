@@ -6,7 +6,7 @@ import { Text, TextInput, Button, Chip, Snackbar } from "../ui";
 import Typeahead from "../Typeahead";
 import { getData, postData, updateData } from "../../utils/backendData";
 
-export default function TeamForm() {
+export default function TeamForm({ onSuccess }: { onSuccess?: (msg: string) => void } = {}) {
   const [name, setName] = useState("");
   const [memberInput, setMemberInput] = useState("");
   const [members, setMembers] = useState<Record<string, any>[]>([]);
@@ -94,8 +94,13 @@ export default function TeamForm() {
         await updateData("Athletes", member.id, { "Team ID": teamId });
       }
 
-      setSnackbarMessage(`Successfully added new group ${name.trim()}`);
-      setSnackbarVisible(true);
+      const msg = `Successfully added new group ${name.trim()}`;
+      if (onSuccess) {
+        onSuccess(msg);
+      } else {
+        setSnackbarMessage(msg);
+        setSnackbarVisible(true);
+      }
       resetForm();
     } catch (e: any) {
       setNameError(e.message ?? "An error occurred");

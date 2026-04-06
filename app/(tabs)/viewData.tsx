@@ -24,6 +24,7 @@ export default function viewData() {
       {selectedTable && metadata && FormComponent && (
         <ListView
           tableName={metadata.tableName}
+          displayName={metadata.label}
           createForm={<FormComponent />}
         />
       )}

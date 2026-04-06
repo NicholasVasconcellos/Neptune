@@ -35,11 +35,13 @@ export default function Modal({
       onRequestClose={onClose}
     >
       <KeyboardAvoidingView
-        className="flex-1 justify-center bg-black/50 p-6"
+        className="flex-1 justify-center p-6"
+        style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <View
-          className={`rounded-2xl bg-background-card p-4 max-h-[85%] ${className}`}
+          className={`rounded-2xl p-4 max-h-[85%] ${className}`}
+          style={{ backgroundColor: colors.backgroundModal }}
         >
           {title && (
             <View className="flex-row items-center justify-between mb-2">

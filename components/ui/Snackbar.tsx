@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { View, Animated } from "react-native";
 import Text from "./Text";
+import { useThemeColors } from "../../hooks/useThemeColors";
 
 interface SnackbarProps {
   visible: boolean;
@@ -17,6 +18,7 @@ export default function Snackbar({
   children,
   className = "",
 }: SnackbarProps) {
+  const colors = useThemeColors();
   const opacity = React.useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -47,8 +49,13 @@ export default function Snackbar({
     <Animated.View
       style={{ opacity, position: "absolute", bottom: 24, left: 16, right: 16 }}
     >
-      <View className={`rounded-lg bg-foreground px-4 py-3 ${className}`}>
-        <Text className="text-background text-sm">{children}</Text>
+      <View
+        className={`rounded-lg px-4 py-3 ${className}`}
+        style={{ backgroundColor: colors.foreground }}
+      >
+        <Text className="text-sm" style={{ color: colors.background }}>
+          {children}
+        </Text>
       </View>
     </Animated.View>
   );
