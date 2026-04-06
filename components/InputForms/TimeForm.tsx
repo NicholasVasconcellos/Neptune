@@ -23,7 +23,7 @@ export default function TimeForm({ onSuccess, initialAthleteId, initialAthleteNa
   const [athleteId, setAthleteId] = useState<number | null>(initialAthleteId ?? null);
   const [athleteName, setAthleteName] = useState(initialAthleteName ?? "");
   const [stroke, setStroke] = useState("");
-  const [distanceUnit, setDistanceUnit] = useState("yards");
+  const [distanceUnit, setDistanceUnit] = useState("meters");
   const [distance, setDistance] = useState("");
   const [time, setTime] = useState("");
 
@@ -213,8 +213,8 @@ export default function TimeForm({ onSuccess, initialAthleteId, initialAthleteNa
 
         <SegmentedControl
           options={[
-            { value: "yards", label: "Yards" },
             { value: "meters", label: "Meters" },
+            { value: "yards", label: "Yards" },
           ]}
           selected={distanceUnit}
           onChange={setDistanceUnit}
