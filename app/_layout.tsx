@@ -36,6 +36,15 @@ const RootLayout = () => {
                 headerTitle: "",
               }}
             />
+            <Stack.Screen
+              name="athlete/[id]"
+              options={{
+                title: "Athlete",
+                headerShown: true,
+                headerTransparent: true,
+                headerTitle: "",
+              }}
+            />
           </Stack>
         </SafeAreaView>
       </SafeAreaProvider>
