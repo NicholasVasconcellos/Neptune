@@ -1,10 +1,9 @@
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import { useState } from "react";
 import ButtonGrid from "../../components/ButtonGrid";
-import Title from "../../components/Title";
+import { Text } from "../../components/ui";
 import ListView from "../../components/ListView";
 import { OBJECT_MAP } from "../../constants/objectMap";
-
 
 export default function viewData() {
   const [selectedTable, setSelectedTable] = useState<string | null>("Athletes");
@@ -13,10 +12,12 @@ export default function viewData() {
   const FormComponent = metadata?.formComponent;
 
   return (
-    <View style={styles.container}>
-      <Title>View Data</Title>
+    <View className="flex-1">
+      <Text variant="headline" className="text-center mt-10 mb-4">
+        View Data
+      </Text>
       <ButtonGrid
-        items={["Athletes", "Teams", "Times"]}
+        items={["Athletes", "Groups", "Times"]}
         selected={selectedTable}
         onSelectionChange={setSelectedTable}
       />
@@ -29,9 +30,3 @@ export default function viewData() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

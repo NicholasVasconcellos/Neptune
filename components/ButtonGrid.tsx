@@ -1,8 +1,8 @@
-import { StyleSheet, View, Pressable, Text, useColorScheme } from "react-native";
+import { View, Pressable } from "react-native";
 
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Colors, spacing, typography } from "../Styles/Theme";
+import { Text } from "./ui";
 import { OBJECT_MAP } from "../constants/objectMap";
 
 interface ButtonGridProps {
@@ -16,9 +16,6 @@ export default function ButtonGrid({
   selected,
   onSelectionChange,
 }: ButtonGridProps) {
-  const themeName = useColorScheme();
-  const theme = Colors[themeName ?? "light"];
-
   function handlePress(tableName: string) {
     if (selected === tableName) {
       onSelectionChange(null);
@@ -28,13 +25,12 @@ export default function ButtonGrid({
   }
 
   return (
-    <View style={styles.grid}>
+    <View className="flex-row flex-wrap gap-md mb-xl px-lg">
       {items.map((tableName) => {
         const metadata = OBJECT_MAP[tableName];
         if (!metadata) return null;
 
         const isSelected = selected === tableName;
-        const iconColor = isSelected ? Colors.primary : theme.text;
         const IconComponent =
           metadata.iconSet === "fa5" ? FontAwesome5 : FontAwesome6;
 
@@ -42,20 +38,23 @@ export default function ButtonGrid({
           <Pressable
             key={tableName}
             onPress={() => handlePress(tableName)}
-            style={({ pressed }) => [
-              styles.gridItem,
-              { backgroundColor: theme.backgroundCard },
-              isSelected && styles.gridItemSelected,
-              pressed && styles.pressed,
-            ]}
+            className={`w-[30%] aspect-square rounded-md items-center justify-center gap-sm border-2 bg-background-card ${
+              isSelected ? "border-primary" : "border-transparent"
+            }`}
+            style={({ pressed }) => (pressed ? { opacity: 0.5 } : undefined)}
           >
-            <Text style={[styles.gridLabel, { color: iconColor }]}>
+            <Text
+              variant="body"
+              className={`text-base font-semibold ${
+                isSelected ? "text-primary" : "text-foreground"
+              }`}
+            >
               {metadata.label}
             </Text>
             <IconComponent
               name={metadata.icon as any}
               size={28}
-              color={iconColor}
+              color={isSelected ? "#4fc3f7" : "var(--color-foreground)"}
             />
           </Pressable>
         );
@@ -63,33 +62,3 @@ export default function ButtonGrid({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: spacing.md,
-    marginBottom: spacing.xl,
-    paddingHorizontal: spacing.lg,
-  },
-  gridItem: {
-    width: "30%",
-    aspectRatio: 1,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: spacing.sm,
-    borderWidth: 2,
-    borderColor: "transparent",
-  },
-  gridItemSelected: {
-    borderColor: Colors.primary,
-  },
-  pressed: {
-    opacity: 0.5,
-  },
-  gridLabel: {
-    fontSize: typography.sizes.l,
-    fontWeight: typography.weights.semibold,
-  },
-});

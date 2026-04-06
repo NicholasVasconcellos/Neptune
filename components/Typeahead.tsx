@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
-import { View, ScrollView, StyleSheet, Platform } from "react-native";
-
-import { TextInput, List, Surface, Chip, ActivityIndicator, HelperText } from "react-native-paper";
+import {
+  View,
+  ScrollView,
+  TextInput,
+  Pressable,
+  Platform,
+  ActivityIndicator,
+} from "react-native";
+import { Text, Chip } from "./ui";
 
 interface TypeaheadProps {
   array: Record<string, any>[];
@@ -47,11 +53,9 @@ const Typeahead = ({
   };
 
   const onChangeText = (currText: string) => {
-    // Update Input Value (queue for next tick)
     setInputValue(currText);
     onChangeTextProp?.(currText);
 
-    // if no Text input set to initial state
     if (!currText || currText.trim() === "") {
       if (showOnEmpty) {
         setFilteredArray(array);
@@ -65,17 +69,11 @@ const Typeahead = ({
       return;
     }
 
-    // Get lowecase input
     const currTextLower = currText.toLowerCase();
-    //// Update the Filtered list with the entry and check and update exact match if any
-    // For each entry in array include it if it contains currText (case insensitive)
     let exactMatch = false;
     const currArray = array.filter((entry) => {
-      // Get Lowercase entry
       const entryLower = entry[propertyName].toLowerCase();
-      // Check if exact match (case insensitive)
       if (entryLower === currTextLower) exactMatch = true;
-      // Include if it contains lowe
       return entryLower.includes(currTextLower);
     });
 
@@ -83,103 +81,84 @@ const Typeahead = ({
     setIsNew(!exactMatch && allowsNew);
     setHasNoMatch(!exactMatch && !allowsNew && currArray.length === 0);
 
-    // if no Match
     if (currArray.length === 0) {
       setIsDisplayed(false);
       return;
     }
 
-    // set Display to true
-    setIsDisplayed(true); // Display
+    setIsDisplayed(true);
   };
 
   const onOptionClick = (item: Record<string, any>) => {
-    setInputValue(item[propertyName]); // Update Input value
-    setIsDisplayed(false); // Hide list
-    setIsNew(false); // not a new value
-
-    // Call the parent callback function if it exists
+    setInputValue(item[propertyName]);
+    setIsDisplayed(false);
+    setIsNew(false);
     onSelect?.(item);
   };
 
+  const borderClass = hasNoMatch
+    ? "border-danger"
+    : isDisplayed
+      ? "border-border-focused"
+      : "border-border";
+
   return (
-    <View
-      {...(Platform.OS === "web"
-        ? { onSubmit: (e: any) => e.preventDefault() }
-        : {})}
-      style={[styles.container, isDisplayed && styles.containerActive]}
-    >
+    <View style={[{ zIndex: isDisplayed ? 10 : 1 }]}>
       <View>
-        <TextInput
-          label={formTitle}
-          value={inputValue}
-          onChangeText={onChangeText}
-          onFocus={onFocus}
-          // Dismis the list when out of focus (delay so that onSelect can run first)
-          onBlur={() => setTimeout(() => setIsDisplayed(false), Platform.OS === 'ios' ? 300 : 100)}
-          placeholder={placeholderText}
-          mode="outlined"
-          error={hasNoMatch}
-          right={
-            loading ? (
-              <TextInput.Icon
-                icon={() => <ActivityIndicator size="small" />}
-              />
-            ) : undefined
-          }
-        />
-        {isNew && (
-          <Chip mode="flat" style={styles.newChip} compact>
-            New
-          </Chip>
+        {formTitle && (
+          <Text variant="label-sm" className="mb-1 ml-1">
+            {formTitle}
+          </Text>
         )}
+        <View
+          className={`flex-row items-center rounded-md border ${borderClass} bg-background-input px-3`}
+        >
+          <TextInput
+            value={inputValue}
+            onChangeText={onChangeText}
+            onFocus={onFocus}
+            onBlur={() =>
+              setTimeout(
+                () => setIsDisplayed(false),
+                Platform.OS === "ios" ? 300 : 100,
+              )
+            }
+            placeholder={placeholderText}
+            placeholderTextColor="var(--color-placeholder)"
+            className="flex-1 py-3 text-sm text-foreground"
+          />
+          {loading && <ActivityIndicator size="small" color="#4fc3f7" />}
+          {isNew && <Chip label="New" compact className="ml-1" />}
+        </View>
         {hasNoMatch && (
-          <HelperText type="error" visible>
+          <Text variant="body-sm" className="mt-1 ml-1 text-danger">
             No matching entry
-          </HelperText>
+          </Text>
         )}
       </View>
       {isDisplayed && (
-        <Surface style={styles.suggestionsContainer} elevation={3}>
-          <ScrollView
-            keyboardShouldPersistTaps="handled"
-            nestedScrollEnabled
-          >
+        <View
+          className="absolute top-full left-0 right-0 max-h-[200px] rounded-md bg-background-card border border-border shadow-lg"
+          style={{ zIndex: 2 }}
+        >
+          <ScrollView keyboardShouldPersistTaps="handled" nestedScrollEnabled>
             {filteredArray.map((item) => (
-              <List.Item
+              <Pressable
                 key={String(item.id)}
-                title={item[propertyName]}
                 onPress={() => onOptionClick(item)}
-              />
+                className="px-4 py-3 border-b border-border-light"
+                style={({ pressed }) =>
+                  pressed ? { opacity: 0.7 } : undefined
+                }
+              >
+                <Text>{item[propertyName]}</Text>
+              </Pressable>
             ))}
           </ScrollView>
-        </Surface>
+        </View>
       )}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    zIndex: 1,
-  },
-  containerActive: {
-    zIndex: 10,
-  },
-  newChip: {
-    position: "absolute",
-    right: 8,
-    top: "50%",
-    transform: [{ translateY: "-50%" }],
-  },
-  suggestionsContainer: {
-    position: "absolute",
-    top: "100%",
-    left: 0,
-    right: 0,
-    maxHeight: 200,
-    zIndex: 2,
-  },
-});
 
 export default Typeahead;

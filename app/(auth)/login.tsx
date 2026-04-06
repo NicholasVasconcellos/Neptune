@@ -1,15 +1,9 @@
-import {
-  View,
-  Keyboard,
-  Pressable,
-  Platform,
-  StyleSheet,
-} from "react-native";
-import Button from "../../components/Button";
+import { View, Keyboard, Pressable, Platform } from "react-native";
 import React, { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import { Button, TextInput } from "../../components/ui";
 import { supabase } from "../../lib/supabase";
 import { alertLog } from "../../utils/alertLog";
-import ThemedInput from "../../components/ThemedInput";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -29,28 +23,31 @@ export default function Login() {
   }
 
   return (
-    <Pressable onPress={() => Platform.OS !== "web" && Keyboard.dismiss()} accessible={false}>
-      <View style={styles.container} accessibilityRole={"form" as any}>
-        <ThemedInput
-          formTitle="Email"
+    <Pressable
+      onPress={() => Platform.OS !== "web" && Keyboard.dismiss()}
+      accessible={false}
+    >
+      <View className="mt-10 p-3 gap-1" accessibilityRole={"form" as any}>
+        <TextInput
+          label="Email"
           placeholder="email@domain.com"
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
         />
-        <ThemedInput
-          formTitle="Password"
+        <TextInput
+          label="Password"
           placeholder="Enter Password"
           secureTextEntry
           value={password}
           onChangeText={setPassword}
         />
         <Button
-          onClick={signInWithEmail}
+          onPress={signInWithEmail}
           disabled={loading}
           loading={loading}
-          icon="login"
+          icon={<Ionicons name="log-in-outline" size={20} color="#fff" />}
         >
           Sign In
         </Button>
@@ -58,11 +55,3 @@ export default function Login() {
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 40,
-    padding: 12,
-    gap: 4,
-  },
-});

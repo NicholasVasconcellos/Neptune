@@ -1,16 +1,9 @@
-import {
-  View,
-  Keyboard,
-  Pressable,
-  Platform,
-  StyleSheet,
-} from "react-native";
-import { HelperText } from "react-native-paper";
-import Button from "../../components/Button";
+import { View, Keyboard, Pressable, Platform } from "react-native";
 import React, { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import { Button, TextInput, Text } from "../../components/ui";
 import { supabase } from "../../lib/supabase";
 import { alertLog } from "../../utils/alertLog";
-import ThemedInput from "../../components/ThemedInput";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -53,54 +46,55 @@ export default function Register() {
     const {
       data: { session },
       error,
-    } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-    });
+    } = await supabase.auth.signUp({ email, password });
     if (error) {
       alertLog("Shii Bro:", error.message);
     } else if (!session) {
       alertLog(
         "Check Your Email",
-        "We've sent a confirmation link to your inbox. Please verify your email to get started."
+        "We've sent a confirmation link to your inbox. Please verify your email to get started.",
       );
     }
     setLoading(false);
   }
 
   return (
-    <Pressable onPress={() => Platform.OS !== "web" && Keyboard.dismiss()} accessible={false}>
-      <View style={styles.container} accessibilityRole={"form" as any}>
-        <ThemedInput
-          formTitle="Email"
+    <Pressable
+      onPress={() => Platform.OS !== "web" && Keyboard.dismiss()}
+      accessible={false}
+    >
+      <View className="mt-10 p-3 gap-1" accessibilityRole={"form" as any}>
+        <TextInput
+          label="Email"
           placeholder="email@domain.com"
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
         />
-        <ThemedInput
-          formTitle="Set Password"
+        <TextInput
+          label="Set Password"
           placeholder="Create New Password"
           secureTextEntry
           value={password}
           onChangeText={handlePasswordChange}
         />
-        <ThemedInput
-          formTitle="Confirm Password"
+        <TextInput
+          label="Confirm Password"
           placeholder="Re-enter Password"
           secureTextEntry
           value={confirmPassword}
           onChangeText={handleConfirmPasswordChange}
+          error={!!passwordError}
+          errorMessage={passwordError}
         />
-        <HelperText type="error" visible={!!passwordError}>
-          {passwordError}
-        </HelperText>
         <Button
-          onClick={signUpWithEmail}
+          onPress={signUpWithEmail}
           disabled={loading || !!passwordError}
           loading={loading}
-          icon="account-plus"
+          icon={
+            <Ionicons name="person-add-outline" size={20} color="#fff" />
+          }
         >
           Create Account
         </Button>
@@ -108,11 +102,3 @@ export default function Register() {
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 40,
-    padding: 12,
-    gap: 4,
-  },
-});

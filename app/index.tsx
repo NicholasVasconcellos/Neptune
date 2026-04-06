@@ -1,24 +1,12 @@
-import {
-  StyleSheet,
-  View,
-  Image,
-  useColorScheme,
-} from "react-native";
+import { View, Image, ActivityIndicator } from "react-native";
 import React, { useEffect } from "react";
 import { router } from "expo-router";
-import { ActivityIndicator } from "react-native-paper";
-import Card from "../components/Card";
-import Button from "../components/Button";
-import ThemedText from "../components/ThemedText";
+import { Ionicons } from "@expo/vector-icons";
+import { Card, Button, Text } from "../components/ui";
 import Logo from "../assets/NeptuneAppIcon.png";
-
 import { useAuth } from "../context/AuthContext";
 
-import { Colors } from "../Styles/Theme";
-
-/* Home Page */
 const Home = () => {
-  const theme = Colors[useColorScheme() ?? "light"];
   const { session, loading } = useAuth();
 
   useEffect(() => {
@@ -29,30 +17,37 @@ const Home = () => {
 
   if (loading) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.background }]}>
-        <ActivityIndicator size="large" />
+      <View className="flex-1 items-center justify-center bg-background">
+        <ActivityIndicator size="large" color="#4fc3f7" />
       </View>
     );
   }
 
-  if (session) {
-    return null;
-  }
+  if (session) return null;
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
+    <View className="flex-1 items-center justify-center self-center gap-1">
       <Card>
-        <ThemedText variant="titleLarge" style={{ fontWeight: "bold" }}>
+        <Text variant="title" className="font-bold">
           Welcome to Neptune Swim
-        </ThemedText>
+        </Text>
       </Card>
-      <Image source={Logo} style={styles.image} resizeMode="contain" />
-
-      <Button icon="login" href={"/login"}>
+      <Image
+        source={Logo}
+        style={{ width: 300, height: 300, alignSelf: "center", marginBottom: 20 }}
+        resizeMode="contain"
+      />
+      <Button
+        href="/login"
+        icon={<Ionicons name="log-in-outline" size={20} color="#fff" />}
+      >
         Login To Account
       </Button>
-
-      <Button icon="account-plus" href={"/register"} mode="outlined">
+      <Button
+        href="/register"
+        variant="outlined"
+        icon={<Ionicons name="person-add-outline" size={20} color="#4fc3f7" />}
+      >
         Create new Account
       </Button>
     </View>
@@ -60,19 +55,3 @@ const Home = () => {
 };
 
 export default Home;
-
-const styles = StyleSheet.create({
-  container: {
-    alignSelf: "center",
-    alignItems: "stretch",
-    flex: 1,
-    gap: 4,
-    justifyContent: "center",
-  },
-  image: {
-    width: 300,
-    height: 300,
-    alignSelf: "center",
-    marginBottom: 20,
-  },
-});

@@ -1,76 +1,74 @@
-import { View, useColorScheme } from "react-native";
+import { View } from "react-native";
 import React from "react";
 import { Tabs } from "expo-router";
-import { Colors } from "../../Styles/Theme";
-
-// Icons
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
-// Expo Renders Layout file by default
-// Slot: Renders page content
-// Tabs: Renders page +  keeps the previous pages stored
-const RootLayout = () => {
-  // Use Tabs Screen to setup the screen
-  // headerShown = False to hide header on a page
-  // Options>Title: name to set custom title
-
-  // Get Color scheme
-
-  const theme = Colors[useColorScheme() ?? "light"];
-
+const TabsLayout = () => {
   return (
-    <View style={{ flex: 1, backgroundColor: theme.background }}>
-      {/* Screen Options: Global Options for all screens */}
+    <View className="flex-1 bg-background">
       <Tabs
         screenOptions={{
           headerShown: false,
-          headerStyle: { backgroundColor: theme.backgroundSecondary },
-          headerTintColor: theme.text,
-          sceneStyle: { backgroundColor: theme.background },
-          tabBarActiveTintColor: Colors.primary,
-          tabBarStyle:{backgroundColor: theme.background}
+          tabBarActiveTintColor: "#4fc3f7",
+          tabBarStyle: { backgroundColor: "var(--color-background)" },
+          sceneStyle: { backgroundColor: "transparent" },
         }}
       >
-        {/* Reister screen with file name index, title=Home, */}
         <Tabs.Screen
           name="index"
           options={{
             title: "Home",
-            tabBarIcon: ({focused}) => (
-              <FontAwesome6 name="house" size={24} color={focused ? Colors.primary : theme.text} />
+            tabBarIcon: ({ focused }) => (
+              <FontAwesome6
+                name="house"
+                size={24}
+                color={focused ? "#4fc3f7" : "var(--color-foreground)"}
+              />
             ),
           }}
-        ></Tabs.Screen>
-<Tabs.Screen
+        />
+        <Tabs.Screen
           name="viewData"
           options={{
             title: "View Metrics",
-            tabBarIcon: ({focused}) => (
-              <FontAwesome6 name="chart-line" size={24} color={focused ? Colors.primary : theme.text} />
+            tabBarIcon: ({ focused }) => (
+              <FontAwesome6
+                name="chart-line"
+                size={24}
+                color={focused ? "#4fc3f7" : "var(--color-foreground)"}
+              />
             ),
           }}
-        ></Tabs.Screen>
+        />
         <Tabs.Screen
           name="addTraining"
           options={{
             title: "New Training",
-            tabBarIcon: ({focused}) => (
-              <FontAwesome6 name="scroll" size={24} color={focused ? Colors.primary : theme.text} />
+            tabBarIcon: ({ focused }) => (
+              <FontAwesome6
+                name="scroll"
+                size={24}
+                color={focused ? "#4fc3f7" : "var(--color-foreground)"}
+              />
             ),
           }}
-        ></Tabs.Screen>
+        />
         <Tabs.Screen
           name="viewTraining"
           options={{
             title: "Start Training",
-            tabBarIcon: ({focused}) => (
-              <FontAwesome6 name="play" size={24} color={focused ? Colors.primary : theme.text} />
+            tabBarIcon: ({ focused }) => (
+              <FontAwesome6
+                name="play"
+                size={24}
+                color={focused ? "#4fc3f7" : "var(--color-foreground)"}
+              />
             ),
           }}
-        ></Tabs.Screen>
+        />
       </Tabs>
     </View>
   );
 };
 
-export default RootLayout;
+export default TabsLayout;

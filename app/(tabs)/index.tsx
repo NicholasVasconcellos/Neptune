@@ -1,17 +1,13 @@
-import { StyleSheet, View, Image, useColorScheme, ScrollView } from "react-native";
+import { View, Image, ScrollView } from "react-native";
 import React, { useEffect } from "react";
 import { router } from "expo-router";
-import { Divider } from "react-native-paper";
-import Card from "../../components/Card";
-import Button from "../../components/Button";
-import ThemedText from "../../components/ThemedText";
-import { Colors } from "../../Styles/Theme";
+import { Ionicons } from "@expo/vector-icons";
+import { Card, Button, Text, Divider } from "../../components/ui";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
 import Logo from "../../assets/NeptuneAppIcon.png";
 
 const Home = () => {
-  const theme = Colors[useColorScheme() ?? "light"];
   const { session } = useAuth();
 
   useEffect(() => {
@@ -22,43 +18,61 @@ const Home = () => {
 
   return (
     <ScrollView
-      style={{ backgroundColor: theme.background }}
-      contentContainerStyle={styles.container}
+      className="bg-background"
+      contentContainerStyle={{
+        alignSelf: "center",
+        alignItems: "stretch",
+        gap: 4,
+        paddingVertical: 20,
+      }}
     >
       <Card>
-        <ThemedText variant="titleLarge" style={{ fontWeight: "bold" }}>
+        <Text variant="title" className="font-bold">
           Welcome to Neptune Swim
-        </ThemedText>
+        </Text>
       </Card>
-      <Image source={Logo} style={styles.image} resizeMode="contain" />
+      <Image
+        source={Logo}
+        style={{ width: 300, height: 300, alignSelf: "center", marginBottom: 20 }}
+        resizeMode="contain"
+      />
 
       <Card>
-        <ThemedText variant="titleMedium" style={{ fontWeight: "bold" }}>
+        <Text variant="title" className="font-bold text-base">
           Welcome to Neptune Swim
-        </ThemedText>
-        <ThemedText variant="bodyMedium">
-          Logged in as {session?.user?.email}
-        </ThemedText>
+        </Text>
+        <Text>Logged in as {session?.user?.email}</Text>
       </Card>
 
-      <Divider style={{ marginVertical: 8 }} />
+      <Divider className="my-2" />
 
-<Button icon="chart-line" href={"/viewData"}>
+      <Button
+        href="/viewData"
+        icon={<Ionicons name="bar-chart-outline" size={20} color="#fff" />}
+      >
         View Metrics
       </Button>
 
-      <Button icon="script-text" href={"/addTraining"} mode="outlined">
+      <Button
+        href="/addTraining"
+        variant="outlined"
+        icon={<Ionicons name="document-text-outline" size={20} color="#4fc3f7" />}
+      >
         Add New Training
       </Button>
 
-      <Button icon="play" href={"/viewTraining"} mode="outlined">
+      <Button
+        href="/viewTraining"
+        variant="outlined"
+        icon={<Ionicons name="play-outline" size={20} color="#4fc3f7" />}
+      >
         Start Training
       </Button>
 
       <Button
-        icon="logout"
-        onClick={() => supabase.auth.signOut()}
-        mode="text"
+        onPress={() => supabase.auth.signOut()}
+        variant="text"
+        icon={<Ionicons name="log-out-outline" size={20} color="#4fc3f7" />}
       >
         Log Out
       </Button>
@@ -67,18 +81,3 @@ const Home = () => {
 };
 
 export default Home;
-
-const styles = StyleSheet.create({
-  container: {
-    alignSelf: "center",
-    alignItems: "stretch",
-    gap: 4,
-    paddingVertical: 20,
-  },
-  image: {
-    width: 300,
-    height: 300,
-    alignSelf: "center",
-    marginBottom: 20,
-  },
-});

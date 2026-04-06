@@ -1,11 +1,9 @@
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import React, { useState, useEffect } from "react";
-import { HelperText, Snackbar, SegmentedButtons } from "react-native-paper";
+import { Ionicons } from "@expo/vector-icons";
 
-import Title from "../Title";
-import ThemedInput from "../ThemedInput";
+import { Text, TextInput, Button, SegmentedControl, Snackbar } from "../ui";
 import Typeahead from "../Typeahead";
-import Button from "../Button";
 import { getData, postData } from "../../utils/backendData";
 import {
   SWIM_STROKES,
@@ -21,7 +19,9 @@ export default function TimeForm() {
   const [time, setTime] = useState("");
 
   const [athleteData, setAthleteData] = useState<Record<string, any>[]>([]);
-  const [localStrokes, setLocalStrokes] = useState<string[]>([...SWIM_STROKES]);
+  const [localStrokes, setLocalStrokes] = useState<string[]>([
+    ...SWIM_STROKES,
+  ]);
   const [athleteLoading, setAthleteLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -33,9 +33,9 @@ export default function TimeForm() {
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const strokeData = localStrokes.map((s, idx) => ({ id: idx, Name: s }));
-  const distanceData = (
-    SWIM_DISTANCES as Record<string, number[]>
-  )[distanceUnit].map((d: number) => ({
+  const distanceData = (SWIM_DISTANCES as Record<string, number[]>)[
+    distanceUnit
+  ].map((d: number) => ({
     id: d,
     Name: String(d),
   }));
@@ -60,10 +60,11 @@ export default function TimeForm() {
 
   function handleStrokeChange(text: string) {
     setStroke(text);
-    // If the user typed a new stroke that doesn't exist, add it to local array
     if (
       text.trim() &&
-      !localStrokes.some((s) => s.toLowerCase() === text.trim().toLowerCase())
+      !localStrokes.some(
+        (s) => s.toLowerCase() === text.trim().toLowerCase(),
+      )
     ) {
       setLocalStrokes((prev) => [...prev, text.trim()]);
     }
@@ -137,91 +138,98 @@ export default function TimeForm() {
 
   return (
     <>
-        <View style={styles.container}>
-          <Title>New Time</Title>
+      <View className="p-3 gap-1">
+        <Text variant="headline" className="text-center mt-4 mb-2">
+          New Time
+        </Text>
 
-          <Typeahead
-            array={athleteData}
-            propertyName="Name"
-            formTitle="Swimmer"
-            placeholderText="Search for swimmer"
-            loading={athleteLoading}
-            value={athleteName}
-            allowsNew={false}
-            showOnEmpty={false}
-            onChangeText={(text) => {
-              setAthleteName(text);
-              setAthleteId(null);
-            }}
-            onSelect={(item) => {
-              setAthleteName(item.Name);
-              setAthleteId(item.id);
-            }}
-          />
-          <HelperText type="error" visible={!!swimmerError}>
+        <Typeahead
+          array={athleteData}
+          propertyName="Name"
+          formTitle="Swimmer"
+          placeholderText="Search for swimmer"
+          loading={athleteLoading}
+          value={athleteName}
+          allowsNew={false}
+          showOnEmpty={false}
+          onChangeText={(text) => {
+            setAthleteName(text);
+            setAthleteId(null);
+          }}
+          onSelect={(item) => {
+            setAthleteName(item.Name);
+            setAthleteId(item.id);
+          }}
+        />
+        {!!swimmerError && (
+          <Text variant="body-sm" className="text-danger ml-1">
             {swimmerError}
-          </HelperText>
+          </Text>
+        )}
 
-          <Typeahead
-            array={strokeData}
-            propertyName="Name"
-            formTitle="Stroke"
-            placeholderText="Select or add stroke"
-            value={stroke}
-            allowsNew
-            showOnEmpty
-            onChangeText={handleStrokeChange}
-            onSelect={handleStrokeSelect}
-          />
-          <HelperText type="error" visible={!!strokeError}>
+        <Typeahead
+          array={strokeData}
+          propertyName="Name"
+          formTitle="Stroke"
+          placeholderText="Select or add stroke"
+          value={stroke}
+          allowsNew
+          showOnEmpty
+          onChangeText={handleStrokeChange}
+          onSelect={handleStrokeSelect}
+        />
+        {!!strokeError && (
+          <Text variant="body-sm" className="text-danger ml-1">
             {strokeError}
-          </HelperText>
+          </Text>
+        )}
 
-          <SegmentedButtons
-            style={styles.unitToggle}
-            value={distanceUnit}
-            onValueChange={setDistanceUnit}
-            buttons={[
-              { value: "yards", label: "Yards" },
-              { value: "meters", label: "Meters" },
-            ]}
-          />
+        <SegmentedControl
+          options={[
+            { value: "yards", label: "Yards" },
+            { value: "meters", label: "Meters" },
+          ]}
+          selected={distanceUnit}
+          onChange={setDistanceUnit}
+          className="my-2"
+        />
 
-          <Typeahead
-            array={distanceData}
-            propertyName="Name"
-            formTitle="Distance"
-            placeholderText="Select or enter distance"
-            value={distance}
-            allowsNew
-            showOnEmpty
-            onChangeText={setDistance}
-            onSelect={(item) => setDistance(item.Name)}
-          />
-          <HelperText type="error" visible={!!distanceError}>
+        <Typeahead
+          array={distanceData}
+          propertyName="Name"
+          formTitle="Distance"
+          placeholderText="Select or enter distance"
+          value={distance}
+          allowsNew
+          showOnEmpty
+          onChangeText={setDistance}
+          onSelect={(item) => setDistance(item.Name)}
+        />
+        {!!distanceError && (
+          <Text variant="body-sm" className="text-danger ml-1">
             {distanceError}
-          </HelperText>
+          </Text>
+        )}
 
-          <ThemedInput
-            formTitle="Time (seconds)"
-            placeholder="Enter time in seconds"
-            value={time}
-            onChangeText={setTime}
-            keyboardType="decimal-pad"
-          />
-          <HelperText type="error" visible={!!timeError}>
-            {timeError}
-          </HelperText>
+        <TextInput
+          label="Time (seconds)"
+          placeholder="Enter time in seconds"
+          value={time}
+          onChangeText={setTime}
+          keyboardType="decimal-pad"
+          error={!!timeError}
+          errorMessage={timeError}
+        />
 
-          <Button
-            onClick={handleSubmit}
-            disabled={submitLoading}
-            loading={submitLoading}
-            icon="timer"
-          >
-            Add Time
-          </Button>
-        </View>
+        <Button
+          onPress={handleSubmit}
+          disabled={submitLoading}
+          loading={submitLoading}
+          icon={<Ionicons name="timer-outline" size={18} color="#fff" />}
+        >
+          Add Time
+        </Button>
+      </View>
 
       <Snackbar
         visible={snackbarVisible}
@@ -233,13 +241,3 @@ export default function TimeForm() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 12,
-    gap: 4,
-  },
-  unitToggle: {
-    marginVertical: 8,
-  },
-});
