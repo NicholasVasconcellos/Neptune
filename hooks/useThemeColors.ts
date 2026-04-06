@@ -23,5 +23,7 @@ export function useThemeColors() {
     primary: Colors.primary,
     danger: Colors.danger,
     success: Colors.success,
+    onPrimary: "#ffffff",
+    overlay: scheme === "dark" ? "rgba(0,0,0,0.6)" : "rgba(0,0,0,0.5)",
   };
 }

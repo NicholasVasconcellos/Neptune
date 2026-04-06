@@ -36,7 +36,7 @@ export default function Modal({
     >
       <KeyboardAvoidingView
         className="flex-1 justify-center p-6"
-        style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        style={{ backgroundColor: colors.overlay }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <View

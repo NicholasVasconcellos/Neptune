@@ -43,6 +43,8 @@ module.exports = {
         "danger-bg": "var(--color-danger-bg)",
         "input-focused": "var(--color-input-focused)",
         "unit-active": "var(--color-unit-active)",
+        overlay: "var(--color-overlay)",
+        "on-primary": "var(--color-on-primary)",
       },
       borderRadius: {
         sm: "10px",

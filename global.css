@@ -26,6 +26,8 @@
     --color-danger-bg: rgba(255, 82, 82, 0.05);
     --color-input-focused: rgba(79, 195, 247, 0.05);
     --color-unit-active: rgba(79, 195, 247, 0.15);
+    --color-overlay: rgba(0, 0, 0, 0.5);
+    --color-on-primary: #ffffff;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -52,6 +54,8 @@
       --color-danger-bg: rgba(255, 82, 82, 0.1);
       --color-input-focused: rgba(79, 195, 247, 0.1);
       --color-unit-active: rgba(79, 195, 247, 0.2);
+      --color-overlay: rgba(0, 0, 0, 0.6);
+      --color-on-primary: #ffffff;
     }
   }
 }

@@ -2,6 +2,7 @@ import React from "react";
 import { Pressable } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Text from "./Text";
+import { useThemeColors } from "../../hooks/useThemeColors";
 
 interface FABProps {
   icon: keyof typeof Ionicons.glyphMap;
@@ -20,6 +21,8 @@ export default function FAB({
   className = "",
   accessibilityLabel,
 }: FABProps) {
+  const colors = useThemeColors();
+
   return (
     <Pressable
       onPress={onPress}
@@ -28,9 +31,9 @@ export default function FAB({
       className={`flex-row items-center gap-2 rounded-2xl bg-primary px-4 py-3.5 shadow-lg ${className}`}
       style={({ pressed }) => (pressed ? { opacity: 0.85 } : undefined)}
     >
-      <Ionicons name={icon} size={22} color="#fff" />
+      <Ionicons name={icon} size={22} color={colors.onPrimary} />
       {extended && label && (
-        <Text className="text-white font-semibold text-sm">{label}</Text>
+        <Text className="text-on-primary font-semibold text-sm">{label}</Text>
       )}
     </Pressable>
   );
