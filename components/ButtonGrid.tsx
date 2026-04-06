@@ -46,19 +46,24 @@ export default function ButtonGrid({
             }`}
             style={({ pressed }) => (pressed ? { opacity: 0.5 } : undefined)}
           >
-            <Text
-              variant="body"
-              className={`text-base font-semibold ${
-                isSelected ? "text-primary" : "text-foreground"
-              }`}
-            >
-              {metadata.label}
-            </Text>
-            <IconComponent
-              name={metadata.icon as any}
-              size={28}
-              color={isSelected ? colors.primary : colors.foreground}
-            />
+            <View className="flex-1 items-center justify-center gap-sm">
+              <View className="h-8 items-center justify-center">
+                <IconComponent
+                  name={metadata.icon as any}
+                  size={28}
+                  color={isSelected ? colors.primary : colors.foreground}
+                />
+              </View>
+              <Text
+                variant="body"
+                numberOfLines={1}
+                className={`text-base font-semibold ${
+                  isSelected ? "text-primary" : "text-foreground"
+                }`}
+              >
+                {metadata.label}
+              </Text>
+            </View>
           </Pressable>
         );
       })}
