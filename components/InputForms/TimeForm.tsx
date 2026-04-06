@@ -40,6 +40,42 @@ export default function TimeForm({ onSuccess, initialAthleteId, initialAthleteNa
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
+  function handleTimeChange(text: string) {
+    let cleaned = text.replace(/[^0-9:.]/g, "");
+    const hasColon = cleaned.includes(":");
+    const hasDot = cleaned.includes(".");
+
+    // Auto-insert colon after 2 digits when no colon or dot is present yet
+    if (!hasColon && !hasDot) {
+      const digits = cleaned.replace(/[^0-9]/g, "");
+      if (digits.length > 2) {
+        cleaned = digits.slice(0, 2) + ":" + digits.slice(2);
+      }
+    }
+
+    setTime(cleaned);
+  }
+
+  function parseTimeToSeconds(input: string): number | null {
+    const trimmed = input.trim();
+    if (!trimmed) return null;
+
+    if (trimmed.includes(":")) {
+      const parts = trimmed.split(":");
+      if (parts.length !== 2) return null;
+      const minutes = parseInt(parts[0], 10);
+      const seconds = parseFloat(parts[1]);
+      if (isNaN(minutes) || isNaN(seconds) || minutes < 0 || seconds < 0) {
+        return null;
+      }
+      return minutes * 60 + seconds;
+    }
+
+    const val = parseFloat(trimmed);
+    if (isNaN(val) || val <= 0) return null;
+    return val;
+  }
+
   const strokeData = localStrokes.map((s, idx) => ({ id: idx, Name: s }));
   const distanceData = (SWIM_DISTANCES as Record<string, number[]>)[
     distanceUnit
@@ -121,15 +157,15 @@ export default function TimeForm({ onSuccess, initialAthleteId, initialAthleteNa
     if (!time.trim()) {
       setTimeError("Time is required");
       hasError = true;
-    } else if (isNaN(Number(time)) || Number(time) <= 0) {
-      setTimeError("Time must be a positive number");
+    } else if (parseTimeToSeconds(time) === null || parseTimeToSeconds(time)! <= 0) {
+      setTimeError("Invalid time — use MM:SS.ms or seconds");
       hasError = true;
     }
 
     if (hasError) return;
 
     const timeRecord: Record<string, any> = {
-      Time: Number(time),
+      Time: parseTimeToSeconds(time)!,
       Distance: Number(distance),
       "Distance Unit": distanceUnit,
       Stroke: stroke.trim(),
@@ -234,10 +270,10 @@ export default function TimeForm({ onSuccess, initialAthleteId, initialAthleteNa
         )}
 
         <TextInput
-          label="Time (seconds)"
-          placeholder="Enter time in seconds"
+          label="Time (MM:SS.ms)"
+          placeholder="e.g. 1:30.22 or 90"
           value={time}
-          onChangeText={setTime}
+          onChangeText={handleTimeChange}
           keyboardType="decimal-pad"
           error={!!timeError}
           errorMessage={timeError}
