@@ -8,8 +8,12 @@ import {
   Divider,
   LoadingIndicator,
   EmptyState,
+  FAB,
+  Modal,
+  Snackbar,
 } from "@/components/ui";
 import AthleteTimesChart from "@/components/AthleteTimesChart";
+import TimeForm from "@/components/InputForms/TimeForm";
 import { getData } from "@/utils/backendData";
 import { formatTime, formatDateShort } from "@/utils/timeFormatting";
 
@@ -23,6 +27,11 @@ export default function AthleteDetail() {
 
   const [selectedStroke, setSelectedStroke] = useState<string | null>(null);
   const [selectedDistance, setSelectedDistance] = useState<string | null>(null);
+
+  const [addTimeModalVisible, setAddTimeModalVisible] = useState(false);
+  const [isFabExtended, setIsFabExtended] = useState(true);
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const fetchData = useCallback(async () => {
     if (!id) return;
@@ -84,6 +93,19 @@ export default function AthleteDetail() {
     return result;
   }, [times, selectedStroke, selectedDistance]);
 
+  const handleFormSuccess = useCallback((msg: string) => {
+    setAddTimeModalVisible(false);
+    setSnackbarMessage(msg);
+    setSnackbarVisible(true);
+    fetchData();
+  }, [fetchData]);
+
+  const onFlatListScroll = ({ nativeEvent }: any) => {
+    const currentScrollPosition =
+      Math.floor(nativeEvent?.contentOffset?.y) ?? 0;
+    setIsFabExtended(currentScrollPosition <= 0);
+  };
+
   const sortedTimesForList = useMemo(
     () =>
       [...times].sort(
@@ -114,7 +136,8 @@ export default function AthleteDetail() {
       <FlatList
         data={sortedTimesForList}
         keyExtractor={(item) => String(item.id)}
-        contentContainerStyle={{ paddingBottom: 32 }}
+        onScroll={onFlatListScroll}
+        contentContainerStyle={{ paddingBottom: 80 }}
         ListHeaderComponent={
           <View className="px-4">
             {/* Athlete Info */}
@@ -230,6 +253,39 @@ export default function AthleteDetail() {
           </View>
         }
       />
+
+      <Modal
+        visible={addTimeModalVisible}
+        onClose={() => setAddTimeModalVisible(false)}
+        title="Add Time"
+      >
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <TimeForm
+            initialAthleteId={Number(id)}
+            initialAthleteName={athlete.Name}
+            onSuccess={handleFormSuccess}
+          />
+        </ScrollView>
+      </Modal>
+
+      <FAB
+        icon="add"
+        label="Add Time"
+        extended={isFabExtended}
+        onPress={() => setAddTimeModalVisible(true)}
+        className="absolute right-4 bottom-4"
+      />
+
+      <Snackbar
+        visible={snackbarVisible}
+        onDismiss={() => setSnackbarVisible(false)}
+        duration={3000}
+      >
+        {snackbarMessage}
+      </Snackbar>
     </View>
   );
 }

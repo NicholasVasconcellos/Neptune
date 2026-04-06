@@ -11,10 +11,16 @@ import {
   SWIM_DISTANCES,
 } from "@/constants/swimmingConstants";
 
-export default function TimeForm({ onSuccess }: { onSuccess?: (msg: string) => void } = {}) {
+interface TimeFormProps {
+  onSuccess?: (msg: string) => void;
+  initialAthleteId?: number;
+  initialAthleteName?: string;
+}
+
+export default function TimeForm({ onSuccess, initialAthleteId, initialAthleteName }: TimeFormProps = {}) {
   const colors = useThemeColors();
-  const [athleteId, setAthleteId] = useState<number | null>(null);
-  const [athleteName, setAthleteName] = useState("");
+  const [athleteId, setAthleteId] = useState<number | null>(initialAthleteId ?? null);
+  const [athleteName, setAthleteName] = useState(initialAthleteName ?? "");
   const [stroke, setStroke] = useState("");
   const [distanceUnit, setDistanceUnit] = useState("yards");
   const [distance, setDistance] = useState("");
@@ -42,7 +48,10 @@ export default function TimeForm({ onSuccess }: { onSuccess?: (msg: string) => v
     Name: String(d),
   }));
 
+  const athletePreset = initialAthleteId != null;
+
   useEffect(() => {
+    if (athletePreset) return;
     async function fetchAthletes() {
       setAthleteLoading(true);
       try {
@@ -54,7 +63,7 @@ export default function TimeForm({ onSuccess }: { onSuccess?: (msg: string) => v
       }
     }
     fetchAthletes();
-  }, []);
+  }, [athletePreset]);
 
   function handleStrokeSelect(item: Record<string, any>) {
     setStroke(item.Name);
@@ -76,8 +85,10 @@ export default function TimeForm({ onSuccess }: { onSuccess?: (msg: string) => v
     setTime("");
     setStroke("");
     setDistance("");
-    setAthleteId(null);
-    setAthleteName("");
+    if (!athletePreset) {
+      setAthleteId(null);
+      setAthleteName("");
+    }
     setSwimmerError("");
     setStrokeError("");
     setDistanceError("");
@@ -150,28 +161,32 @@ export default function TimeForm({ onSuccess }: { onSuccess?: (msg: string) => v
           New Time
         </Text>
 
-        <Typeahead
-          array={athleteData}
-          propertyName="Name"
-          formTitle="Swimmer"
-          placeholderText="Search for swimmer"
-          loading={athleteLoading}
-          value={athleteName}
-          allowsNew={false}
-          showOnEmpty={false}
-          onChangeText={(text) => {
-            setAthleteName(text);
-            setAthleteId(null);
-          }}
-          onSelect={(item) => {
-            setAthleteName(item.Name);
-            setAthleteId(item.id);
-          }}
-        />
-        {!!swimmerError && (
-          <Text variant="body-sm" className="text-danger ml-1">
-            {swimmerError}
-          </Text>
+        {!athletePreset && (
+          <>
+            <Typeahead
+              array={athleteData}
+              propertyName="Name"
+              formTitle="Swimmer"
+              placeholderText="Search for swimmer"
+              loading={athleteLoading}
+              value={athleteName}
+              allowsNew={false}
+              showOnEmpty={false}
+              onChangeText={(text) => {
+                setAthleteName(text);
+                setAthleteId(null);
+              }}
+              onSelect={(item) => {
+                setAthleteName(item.Name);
+                setAthleteId(item.id);
+              }}
+            />
+            {!!swimmerError && (
+              <Text variant="body-sm" className="text-danger ml-1">
+                {swimmerError}
+              </Text>
+            )}
+          </>
         )}
 
         <Typeahead

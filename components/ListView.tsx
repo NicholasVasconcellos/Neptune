@@ -219,9 +219,19 @@ export default function ListView({
   }
 
   function renderRow({ item }: { item: Record<string, any> }) {
+    const isRowTappable = tableName === "Athletes";
+    const RowWrapper = isRowTappable ? Pressable : View;
+    const rowProps = isRowTappable
+      ? {
+          onPress: () => handleCellPress(tableName, item.id),
+          style: ({ pressed }: { pressed: boolean }) =>
+            pressed ? { opacity: 0.7 } : undefined,
+        }
+      : {};
+
     return (
       <View>
-        <View className="flex-row flex-wrap px-4 py-3 gap-3">
+        <RowWrapper {...(rowProps as any)} className="flex-row flex-wrap px-4 py-3 gap-3">
           {columns.map((col) => (
             <View key={col} className="min-w-[80px] flex-1">
               <Text variant="label-sm" className="opacity-60 mb-0.5">
@@ -230,7 +240,7 @@ export default function ListView({
               {renderCell(col, item[col], item)}
             </View>
           ))}
-        </View>
+        </RowWrapper>
         <Divider />
       </View>
     );
