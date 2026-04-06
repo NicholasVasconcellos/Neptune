@@ -60,3 +60,24 @@ export async function updateData(
   if (error) throw error;
   return data;
 }
+
+export async function deleteData(tableName: string, id: number) {
+  const { error } = await supabase
+    .from(tableName)
+    .delete()
+    .eq("id", id);
+
+  if (error) throw error;
+}
+
+export async function deleteByFilter(
+  tableName: string,
+  filters: Record<string, any>,
+) {
+  let query = supabase.from(tableName).delete();
+  for (const [key, value] of Object.entries(filters)) {
+    query = query.eq(key, value);
+  }
+  const { error } = await query;
+  if (error) throw error;
+}

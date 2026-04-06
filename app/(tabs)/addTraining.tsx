@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  Modal,
+  Alert,
+  Modal as RNModal,
   Platform,
   Pressable,
   ScrollView,
@@ -14,6 +15,7 @@ import {
   Divider,
   Text,
   TextInput,
+  Modal,
   SegmentedControl,
   IconButton,
   FAB,
@@ -25,9 +27,10 @@ import Typeahead from "@/components/Typeahead";
 import ExerciseRow, {
   type Exercise,
 } from "@/components/training/ExerciseRow";
-import { getData, postData } from "@/utils/backendData";
+import { getData, postData, updateData, deleteData, deleteByFilter } from "@/utils/backendData";
 import { alertLog } from "@/utils/alertLog";
 import { useThemeColors } from "@/hooks/useThemeColors";
+import { exportTrainingCSV, exportTrainingPDF } from "@/utils/exportTraining";
 
 const DateTimePicker =
   Platform.OS !== "web"
@@ -49,12 +52,26 @@ function parseInterval(mmss: string): number | null {
   return mm * 60 + ss;
 }
 
+function formatSecondsToInterval(totalSec: number | null): string {
+  if (!totalSec) return "";
+  const m = Math.floor(totalSec / 60);
+  const s = totalSec % 60;
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
+
 // ─── Training List View ─────────────────────────────────────────────────
 
 function TrainingListView({ onAdd }: { onAdd: () => void }) {
+  const colors = useThemeColors();
   const [trainings, setTrainings] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+
+  // Export modal state
+  const [selectedTraining, setSelectedTraining] = useState<Record<string, any> | null>(null);
+  const [selectedExercises, setSelectedExercises] = useState<Record<string, any>[]>([]);
+  const [loadingExercises, setLoadingExercises] = useState(false);
+  const [exporting, setExporting] = useState<"csv" | "pdf" | null>(null);
 
   useEffect(() => {
     getData("Trainings")
@@ -68,6 +85,35 @@ function TrainingListView({ onAdd }: { onAdd: () => void }) {
         (t.Name ?? "").toLowerCase().includes(search.toLowerCase()),
       )
     : trainings;
+
+  const openExportModal = useCallback(async (training: Record<string, any>) => {
+    setSelectedTraining(training);
+    setLoadingExercises(true);
+    try {
+      const exercises = await getData("Exercises", { "Training ID": training.id });
+      setSelectedExercises(exercises);
+    } catch {
+      setSelectedExercises([]);
+    } finally {
+      setLoadingExercises(false);
+    }
+  }, []);
+
+  const handleExport = useCallback(async (format: "csv" | "pdf") => {
+    if (!selectedTraining) return;
+    setExporting(format);
+    try {
+      if (format === "csv") {
+        await exportTrainingCSV(selectedTraining, selectedExercises);
+      } else {
+        await exportTrainingPDF(selectedTraining, selectedExercises);
+      }
+    } catch (e: any) {
+      alertLog("Export Error", e.message);
+    } finally {
+      setExporting(null);
+    }
+  }, [selectedTraining, selectedExercises]);
 
   if (loading) {
     return <LoadingIndicator />;
@@ -88,8 +134,14 @@ function TrainingListView({ onAdd }: { onAdd: () => void }) {
         keyExtractor={(item) => String(item.id)}
         contentContainerStyle={{ paddingBottom: 80 }}
         renderItem={({ item }) => (
-          <View className="px-4 py-3 border-b border-border-light">
-            <Text className="font-semibold">{item.Name ?? "Untitled"}</Text>
+          <Pressable
+            onPress={() => openExportModal(item)}
+            className="px-4 py-3 border-b border-border-light"
+          >
+            <View className="flex-row items-center justify-between">
+              <Text className="font-semibold flex-1">{item.Name ?? "Untitled"}</Text>
+              <Ionicons name="share-outline" size={18} color={colors.foregroundMuted} />
+            </View>
             <View className="flex-row gap-3 mt-1">
               {item.Date && (
                 <Text variant="body-sm" className="text-foreground-muted">
@@ -106,7 +158,7 @@ function TrainingListView({ onAdd }: { onAdd: () => void }) {
                 </Text>
               )}
             </View>
-          </View>
+          </Pressable>
         )}
         ListEmptyComponent={
           <EmptyState message="No trainings yet" icon="barbell-outline" />
@@ -118,6 +170,55 @@ function TrainingListView({ onAdd }: { onAdd: () => void }) {
         onPress={onAdd}
         className="absolute right-4 bottom-4"
       />
+
+      {/* Export Modal */}
+      <Modal
+        visible={selectedTraining !== null}
+        onClose={() => setSelectedTraining(null)}
+        title={selectedTraining?.Name ?? "Export Training"}
+      >
+        {loadingExercises ? (
+          <LoadingIndicator />
+        ) : (
+          <View className="gap-3">
+            <View className="gap-1">
+              {selectedTraining?.Date && (
+                <Text variant="body-sm" className="text-foreground-muted">
+                  Date: {selectedTraining.Date}
+                </Text>
+              )}
+              {selectedTraining?.Notes && (
+                <Text variant="body-sm" className="text-foreground-muted">
+                  Notes: {selectedTraining.Notes}
+                </Text>
+              )}
+              <Text variant="body-sm" className="text-foreground-muted">
+                {selectedExercises.length} exercise{selectedExercises.length !== 1 ? "s" : ""}
+              </Text>
+            </View>
+
+            <Divider />
+
+            <Button
+              variant="outlined"
+              onPress={() => handleExport("csv")}
+              loading={exporting === "csv"}
+              disabled={exporting !== null}
+              icon={<Ionicons name="document-text-outline" size={18} color={colors.primary} />}
+            >
+              Export CSV
+            </Button>
+            <Button
+              onPress={() => handleExport("pdf")}
+              loading={exporting === "pdf"}
+              disabled={exporting !== null}
+              icon={<Ionicons name="download-outline" size={18} color="#fff" />}
+            >
+              Export PDF
+            </Button>
+          </View>
+        )}
+      </Modal>
     </View>
   );
 }
@@ -471,7 +572,7 @@ const AddTraining = () => {
           />
         )}
         {Platform.OS === "ios" && DateTimePicker && (
-          <Modal transparent visible={showDatePicker} animationType="fade">
+          <RNModal transparent visible={showDatePicker} animationType="fade">
             <Pressable
               className="flex-1 items-center justify-center"
               style={{ backgroundColor: colors.overlay }}
@@ -489,7 +590,7 @@ const AddTraining = () => {
                 />
               </Pressable>
             </Pressable>
-          </Modal>
+          </RNModal>
         )}
 
         {/* Days row */}
