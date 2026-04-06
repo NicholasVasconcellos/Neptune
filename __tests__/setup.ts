@@ -124,7 +124,7 @@ jest.mock("../context/AuthContext", () => ({
 // ---------------------------------------------------------------------------
 // Mock: Image assets
 // ---------------------------------------------------------------------------
-jest.mock("../assets/NeptuneAppIcon.png", () => "mocked-logo");
+jest.mock("../assets/neptune-logo-no-bg.png", () => "mocked-logo");
 
 // ---------------------------------------------------------------------------
 // Suppress noisy warnings during tests

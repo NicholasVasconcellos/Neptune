@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { router } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Card, Button, Text, LoadingIndicator } from "@/components/ui";
-import Logo from "@/assets/NeptuneAppIcon.png";
+import { AppLogo } from "@/constants/images";
 import { useAuth } from "@/context/AuthContext";
 import { useThemeColors } from "@/hooks/useThemeColors";
 
@@ -31,7 +31,7 @@ const Home = () => {
         </Text>
       </Card>
       <Image
-        source={Logo}
+        source={AppLogo}
         style={{ width: 300, height: 300, alignSelf: "center", marginBottom: 20 }}
         resizeMode="contain"
       />

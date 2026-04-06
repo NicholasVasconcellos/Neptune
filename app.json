@@ -5,11 +5,11 @@
     "slug": "NeptuneSwim",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/Icon - Neptune Swim - Andressa - No BG.png",
+    "icon": "./assets/neptune-logo-no-bg.png",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/Icon - Neptune Swim - Andressa - No BG.png",
+      "image": "./assets/neptune-logo-no-bg.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -19,14 +19,14 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/Icon - Neptune Swim - Andressa - No BG.png",
+        "foregroundImage": "./assets/neptune-logo-no-bg.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.neptuneswim.app"
     },
     "web": {
-      "favicon": "./assets/Icon - Neptune Swim - Andressa - No BG.png",
+      "favicon": "./assets/neptune-logo-no-bg.png",
       "bundler": "metro"
     },
     "plugins": [

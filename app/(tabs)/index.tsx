@@ -6,7 +6,7 @@ import { Card, Button, Text, Divider } from "@/components/ui";
 import { useAuth } from "@/context/AuthContext";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { supabase } from "@/lib/supabase";
-import Logo from "@/assets/neptune-logo-no-bg.png";
+import { AppLogo } from "@/constants/images";
 
 const Home = () => {
   const { session } = useAuth();
@@ -34,7 +34,7 @@ const Home = () => {
         </Text>
       </Card>
       <Image
-        source={Logo}
+        source={AppLogo}
         style={{
           width: 300,
           height: 300,
