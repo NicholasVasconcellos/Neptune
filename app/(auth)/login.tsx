@@ -46,6 +46,12 @@ export default function Login() {
           onChangeText={setPassword}
         />
         <Button
+          href={`/forgot-password?email=${encodeURIComponent(email)}`}
+          variant="text"
+        >
+          Forgot Password?
+        </Button>
+        <Button
           onPress={signInWithEmail}
           disabled={loading}
           loading={loading}

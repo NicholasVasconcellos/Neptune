@@ -1,27 +1,12 @@
 import { View, Image } from "react-native";
-import React, { useEffect } from "react";
-import { router } from "expo-router";
+
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Card, Button, Text, LoadingIndicator } from "@/components/ui";
+import { Card, Button, Text } from "@/components/ui";
 import { AppLogo } from "@/constants/images";
-import { useAuth } from "@/context/AuthContext";
 import { useThemeColors } from "@/hooks/useThemeColors";
 
 const Home = () => {
-  const { session, loading } = useAuth();
   const colors = useThemeColors();
-
-  useEffect(() => {
-    if (!loading && session) {
-      router.replace("/(tabs)" as any);
-    }
-  }, [session, loading]);
-
-  if (loading) {
-    return <LoadingIndicator className="bg-background" />;
-  }
-
-  if (session) return null;
 
   return (
     <View className="flex-1 items-center justify-center self-center gap-1">

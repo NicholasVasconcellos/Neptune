@@ -1,6 +1,5 @@
 import { View, Image, ScrollView } from "react-native";
-import React, { useEffect } from "react";
-import { router } from "expo-router";
+import React from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Card, Button, Text, Divider } from "@/components/ui";
 import { useAuth } from "@/context/AuthContext";
@@ -11,12 +10,6 @@ import { AppLogo } from "@/constants/images";
 const Home = () => {
   const { session } = useAuth();
   const colors = useThemeColors();
-
-  useEffect(() => {
-    if (!session) {
-      router.replace("../" as any);
-    }
-  }, [session]);
 
   return (
     <ScrollView
