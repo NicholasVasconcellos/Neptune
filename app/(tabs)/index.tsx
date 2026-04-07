@@ -14,7 +14,7 @@ const Home = () => {
 
   useEffect(() => {
     if (!session) {
-      router.replace("/" as any);
+      router.replace("../" as any);
     }
   }, [session]);
 
