@@ -25,10 +25,11 @@ Explain in consise and plain terms. Be extremely consise only list relevant info
 
 - **When:** After implementing any UI-facing feature or fixing a UI bug.
 - **Tool:** `ios-simulator-skill` (`~/.claude/skills/ios-simulator-skill`).
-- **Workflow:**
+- **Run as a subagent** — spawn a separate Claude Code session to perform the UI test. The subagent should:
   1. Build and install the app on the booted simulator.
   2. Navigate to the affected screens using tap/swipe commands.
   3. Screenshot and view **every distinct state** (empty, loaded, error, edge cases).
   4. Visually verify: correct layout, no clipping, text readable, interactive elements visible.
+  5. Return consise summary of findings: what was tested, what passed, and any issues found.
 - Do not skip verification for "minor" changes — if it touches UI, test it.
-- Do not consider a UI feature complete until screenshots confirm correctness.
+- Do not consider a UI feature complete until the subagent confirms correctness.
