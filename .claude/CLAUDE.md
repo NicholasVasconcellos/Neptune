@@ -9,3 +9,7 @@ semantic color tokens — never hardcode colors or rebuild existing components.
 Always use the Context7 MCP tools (`resolve-library-id` and `query-docs`) before
 implementing code for external libraries like React Native, Expo, NativeWind to ensure
 you are using the latest API patterns.
+
+## Summarization
+
+Explain in consise and plain terms. Be extremely consise only list relevant information. Sacrifice grammer for the sake of concision.
