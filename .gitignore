@@ -53,3 +53,7 @@ supabase/.temp/
 /ios
 /android
 .env.example
+
+# Misc
+screenshots/
+GUIDE.md
