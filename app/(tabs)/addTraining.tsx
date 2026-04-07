@@ -807,6 +807,7 @@ const AddTraining = () => {
       <ScrollView
         contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 16, gap: 8, paddingBottom: 100 }}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
       >
         {/* ── Header Section ── */}
         <TextInput

@@ -5,6 +5,7 @@ import {
   Pressable,
   KeyboardAvoidingView,
   Platform,
+  Keyboard,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Text from "./Text";
@@ -39,9 +40,19 @@ export default function Modal({
         style={{ backgroundColor: colors.overlay }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
+        {/* Backdrop: tap outside modal card to dismiss keyboard + close */}
+        <Pressable
+          className="absolute inset-0"
+          onPress={() => {
+            Keyboard.dismiss();
+            onClose();
+          }}
+        />
         <View
           className={`rounded-2xl p-4 max-h-[85%] ${className}`}
           style={{ backgroundColor: colors.backgroundModal }}
+          // Prevent taps inside the card from propagating to the backdrop
+          onStartShouldSetResponder={() => true}
         >
           {title && (
             <View className="flex-row items-center justify-between mb-2">

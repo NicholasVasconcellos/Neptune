@@ -6,6 +6,7 @@ import {
   Pressable,
   Platform,
   ActivityIndicator,
+  Keyboard,
 } from "react-native";
 import { Text, Chip } from "./ui";
 import { useThemeColors } from "@/hooks/useThemeColors";
@@ -54,6 +55,17 @@ const Typeahead = forwardRef<RNTextInput, TypeaheadProps>(
     const [isDisplayed, setIsDisplayed] = useState(false);
     const [isNew, setIsNew] = useState(false);
     const [hasNoMatch, setHasNoMatch] = useState(false);
+
+    // Close dropdown when keyboard hides (e.g. tapping outside, scrolling)
+    useEffect(() => {
+      if (!isDisplayed) return;
+      const event =
+        Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
+      const sub = Keyboard.addListener(event, () => {
+        setIsDisplayed(false);
+      });
+      return () => sub.remove();
+    }, [isDisplayed]);
 
     const onFocus = () => {
       if (showOnEmpty && (!inputValue || inputValue.trim() === "")) {

@@ -293,6 +293,7 @@ export default function ListView({
       >
         <ScrollView
           keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
           showsVerticalScrollIndicator={false}
         >
           {React.isValidElement(createForm)

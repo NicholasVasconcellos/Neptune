@@ -261,6 +261,7 @@ export default function AthleteDetail() {
       >
         <ScrollView
           keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
           showsVerticalScrollIndicator={false}
         >
           <TimeForm
