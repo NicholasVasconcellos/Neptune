@@ -42,6 +42,10 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# Python
+__pycache__/
+*.pyc
+
 # Supabase CLI temp files
 supabase/.temp/
 
