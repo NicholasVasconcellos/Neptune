@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { View, FlatList, ScrollView } from "react-native";
+import React, { useState, useCallback, useMemo } from "react";
+import { View, FlatList, ScrollView, RefreshControl } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import {
   Text,
@@ -14,16 +14,28 @@ import {
 } from "@/components/ui";
 import AthleteTimesChart from "@/components/AthleteTimesChart";
 import TimeForm from "@/components/InputForms/TimeForm";
-import { getData } from "@/utils/backendData";
+import { useData } from "@/context/DataContext";
 import { formatTime, formatDateShort } from "@/utils/timeFormatting";
 
 export default function AthleteDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const cache = useData();
 
-  const [athlete, setAthlete] = useState<Record<string, any> | null>(null);
-  const [times, setTimes] = useState<Record<string, any>[]>([]);
-  const [teamName, setTeamName] = useState<string>("");
-  const [loading, setLoading] = useState(true);
+  const athlete = useMemo(
+    () => cache.athletes.find((a) => a.id === Number(id)) ?? null,
+    [cache.athletes, id]
+  );
+
+  const times = useMemo(
+    () => cache.times.filter((t) => t["Athlete ID"] === Number(id)),
+    [cache.times, id]
+  );
+
+  const teamName = useMemo(() => {
+    if (!athlete?.["Team ID"]) return "";
+    const team = cache.teams.find((t) => t.id === athlete["Team ID"]);
+    return team?.Name ?? "";
+  }, [athlete, cache.teams]);
 
   const [selectedStroke, setSelectedStroke] = useState<string | null>(null);
   const [selectedDistance, setSelectedDistance] = useState<string | null>(null);
@@ -32,36 +44,6 @@ export default function AthleteDetail() {
   const [isFabExtended, setIsFabExtended] = useState(true);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-
-  const fetchData = useCallback(async () => {
-    if (!id) return;
-    setLoading(true);
-    try {
-      const [athleteRows, timesRows, teamsRows] = await Promise.all([
-        getData("Athletes", { id: Number(id) }),
-        getData("Times", { "Athlete ID": Number(id) }),
-        getData("Teams"),
-      ]);
-
-      if (athleteRows.length > 0) {
-        setAthlete(athleteRows[0]);
-        const teamId = athleteRows[0]["Team ID"];
-        if (teamId) {
-          const team = teamsRows.find((t) => t.id === teamId);
-          setTeamName(team?.Name ?? "");
-        }
-      }
-      setTimes(timesRows);
-    } catch {
-      // getData already handles error logging
-    } finally {
-      setLoading(false);
-    }
-  }, [id]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
 
   const uniqueStrokes = useMemo(
     () => [...new Set(times.map((t) => t.Stroke).filter(Boolean))].sort(),
@@ -97,8 +79,7 @@ export default function AthleteDetail() {
     setAddTimeModalVisible(false);
     setSnackbarMessage(msg);
     setSnackbarVisible(true);
-    fetchData();
-  }, [fetchData]);
+  }, []);
 
   const onFlatListScroll = ({ nativeEvent }: any) => {
     const currentScrollPosition =
@@ -115,7 +96,7 @@ export default function AthleteDetail() {
     [times]
   );
 
-  if (loading) {
+  if (cache.loading) {
     return (
       <View className="flex-1 bg-background justify-center">
         <LoadingIndicator />
@@ -138,6 +119,12 @@ export default function AthleteDetail() {
         keyExtractor={(item) => String(item.id)}
         onScroll={onFlatListScroll}
         contentContainerStyle={{ paddingBottom: 80 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={cache.refreshing}
+            onRefresh={cache.refreshAll}
+          />
+        }
         ListHeaderComponent={
           <View className="px-4">
             {/* Athlete Info */}

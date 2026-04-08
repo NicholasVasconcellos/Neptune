@@ -4,6 +4,7 @@ import React from "react";
 import { Stack } from "expo-router";
 
 import { AuthProvider, useAuth } from "@/context/AuthContext";
+import { DataProvider } from "@/context/DataContext";
 import { LoadingIndicator } from "@/components/ui";
 
 function RootNavigator() {
@@ -77,11 +78,13 @@ function RootNavigator() {
 const RootLayout = () => {
   return (
     <AuthProvider>
-      <SafeAreaProvider>
-        <SafeAreaView className="flex-1 bg-background">
-          <RootNavigator />
-        </SafeAreaView>
-      </SafeAreaProvider>
+      <DataProvider>
+        <SafeAreaProvider>
+          <SafeAreaView className="flex-1 bg-background">
+            <RootNavigator />
+          </SafeAreaView>
+        </SafeAreaProvider>
+      </DataProvider>
     </AuthProvider>
   );
 };

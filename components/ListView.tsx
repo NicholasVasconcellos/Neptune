@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import {
   View,
   FlatList,
   ScrollView,
   Pressable,
+  RefreshControl,
 } from "react-native";
 import {
   Text,
@@ -18,7 +19,8 @@ import {
 } from "./ui";
 import Typeahead from "./Typeahead";
 import { useRouter } from "expo-router";
-import { getData, updateData } from "@/utils/backendData";
+import { updateData } from "@/utils/backendData";
+import { useData } from "@/context/DataContext";
 import { alertLog } from "@/utils/alertLog";
 
 const SYSTEM_COLUMNS = ["id", "created_at", "User ID"];
@@ -51,20 +53,39 @@ export default function ListView({
   createForm,
 }: ListViewProps) {
   const router = useRouter();
+  const cache = useData();
   const label = displayName ?? tableName;
-  const [data, setData] = useState<Record<string, any>[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const [fkLookups, setFkLookups] = useState<
-    Record<string, Record<number, string>>
-  >({});
+  const TABLE_KEY_MAP: Record<string, keyof typeof cache> = {
+    Athletes: "athletes",
+    Teams: "teams",
+    Times: "times",
+    Trainings: "trainings",
+  };
+
+  const data = (cache[TABLE_KEY_MAP[tableName] as keyof typeof cache] ?? []) as Record<string, any>[];
+
+  const fkLookups = useMemo(() => {
+    const lookups: Record<string, Record<number, string>> = {};
+    const fkColumns =
+      data.length > 0
+        ? Object.keys(data[0]).filter((col) => col in FK_TABLE_MAP)
+        : [];
+    for (const col of fkColumns) {
+      const related = (cache[TABLE_KEY_MAP[FK_TABLE_MAP[col]] as keyof typeof cache] ?? []) as Record<string, any>[];
+      const map: Record<number, string> = {};
+      for (const item of related) {
+        map[item.id] = item.Name ?? String(item.id);
+      }
+      lookups[col] = map;
+    }
+    return lookups;
+  }, [data, cache.teams, cache.athletes]);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalColumn, setModalColumn] = useState("");
   const [modalRowId, setModalRowId] = useState<number | null>(null);
-  const [modalOptions, setModalOptions] = useState<Record<string, any>[]>([]);
-  const [modalLoading, setModalLoading] = useState(false);
 
   const [fabModalVisible, setFabModalVisible] = useState(false);
   const [isFabExtended, setIsFabExtended] = useState(true);
@@ -72,50 +93,11 @@ export default function ListView({
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    try {
-      const rows = await getData(tableName);
-      setData(rows);
-
-      const fkColumns =
-        rows.length > 0
-          ? Object.keys(rows[0]).filter((col) => col in FK_TABLE_MAP)
-          : [];
-
-      const lookups: Record<string, Record<number, string>> = {};
-      await Promise.all(
-        fkColumns.map(async (col) => {
-          try {
-            const related = await getData(FK_TABLE_MAP[col]);
-            const map: Record<number, string> = {};
-            for (const item of related) {
-              map[item.id] = item.Name ?? String(item.id);
-            }
-            lookups[col] = map;
-          } catch {
-            lookups[col] = {};
-          }
-        }),
-      );
-      setFkLookups(lookups);
-    } catch (e: any) {
-      alertLog("Error loading data", e.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [tableName]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
   const handleFormSuccess = useCallback((msg: string) => {
     setFabModalVisible(false);
     setSnackbarMessage(msg);
     setSnackbarVisible(true);
-    fetchData();
-  }, [fetchData]);
+  }, []);
 
   const columns =
     displayColumns ??
@@ -139,23 +121,21 @@ export default function ListView({
     }
   }
 
-  async function handleEmptyCellPress(column: string, rowId: number) {
+  function handleEmptyCellPress(column: string, rowId: number) {
     const relatedTable = FK_TABLE_MAP[column];
     if (!relatedTable) return;
 
     setModalColumn(column);
     setModalRowId(rowId);
     setModalVisible(true);
-    setModalLoading(true);
-
-    try {
-      setModalOptions(await getData(relatedTable));
-    } catch (e: any) {
-      alertLog("Error loading options", e.message);
-    } finally {
-      setModalLoading(false);
-    }
   }
+
+  const modalOptions = useMemo(() => {
+    if (!modalColumn) return [];
+    const relatedTable = FK_TABLE_MAP[modalColumn];
+    if (!relatedTable) return [];
+    return (cache[TABLE_KEY_MAP[relatedTable] as keyof typeof cache] ?? []) as Record<string, any>[];
+  }, [modalColumn, cache.teams, cache.athletes]);
 
   async function handleModalSelect(item: Record<string, any>) {
     if (modalRowId === null) return;
@@ -163,7 +143,6 @@ export default function ListView({
     try {
       await updateData(tableName, modalRowId, { [modalColumn]: item.id });
       setModalVisible(false);
-      await fetchData();
     } catch (e: any) {
       alertLog("Error updating", e.message);
     }
@@ -246,7 +225,7 @@ export default function ListView({
     );
   }
 
-  if (loading) {
+  if (cache.loading) {
     return <LoadingIndicator />;
   }
 
@@ -264,6 +243,12 @@ export default function ListView({
         keyExtractor={(item) => String(item.id)}
         onScroll={onFlatListScroll}
         contentContainerStyle={{ paddingBottom: 80 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={cache.refreshing}
+            onRefresh={cache.refreshAll}
+          />
+        }
         ListEmptyComponent={
           <EmptyState message="No results found" icon="search-outline" />
         }
@@ -280,7 +265,6 @@ export default function ListView({
           propertyName="Name"
           formTitle={`Search ${FK_DISPLAY_NAMES[modalColumn] ?? FK_TABLE_MAP[modalColumn]}`}
           placeholderText="Type to search..."
-          loading={modalLoading}
           onSelect={handleModalSelect}
         />
       </Modal>

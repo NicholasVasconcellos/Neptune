@@ -1,23 +1,24 @@
 import { View } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 import { Text, TextInput, Button, Snackbar } from "@/components/ui";
 import Typeahead from "@/components/Typeahead";
 import { useThemeColors } from "@/hooks/useThemeColors";
-import { getData, postData } from "@/utils/backendData";
+import { postData } from "@/utils/backendData";
+import { useData } from "@/context/DataContext";
 
 export default function AthleteForm({ onSuccess }: { onSuccess?: (msg: string) => void } = {}) {
   const colors = useThemeColors();
+  const cache = useData();
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
   const [teamId, setTeamId] = useState<number | null>(null);
   const [teamName, setTeamName] = useState("");
 
-  const [athleteData, setAthleteData] = useState<Record<string, any>[]>([]);
-  const [teamData, setTeamData] = useState<Record<string, any>[]>([]);
+  const athleteData = cache.athletes;
+  const teamData = cache.teams;
 
-  const [teamLoading, setTeamLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const [nameError, setNameError] = useState("");
@@ -26,30 +27,6 @@ export default function AthleteForm({ onSuccess }: { onSuccess?: (msg: string) =
 
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-
-  async function fetchAthletes() {
-    try {
-      setAthleteData(await getData("Athletes"));
-    } catch (e: any) {
-      setNameError("Failed to load athletes");
-    }
-  }
-
-  async function fetchTeams() {
-    setTeamLoading(true);
-    try {
-      setTeamData(await getData("Teams"));
-    } catch (e: any) {
-      setTeamError("Failed to load groups");
-    } finally {
-      setTeamLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    fetchAthletes();
-    fetchTeams();
-  }, []);
 
   function handleNameChange(text: string) {
     setName(text);
@@ -141,8 +118,6 @@ export default function AthleteForm({ onSuccess }: { onSuccess?: (msg: string) =
         setSnackbarVisible(true);
       }
       resetForm();
-      fetchAthletes();
-      fetchTeams();
     } catch (e: any) {
       const msg = e.message ?? "An error occurred";
       const msgLower = msg.toLowerCase();
@@ -188,7 +163,6 @@ export default function AthleteForm({ onSuccess }: { onSuccess?: (msg: string) =
           propertyName="Name"
           formTitle="Group"
           placeholderText="Select or create group (optional)"
-          loading={teamLoading}
           value={teamName}
           allowsNew
           showOnEmpty

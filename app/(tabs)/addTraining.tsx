@@ -4,6 +4,7 @@ import {
   Modal as RNModal,
   Platform,
   Pressable,
+  RefreshControl,
   ScrollView,
   View,
   FlatList,
@@ -29,6 +30,7 @@ import ExerciseRow, {
 } from "@/components/training/ExerciseRow";
 import TrainingViewMode from "@/components/training/TrainingViewMode";
 import { getData, postData, updateData, deleteData, deleteByFilter } from "@/utils/backendData";
+import { useData } from "@/context/DataContext";
 import { alertLog } from "@/utils/alertLog";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { exportTrainingCSV, exportTrainingPDF } from "@/utils/exportTraining";
@@ -50,16 +52,14 @@ function TrainingListView({
   onAdd,
   onEdit,
   onDelete,
-  refreshKey,
 }: {
   onAdd: () => void;
   onEdit: (training: Record<string, any>) => void;
   onDelete: (training: Record<string, any>) => void;
-  refreshKey: number;
 }) {
   const colors = useThemeColors();
-  const [trainings, setTrainings] = useState<Record<string, any>[]>([]);
-  const [loading, setLoading] = useState(true);
+  const cache = useData();
+  const trainings = cache.trainings;
   const [search, setSearch] = useState("");
 
   // Export modal state
@@ -67,14 +67,6 @@ function TrainingListView({
   const [selectedExercises, setSelectedExercises] = useState<Record<string, any>[]>([]);
   const [loadingExercises, setLoadingExercises] = useState(false);
   const [exporting, setExporting] = useState<"csv" | "pdf" | null>(null);
-
-  useEffect(() => {
-    setLoading(true);
-    getData("Trainings")
-      .then(setTrainings)
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [refreshKey]);
 
   const filtered = search.trim()
     ? trainings.filter((t) =>
@@ -111,7 +103,7 @@ function TrainingListView({
     }
   }, [selectedTraining, selectedExercises]);
 
-  if (loading) {
+  if (cache.loading) {
     return <LoadingIndicator />;
   }
 
@@ -129,6 +121,12 @@ function TrainingListView({
         data={filtered}
         keyExtractor={(item) => String(item.id)}
         contentContainerStyle={{ paddingBottom: 80 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={cache.refreshing}
+            onRefresh={cache.refreshAll}
+          />
+        }
         renderItem={({ item }) => (
           <Pressable
             onPress={() => onEdit(item)}
@@ -232,10 +230,10 @@ function TrainingListView({
 
 const AddTraining = () => {
   const colors = useThemeColors();
+  const cache = useData();
   const nextExerciseId = useRef(1);
   const [view, setView] = useState<"list" | "view" | "edit" | "create">("list");
   const [editingTrainingId, setEditingTrainingId] = useState<number | null>(null);
-  const [listRefreshKey, setListRefreshKey] = useState(0);
   const [showSaveAsModal, setShowSaveAsModal] = useState(false);
   const [saveAsName, setSaveAsName] = useState("");
 
@@ -243,7 +241,7 @@ const AddTraining = () => {
   const [name, setName] = useState("");
   const [unit, setUnit] = useState<"meters" | "yards">("meters");
   const [teamId, setTeamId] = useState<number | null>(null);
-  const [teams, setTeams] = useState<Record<string, any>[]>([]);
+  const teams = cache.teams;
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDays, setSelectedDays] = useState<Set<Day>>(new Set());
@@ -264,11 +262,8 @@ const AddTraining = () => {
     Record<number, Record<string, string>>
   >({});
 
+  // Fetch distinct exercise names for autocomplete (not cached)
   useEffect(() => {
-    getData("Teams")
-      .then(setTeams)
-      .catch(() => {});
-    // Fetch distinct exercise names for autocomplete
     getData("Exercises")
       .then((rows) => {
         const seen = new Set<string>();
@@ -459,7 +454,6 @@ const AddTraining = () => {
 
       alertLog("Saved", "Training saved successfully.");
       resetForm();
-      setListRefreshKey((k) => k + 1);
       setView("list");
     } catch (e: any) {
       alertLog("Error", e.message);
@@ -557,7 +551,6 @@ const AddTraining = () => {
       alertLog("Updated", "Training updated successfully.");
       resetForm();
       setEditingTrainingId(null);
-      setListRefreshKey((k) => k + 1);
       setView("list");
     } catch (e: any) {
       alertLog("Error", e.message);
@@ -603,7 +596,6 @@ const AddTraining = () => {
       setShowSaveAsModal(false);
       resetForm();
       setEditingTrainingId(null);
-      setListRefreshKey((k) => k + 1);
       setView("list");
     } catch (e: any) {
       alertLog("Error", e.message);
@@ -687,7 +679,6 @@ const AddTraining = () => {
     try {
       await deleteData("Trainings", id);
       alertLog("Deleted", "Training deleted.");
-      setListRefreshKey((k) => k + 1);
     } catch (e: any) {
       alertLog("Error", e.message);
     }
@@ -705,7 +696,6 @@ const AddTraining = () => {
         }}
         onEdit={openForView}
         onDelete={handleDeleteFromList}
-        refreshKey={listRefreshKey}
       />
     );
   }

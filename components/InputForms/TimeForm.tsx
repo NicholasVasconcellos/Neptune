@@ -1,11 +1,12 @@
 import { View } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 import { Text, TextInput, Button, SegmentedControl, Snackbar } from "@/components/ui";
 import Typeahead from "@/components/Typeahead";
 import { useThemeColors } from "@/hooks/useThemeColors";
-import { getData, postData } from "@/utils/backendData";
+import { postData } from "@/utils/backendData";
+import { useData } from "@/context/DataContext";
 import { parseTimeToSeconds, cleanTimeInput } from "@/utils/timeFormatting";
 import {
   SWIM_STROKES,
@@ -20,6 +21,7 @@ interface TimeFormProps {
 
 export default function TimeForm({ onSuccess, initialAthleteId, initialAthleteName }: TimeFormProps = {}) {
   const colors = useThemeColors();
+  const cache = useData();
   const [athleteId, setAthleteId] = useState<number | null>(initialAthleteId ?? null);
   const [athleteName, setAthleteName] = useState(initialAthleteName ?? "");
   const [stroke, setStroke] = useState("");
@@ -27,11 +29,10 @@ export default function TimeForm({ onSuccess, initialAthleteId, initialAthleteNa
   const [distance, setDistance] = useState("");
   const [time, setTime] = useState("");
 
-  const [athleteData, setAthleteData] = useState<Record<string, any>[]>([]);
+  const athleteData = cache.athletes;
   const [localStrokes, setLocalStrokes] = useState<string[]>([
     ...SWIM_STROKES,
   ]);
-  const [athleteLoading, setAthleteLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const [swimmerError, setSwimmerError] = useState("");
@@ -54,21 +55,6 @@ export default function TimeForm({ onSuccess, initialAthleteId, initialAthleteNa
   }));
 
   const athletePreset = initialAthleteId != null;
-
-  useEffect(() => {
-    if (athletePreset) return;
-    async function fetchAthletes() {
-      setAthleteLoading(true);
-      try {
-        setAthleteData(await getData("Athletes"));
-      } catch (e: any) {
-        setSwimmerError("Failed to load athletes");
-      } finally {
-        setAthleteLoading(false);
-      }
-    }
-    fetchAthletes();
-  }, [athletePreset]);
 
   function handleStrokeSelect(item: Record<string, any>) {
     setStroke(item.Name);
@@ -173,7 +159,6 @@ export default function TimeForm({ onSuccess, initialAthleteId, initialAthleteNa
               propertyName="Name"
               formTitle="Swimmer"
               placeholderText="Search for swimmer"
-              loading={athleteLoading}
               value={athleteName}
               allowsNew={false}
               showOnEmpty={false}

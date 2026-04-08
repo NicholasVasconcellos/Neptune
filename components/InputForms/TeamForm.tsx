@@ -1,45 +1,28 @@
 import { View } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 import { Text, TextInput, Button, Chip, Snackbar } from "@/components/ui";
 import Typeahead from "@/components/Typeahead";
 import { useThemeColors } from "@/hooks/useThemeColors";
-import { getData, postData, updateData } from "@/utils/backendData";
+import { postData, updateData } from "@/utils/backendData";
+import { useData } from "@/context/DataContext";
 
 export default function TeamForm({ onSuccess }: { onSuccess?: (msg: string) => void } = {}) {
   const colors = useThemeColors();
+  const cache = useData();
   const [name, setName] = useState("");
   const [memberInput, setMemberInput] = useState("");
   const [members, setMembers] = useState<Record<string, any>[]>([]);
 
-  const [teamData, setTeamData] = useState<Record<string, any>[]>([]);
-  const [athleteData, setAthleteData] = useState<Record<string, any>[]>([]);
-  const [athleteLoading, setAthleteLoading] = useState(false);
+  const teamData = cache.teams;
+  const athleteData = cache.athletes;
+
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const [nameError, setNameError] = useState("");
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-
-  useEffect(() => {
-    async function fetchTeams() {
-      try {
-        setTeamData(await getData("Teams"));
-      } catch {}
-    }
-    async function fetchAthletes() {
-      setAthleteLoading(true);
-      try {
-        setAthleteData(await getData("Athletes"));
-      } catch {
-      } finally {
-        setAthleteLoading(false);
-      }
-    }
-    fetchTeams();
-    fetchAthletes();
-  }, []);
 
   function handleNameChange(text: string) {
     setName(text);
@@ -132,7 +115,6 @@ export default function TeamForm({ onSuccess }: { onSuccess?: (msg: string) => v
           propertyName="Name"
           formTitle="Add Members"
           placeholderText="Search for swimmers"
-          loading={athleteLoading}
           value={memberInput}
           allowsNew={false}
           showOnEmpty={false}

@@ -1,5 +1,18 @@
 import { supabase } from "@/lib/supabase";
 
+// ─── Mutation Listener Pub/Sub ──────────────────────────────────────────
+type MutationListener = (tableName: string) => void;
+const listeners = new Set<MutationListener>();
+
+export function onMutation(callback: MutationListener): () => void {
+  listeners.add(callback);
+  return () => { listeners.delete(callback); };
+}
+
+function notifyListeners(tableName: string) {
+  listeners.forEach((cb) => cb(tableName));
+}
+
 export async function getData(
   tableName: string,
   filters?: Record<string, any>,
@@ -43,6 +56,7 @@ export async function postData(
     .select();
 
   if (error) throw error;
+  notifyListeners(tableName);
   return data;
 }
 
@@ -58,6 +72,7 @@ export async function updateData(
     .select();
 
   if (error) throw error;
+  notifyListeners(tableName);
   return data;
 }
 
@@ -68,6 +83,7 @@ export async function deleteData(tableName: string, id: number) {
     .eq("id", id);
 
   if (error) throw error;
+  notifyListeners(tableName);
 }
 
 export async function deleteByFilter(
@@ -80,4 +96,5 @@ export async function deleteByFilter(
   }
   const { error } = await query;
   if (error) throw error;
+  notifyListeners(tableName);
 }

@@ -1,3 +1,20 @@
+## Context Efficiency
+
+### Lazy File Reading
+
+Do NOT read the entire codebase upfront. If a plan, task list, or sufficient context
+is already provided in the conversation, go straight to editing. Only read a file when
+you need extra context that isn't already available (e.g. unfamiliar imports, unclear
+function signatures, unknown file structure).
+
+### Subagents for Independent Edits
+
+When a task involves editing 3+ files that are independent of each other (e.g. separate
+form components, unrelated screens), use subagents to parallelize the work. Each
+subagent gets its own context window, keeping the main conversation lean. Reserve the
+main conversation for coordinating, reviewing results, and files that depend on each
+other. Subagent should be directly provided the relevant context it needs when created.
+
 ## UI System
 
 Follow the design principles and component conventions in `.claude/skill.md`.
