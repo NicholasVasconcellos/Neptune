@@ -58,8 +58,7 @@ function TrainingListView({
   onDelete: (training: Record<string, any>) => void;
 }) {
   const colors = useThemeColors();
-  const cache = useData();
-  const trainings = cache.trainings;
+  const { trainings, loading, refreshing, refreshAll } = useData();
   const [search, setSearch] = useState("");
 
   // Export modal state
@@ -103,7 +102,7 @@ function TrainingListView({
     }
   }, [selectedTraining, selectedExercises]);
 
-  if (cache.loading) {
+  if (loading) {
     return <LoadingIndicator />;
   }
 
@@ -123,8 +122,8 @@ function TrainingListView({
         contentContainerStyle={{ paddingBottom: 80 }}
         refreshControl={
           <RefreshControl
-            refreshing={cache.refreshing}
-            onRefresh={cache.refreshAll}
+            refreshing={refreshing}
+            onRefresh={refreshAll}
           />
         }
         renderItem={({ item }) => (
@@ -230,7 +229,7 @@ function TrainingListView({
 
 const AddTraining = () => {
   const colors = useThemeColors();
-  const cache = useData();
+  const { teams } = useData();
   const nextExerciseId = useRef(1);
   const [view, setView] = useState<"list" | "view" | "edit" | "create">("list");
   const [editingTrainingId, setEditingTrainingId] = useState<number | null>(null);
@@ -241,7 +240,6 @@ const AddTraining = () => {
   const [name, setName] = useState("");
   const [unit, setUnit] = useState<"meters" | "yards">("meters");
   const [teamId, setTeamId] = useState<number | null>(null);
-  const teams = cache.teams;
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDays, setSelectedDays] = useState<Set<Day>>(new Set());

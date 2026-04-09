@@ -45,12 +45,22 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const setterMap: Record<CachedTable, React.Dispatch<React.SetStateAction<Record<string, any>[]>>> = {
+  const setterMap = useRef({
     Athletes: setAthletes,
     Teams: setTeams,
     Times: setTimes,
     Trainings: setTrainings,
-  };
+  } as Record<CachedTable, React.Dispatch<React.SetStateAction<Record<string, any>[]>>>).current;
+
+  const fetchAllTables = useCallback(async () => {
+    const [a, te, ti, tr] = await Promise.all(
+      CACHED_TABLES.map((t) => getData(t))
+    );
+    setAthletes(a);
+    setTeams(te);
+    setTimes(ti);
+    setTrainings(tr);
+  }, []);
 
   const refreshTable = useCallback(async (tableName: CachedTable) => {
     try {
@@ -59,30 +69,23 @@ export function DataProvider({ children }: { children: ReactNode }) {
     } catch {
       // getData handles error logging
     }
-  }, []);
+  }, [setterMap]);
 
   const refreshAll = useCallback(async () => {
     setRefreshing(true);
     try {
-      const [a, te, ti, tr] = await Promise.all(
-        CACHED_TABLES.map((t) => getData(t))
-      );
-      setAthletes(a);
-      setTeams(te);
-      setTimes(ti);
-      setTrainings(tr);
+      await fetchAllTables();
     } catch {
       // getData handles error logging
     } finally {
       setRefreshing(false);
     }
-  }, []);
+  }, [fetchAllTables]);
 
   // Initial prefetch when session becomes available
   const hasFetched = useRef(false);
   useEffect(() => {
     if (!session) {
-      // Clear on logout
       setAthletes([]);
       setTeams([]);
       setTimes([]);
@@ -95,22 +98,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
     if (hasFetched.current) return;
     hasFetched.current = true;
 
-    (async () => {
-      try {
-        const [a, te, ti, tr] = await Promise.all(
-          CACHED_TABLES.map((t) => getData(t))
-        );
-        setAthletes(a);
-        setTeams(te);
-        setTimes(ti);
-        setTrainings(tr);
-      } catch {
-        // getData handles error logging
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [session]);
+    fetchAllTables()
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [session, fetchAllTables]);
 
   // Subscribe to mutation notifications — auto-refresh cached tables
   useEffect(() => {

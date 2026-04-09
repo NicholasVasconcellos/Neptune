@@ -21,15 +21,13 @@ interface TimeFormProps {
 
 export default function TimeForm({ onSuccess, initialAthleteId, initialAthleteName }: TimeFormProps = {}) {
   const colors = useThemeColors();
-  const cache = useData();
+  const { athletes: athleteData } = useData();
   const [athleteId, setAthleteId] = useState<number | null>(initialAthleteId ?? null);
   const [athleteName, setAthleteName] = useState(initialAthleteName ?? "");
   const [stroke, setStroke] = useState("");
   const [distanceUnit, setDistanceUnit] = useState("meters");
   const [distance, setDistance] = useState("");
   const [time, setTime] = useState("");
-
-  const athleteData = cache.athletes;
   const [localStrokes, setLocalStrokes] = useState<string[]>([
     ...SWIM_STROKES,
   ]);

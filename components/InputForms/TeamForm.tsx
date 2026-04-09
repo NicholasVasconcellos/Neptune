@@ -10,13 +10,10 @@ import { useData } from "@/context/DataContext";
 
 export default function TeamForm({ onSuccess }: { onSuccess?: (msg: string) => void } = {}) {
   const colors = useThemeColors();
-  const cache = useData();
+  const { teams: teamData, athletes: athleteData } = useData();
   const [name, setName] = useState("");
   const [memberInput, setMemberInput] = useState("");
   const [members, setMembers] = useState<Record<string, any>[]>([]);
-
-  const teamData = cache.teams;
-  const athleteData = cache.athletes;
 
   const [submitLoading, setSubmitLoading] = useState(false);
 

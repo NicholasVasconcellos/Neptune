@@ -5,7 +5,6 @@ import {
   TextInput as RNTextInput,
   Pressable,
   Platform,
-  ActivityIndicator,
   Keyboard,
 } from "react-native";
 import { Text, Chip } from "./ui";
@@ -18,7 +17,6 @@ interface TypeaheadProps {
   placeholderText?: string;
   onSelect?: (item: Record<string, any>) => void;
   onChangeText?: (text: string) => void;
-  loading?: boolean;
   value?: string;
   allowsNew?: boolean;
   showOnEmpty?: boolean;
@@ -34,7 +32,6 @@ const Typeahead = forwardRef<RNTextInput, TypeaheadProps>(
       placeholderText,
       onSelect,
       onChangeText: onChangeTextProp,
-      loading,
       value,
       allowsNew = true,
       showOnEmpty = false,
@@ -153,9 +150,6 @@ const Typeahead = forwardRef<RNTextInput, TypeaheadProps>(
               placeholderTextColor={colors.placeholder}
               className="flex-1 py-3 text-sm text-foreground"
             />
-            {loading && (
-              <ActivityIndicator size="small" color={colors.primary} />
-            )}
             {isNew && <Chip label="New" compact className="ml-1" />}
           </View>
           {hasNoMatch && (

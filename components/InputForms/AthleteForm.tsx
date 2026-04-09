@@ -10,14 +10,11 @@ import { useData } from "@/context/DataContext";
 
 export default function AthleteForm({ onSuccess }: { onSuccess?: (msg: string) => void } = {}) {
   const colors = useThemeColors();
-  const cache = useData();
+  const { athletes: athleteData, teams: teamData } = useData();
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
   const [teamId, setTeamId] = useState<number | null>(null);
   const [teamName, setTeamName] = useState("");
-
-  const athleteData = cache.athletes;
-  const teamData = cache.teams;
 
   const [submitLoading, setSubmitLoading] = useState(false);
 

@@ -39,6 +39,13 @@ const COLUMN_DISPLAY_NAMES: Record<string, string> = {
   "Team ID": "Group",
 };
 
+const TABLE_KEY_MAP: Record<string, string> = {
+  Athletes: "athletes",
+  Teams: "teams",
+  Times: "times",
+  Trainings: "trainings",
+};
+
 interface ListViewProps {
   tableName: string;
   displayName?: string;
@@ -57,14 +64,7 @@ export default function ListView({
   const label = displayName ?? tableName;
   const [searchQuery, setSearchQuery] = useState("");
 
-  const TABLE_KEY_MAP: Record<string, keyof typeof cache> = {
-    Athletes: "athletes",
-    Teams: "teams",
-    Times: "times",
-    Trainings: "trainings",
-  };
-
-  const data = (cache[TABLE_KEY_MAP[tableName] as keyof typeof cache] ?? []) as Record<string, any>[];
+  const data = ((cache as any)[TABLE_KEY_MAP[tableName]] ?? []) as Record<string, any>[];
 
   const fkLookups = useMemo(() => {
     const lookups: Record<string, Record<number, string>> = {};
@@ -73,7 +73,7 @@ export default function ListView({
         ? Object.keys(data[0]).filter((col) => col in FK_TABLE_MAP)
         : [];
     for (const col of fkColumns) {
-      const related = (cache[TABLE_KEY_MAP[FK_TABLE_MAP[col]] as keyof typeof cache] ?? []) as Record<string, any>[];
+      const related = ((cache as any)[TABLE_KEY_MAP[FK_TABLE_MAP[col]]] ?? []) as Record<string, any>[];
       const map: Record<number, string> = {};
       for (const item of related) {
         map[item.id] = item.Name ?? String(item.id);
@@ -134,7 +134,7 @@ export default function ListView({
     if (!modalColumn) return [];
     const relatedTable = FK_TABLE_MAP[modalColumn];
     if (!relatedTable) return [];
-    return (cache[TABLE_KEY_MAP[relatedTable] as keyof typeof cache] ?? []) as Record<string, any>[];
+    return ((cache as any)[TABLE_KEY_MAP[relatedTable]] ?? []) as Record<string, any>[];
   }, [modalColumn, cache.teams, cache.athletes]);
 
   async function handleModalSelect(item: Record<string, any>) {

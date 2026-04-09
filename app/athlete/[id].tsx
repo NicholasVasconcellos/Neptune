@@ -19,23 +19,23 @@ import { formatTime, formatDateShort } from "@/utils/timeFormatting";
 
 export default function AthleteDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const cache = useData();
+  const { athletes, times: allTimes, teams, loading, refreshing, refreshAll } = useData();
 
   const athlete = useMemo(
-    () => cache.athletes.find((a) => a.id === Number(id)) ?? null,
-    [cache.athletes, id]
+    () => athletes.find((a) => a.id === Number(id)) ?? null,
+    [athletes, id]
   );
 
   const times = useMemo(
-    () => cache.times.filter((t) => t["Athlete ID"] === Number(id)),
-    [cache.times, id]
+    () => allTimes.filter((t) => t["Athlete ID"] === Number(id)),
+    [allTimes, id]
   );
 
   const teamName = useMemo(() => {
     if (!athlete?.["Team ID"]) return "";
-    const team = cache.teams.find((t) => t.id === athlete["Team ID"]);
+    const team = teams.find((t) => t.id === athlete["Team ID"]);
     return team?.Name ?? "";
-  }, [athlete, cache.teams]);
+  }, [athlete, teams]);
 
   const [selectedStroke, setSelectedStroke] = useState<string | null>(null);
   const [selectedDistance, setSelectedDistance] = useState<string | null>(null);
@@ -96,7 +96,7 @@ export default function AthleteDetail() {
     [times]
   );
 
-  if (cache.loading) {
+  if (loading) {
     return (
       <View className="flex-1 bg-background justify-center">
         <LoadingIndicator />
@@ -121,8 +121,8 @@ export default function AthleteDetail() {
         contentContainerStyle={{ paddingBottom: 80 }}
         refreshControl={
           <RefreshControl
-            refreshing={cache.refreshing}
-            onRefresh={cache.refreshAll}
+            refreshing={refreshing}
+            onRefresh={refreshAll}
           />
         }
         ListHeaderComponent={
